@@ -1,16 +1,4 @@
-enum Colors {
-  Yellow,
-  Green,
-  Red,
-  Blue,
-  Black,
-  White,
-}
-
-enum Directions {
-  Right,
-  Left,
-}
+import { Colors, Directions } from "../enums/index.js"
 
 export default class Camel {
   color: Colors;

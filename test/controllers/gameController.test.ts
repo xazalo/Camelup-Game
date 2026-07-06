@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import GameController from "../../cli/controllers/GameController.js";
+import { Colors } from "../../engine/enums/index.js";
 
 const gameController = new GameController();
 
@@ -24,7 +25,6 @@ describe("GameController", () => {
     const state = gameController.getState();
     expect(state?.board.spaces.length).toBe(16);
     for (const space of state!.board.spaces) {
-      expect(space.camels).toEqual([]);
       expect(space.tile.owner).toBeNull();
       expect(space.tile.tileType).toBe(0);
     }
@@ -47,7 +47,7 @@ describe("GameController", () => {
     expect(state?.currentPlayer).toBe(1);
     expect(state?.currentTurn).toBe(1);
 
-    expect(state?.history.length).toBe(0);
+    expect(state?.history.length).toBe(1);
     expect(state?.phase).toBe(0);
     expect(typeof state?.id).toBe("string");
     expect(state?.id.length).toBe(34);
@@ -68,6 +68,19 @@ describe("GameController", () => {
         tiles: [],
       },
     ]);
+
+    const camelsStack = state!.board!.spaces[0]!.camels;
+
+    for (const camel of camelsStack) {
+      expect([
+        Colors.Green,
+        Colors.Blue,
+        Colors.Red,
+        Colors.Yellow,
+        Colors.White,
+        Colors.Black,
+      ]).toContain(camel.color);
+    }
   });
 
   it("should create a game properly with 3 players", () => {
@@ -91,13 +104,18 @@ describe("GameController", () => {
         name: "Aleksander",
         money: 3,
         cards: [],
-        tiles: []
-      }
+        tiles: [],
+      },
     ]);
-});
+  });
 
-it("should create a game properly with 4 players", () => {
-    const game = gameController.startGame(["Player1", "Player2", "Player3", "Player4"]);
+  it("should create a game properly with 4 players", () => {
+    const game = gameController.startGame([
+      "Player1",
+      "Player2",
+      "Player3",
+      "Player4",
+    ]);
     const state = gameController.getState();
 
     expect(state?.players).toMatchObject([
@@ -123,13 +141,19 @@ it("should create a game properly with 4 players", () => {
         name: "Player4",
         money: 3,
         cards: [],
-        tiles: []
-      }
+        tiles: [],
+      },
     ]);
-});
+  });
 
-it("should create a game properly with 5 players", () => {
-    const game = gameController.startGame(["Player1", "Player2", "Player3", "Player4", "Player5"]);
+  it("should create a game properly with 5 players", () => {
+    const game = gameController.startGame([
+      "Player1",
+      "Player2",
+      "Player3",
+      "Player4",
+      "Player5",
+    ]);
     const state = gameController.getState();
 
     expect(state?.players).toMatchObject([
@@ -161,13 +185,20 @@ it("should create a game properly with 5 players", () => {
         name: "Player5",
         money: 3,
         cards: [],
-        tiles: []
-      }
+        tiles: [],
+      },
     ]);
-});
+  });
 
-it("should create a game properly with 6 players", () => {
-    const game = gameController.startGame(["Player1", "Player2", "Player3", "Player4", "Player5", "Player6"]);
+  it("should create a game properly with 6 players", () => {
+    const game = gameController.startGame([
+      "Player1",
+      "Player2",
+      "Player3",
+      "Player4",
+      "Player5",
+      "Player6",
+    ]);
     const state = gameController.getState();
 
     expect(state?.players).toMatchObject([
@@ -205,10 +236,10 @@ it("should create a game properly with 6 players", () => {
         name: "Player6",
         money: 3,
         cards: [],
-        tiles: []
-      }
+        tiles: [],
+      },
     ]);
-});
+  });
 
   it("should return error if players are not between 2 and 6", () => {
     const game = gameController.startGame(["enzo"]);

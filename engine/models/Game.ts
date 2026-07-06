@@ -1,14 +1,6 @@
-import { Board, Player, type Turn, CardStorage } from "./index.js";
+import { Board, Player, Round, CardStorage } from "./index.js";
 import createRandomId from "../../cli/helpers/createRandomId.js";
-
-enum GamePhase {
-  Setup,
-  RollingDice,
-  Betting,
-  MovingCamels,
-  RoundEnd,
-  Finished,
-}
+import { GamePhase } from "../enums/index.js";
 
 export default class Game {
   id: string;
@@ -22,9 +14,14 @@ export default class Game {
 
   cardStorage: CardStorage;
 
-  history: Turn[];
+  history: Round[];
 
-  constructor(board: Board, players: Player[], history: Turn[], cardStorage: CardStorage) {
+  constructor(
+    board: Board,
+    players: Player[],
+    history: Round[],
+    cardStorage: CardStorage,
+  ) {
     ((this.id = createRandomId()), (this.currentPlayer = 1));
     this.currentTurn = 1;
 
@@ -33,15 +30,6 @@ export default class Game {
       (this.phase = GamePhase.Setup),
       (this.history = history));
 
-      this.cardStorage = cardStorage
-  }
-
-  updateTurn() {
-    if (this.currentPlayer < 4) {
-      this.currentPlayer = this.currentPlayer + 1;
-    } else {
-      this.currentPlayer = 1;
-      this.currentTurn = this.currentTurn + 1;
-    }
+    this.cardStorage = cardStorage;
   }
 }

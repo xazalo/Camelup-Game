@@ -1,12 +1,15 @@
-import { TileType } from "./Tile.js";
+import { TileType } from "../enums/index.js";
+import { Dice } from "./index.js";
+import { type Action } from "../types/index.js"
 
-export type Action =
-    | { type: "RollDice" }
-    | { type: "Bet"; cardId: string }
-    | { type: "PlaceTile"; tileType: TileType; position: number };
+export default class Turn {
+  playerId: string;
+  action: Action;
+  dice: Dice | null;
 
-export default interface Turn {
-    index: number;
-    playerId: string;
-    action: Action;
+  constructor(playerId: string, action: Action, dice: Dice | null) {
+    this.playerId = playerId;
+    this.action = action;
+    this.dice = dice;
+  }
 }

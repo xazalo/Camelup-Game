@@ -1,10 +1,5 @@
 import { Player } from "./index.js";
-
-export enum TileType {
-    None,
-    Oasis,
-    Mirage,
-}
+import { TileType } from "../enums/index.js";
 
 export default class Tile {
     owner: Player | null;
