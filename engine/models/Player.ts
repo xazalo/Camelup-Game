@@ -8,7 +8,7 @@ export default class Player {
 
     constructor(name: string) {
         this.name = name;
-        this.money = 3; // o el valor inicial del juego
+        this.money = 3;
         this.cards = [];
         this.tiles = [];
     }
