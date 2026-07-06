@@ -8,8 +8,8 @@ export default class Board {
     this.spaces = Array.from({ length: size }, () => new Stack());
   }
 
-  //! this logic is correct but only for setup for game 
-  //! needs to detect all the camels witch are moved before of move 
+  //! this logic is correct but only for setup for game
+  //! needs to detect all the camels witch are moved before of move
   //! because now it's moving only one camel in each movement
   //! but they need to move the camel and all the camels up instead.
 
@@ -52,5 +52,42 @@ export default class Board {
     destinationStack.addCamel(camel);
   }
 
-  moveCamelStack() {}
+  moveCamelStack(color: Colors, steps: number): void {
+    let camels: Camel[] = [];
+    let currentPosition = -1;
+
+    // find camel stack
+    for (const [index, stack] of this.spaces.entries()) {
+      camels = stack.removeCamelStack(color);
+
+      if (camels.length > 0) {
+        currentPosition = index;
+        break;
+      }
+    }
+
+    if (camels.length === 0) {
+      throw new Error(`Camel ${color} not found`);
+    }
+
+    const size = this.spaces.length;
+
+    // calculate destination
+    let destination =
+      camels[0]!.direction === Directions.Right
+        ? currentPosition + steps
+        : currentPosition - steps;
+
+    // rounded board movement
+    destination = ((destination % size) + size) % size;
+
+    const destinationStack = this.spaces[destination];
+
+    if (!destinationStack) {
+      throw new Error(`Invalid board state at ${destination}`);
+    }
+
+    // move camel stack
+    destinationStack.addCamels(camels);
+  }
 }

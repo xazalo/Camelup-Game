@@ -9,6 +9,10 @@ export default class Stack {
     this.camels.unshift(camel);
   }
 
+  addCamels(camels: Camel[]): void {
+    this.camels.unshift(...camels);
+  }
+
   removeCamel(color: Colors): Camel | null {
     const index = this.camels.findIndex(camel => camel.color === color);
 
@@ -17,5 +21,15 @@ export default class Stack {
     }
 
     return this.camels.splice(index, 1)[0]!;
+  }
+
+  removeCamelStack(color: Colors): Camel[] {
+    const index = this.camels.findIndex(camel => camel.color === color);
+
+    if (index === -1) {
+      return [];
+    }
+
+    return this.camels.splice(index);
   }
 }
