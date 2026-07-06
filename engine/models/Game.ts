@@ -1,4 +1,5 @@
 import { Board, Player, type Turn, CardStorage } from "./index.js";
+import createRandomId from "../../cli/helpers/createRandomId.js";
 
 enum GamePhase {
   Setup,
@@ -24,7 +25,7 @@ export default class Game {
   history: Turn[];
 
   constructor(board: Board, players: Player[], history: Turn[], cardStorage: CardStorage) {
-    ((this.id = "abg"), (this.currentPlayer = 1));
+    ((this.id = createRandomId()), (this.currentPlayer = 1));
     this.currentTurn = 1;
 
     ((this.board = board),
