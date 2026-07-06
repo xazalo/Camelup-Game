@@ -7,11 +7,11 @@ export enum TileType {
 }
 
 export default class Tile {
-    owner: Player;
-    tileType: TileType;
+    owner: Player | null;
+    tileType: TileType = TileType.None;
 
-    constructor(owner: Player, tileType: TileType) {
-        this.owner = owner;
-        this.tileType = tileType;
+    constructor() {
+        this.owner = null;
+        this.tileType = TileType.None;
     }
 }
