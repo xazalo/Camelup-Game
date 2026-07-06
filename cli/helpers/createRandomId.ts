@@ -1,5 +1,10 @@
 import randomNumber from "./randomNumber.js";
 
+/**
+ * This function returns one RandomId, uses the current Date, 
+ * including milliseconds, all this make the id practically impossible
+ * to repeat 
+ */
 export default function createRandomId(): string {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

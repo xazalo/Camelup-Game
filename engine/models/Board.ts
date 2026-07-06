@@ -1,6 +1,13 @@
 import { Colors, Directions } from "../enums/index.js";
 import { Camel, Stack } from "./index.js";
 
+/**
+ * This class defines de board of the Game, and also
+ * contains methods for move the camels through the tiles
+ * 
+ * @param {size} number, this is the size of the board
+ */
+
 export default class Board {
   spaces: Stack[];
 
@@ -8,10 +15,20 @@ export default class Board {
     this.spaces = Array.from({ length: size }, () => new Stack());
   }
 
-  //! this logic is correct but only for setup for game
-  //! needs to detect all the camels witch are moved before of move
-  //! because now it's moving only one camel in each movement
-  //! but they need to move the camel and all the camels up instead.
+  /**
+   * This method is used for set the camels on their initial position
+   * only at the game start, never in the players actions
+   * 
+   * @param {color} string, This is one string whit the color of the camel for move,
+   *                        used for select it.
+   * 
+   * @param {steps} number, Define the size of the movement across the tiles
+   *                        the camels has a property called direction
+   *                        this direction can be Left or Right
+   *                        this is because the white and black camels move
+   *                        in reverse than the other camels
+   *                        
+   */
 
   moveCamel(color: Colors, steps: number): void {
     let camel: Camel | null = null;
@@ -51,6 +68,15 @@ export default class Board {
     // move camel
     destinationStack.addCamel(camel);
   }
+
+  /**
+   * This function extends moveCamel, the idea is move al the camels which are
+   * up than the camel inside the tile.
+   * 
+   * @param { color } string, again uses the color for select the camel
+   * 
+   * @param { steps } number This is the number the steps for advance 
+   */
 
   moveCamelStack(color: Colors, steps: number): void {
     let camels: Camel[] = [];

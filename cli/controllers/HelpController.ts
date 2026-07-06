@@ -1,3 +1,8 @@
+
+/**
+ * This class returns a list of the commands witch can be used.
+ */
+
 export default class HelpController {
     showHelp(): string {
         return [

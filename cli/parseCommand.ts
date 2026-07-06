@@ -4,6 +4,9 @@ export type Command =
     | { type: "help" }
     | { type: "unknown"; raw: string };
 
+/**
+ * This function convert the text inserted on the CMD into a command
+ */
 export function parseCommand(input: string): Command {
     const parts = input.trim().split(" ");
 

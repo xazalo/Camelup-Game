@@ -13,9 +13,17 @@ import {
 import { type DiceValue, type Action } from "../../engine/types/index.js";
 import { randomNumber } from "../helpers/index.js";
 
+/**
+ * This class creates a controller for the game cli orders
+ */
+
 export default class GameController {
   game: Game | null = null;
 
+  /**
+   * Takes the names of the players, create a game, and define the initial position of the camels.
+   * @param playerNames 
+   */
   startGame(playerNames: string[]) {
     const board = new Board(16);
     const cardStorage = new CardStorage();
@@ -33,6 +41,9 @@ export default class GameController {
     }
   }
 
+  /**
+   * Create the needed camels for play de game.
+   */
   createCamels(game: Game) {
     const camelGreen = new Camel(Colors.Green);
     const camelBlue = new Camel(Colors.Blue);
@@ -49,6 +60,9 @@ export default class GameController {
     game.board.spaces[0]?.addCamel(camelBlack);
   }
 
+  /**
+   * Set the initial position of the camels through the Board
+   */
   setupInitialDice(round: Round) {
     if (!this.game) {
       throw new Error("Game not started");
@@ -62,7 +76,7 @@ export default class GameController {
 
       const dice = new Dice(color, value);
 
-      const turn = new Turn("", { type: "RollDice" }, dice);
+      const turn = new Turn(99, { type: "RollDice" }, dice);
 
       round.addTurn(turn);
 
@@ -70,6 +84,9 @@ export default class GameController {
     }
   }
 
+  /**
+   * Return the state of the game.
+   */
   getState() {
     return this.game;
   }
