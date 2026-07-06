@@ -6,5 +6,6 @@ import Tile from "./Tile.js"
 import Camel from "./Camel.js"
 import Stack from "./Stack.js";
 import Card from "./Card.js"
+import CardStorage from "./CardStorage.js";
 
-export { Player, type Turn, type Action, Board, Tile, Camel, Stack, Card };
+export { Player, type Turn, type Action, Board, Tile, Camel, Stack, Card, CardStorage };

@@ -1,12 +1,12 @@
-import {Board, Player, type Turn} from "./index.js"
+import { Board, Player, type Turn, CardStorage } from "./index.js";
 
 enum GamePhase {
-    Setup,
-    RollingDice,
-    Betting,
-    MovingCamels,
-    RoundEnd,
-    Finished
+  Setup,
+  RollingDice,
+  Betting,
+  MovingCamels,
+  RoundEnd,
+  Finished,
 }
 
 export default class Game {
@@ -19,18 +19,20 @@ export default class Game {
   currentPlayer: number;
   phase: GamePhase;
 
+  cardStorage: CardStorage;
+
   history: Turn[];
 
-  constructor(board: Board, players: Player[], history: Turn[]) {
-    
-    this.id = 'abg',
-    this.currentPlayer = 1;
+  constructor(board: Board, players: Player[], history: Turn[], cardStorage: CardStorage) {
+    ((this.id = "abg"), (this.currentPlayer = 1));
     this.currentTurn = 1;
-    
-    this.board = board,
-    this.players = players,
-    this.phase = GamePhase.Setup,
-    this.history = history
+
+    ((this.board = board),
+      (this.players = players),
+      (this.phase = GamePhase.Setup),
+      (this.history = history));
+
+      this.cardStorage = cardStorage
   }
 
   updateTurn() {

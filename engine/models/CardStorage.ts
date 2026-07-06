@@ -12,7 +12,7 @@ interface BetStorage {
     red: string[]
 }
 
-export default class GameStorage {
+export default class CardStorage {
   winnerCards: BetStorage;
   loserCards: BetStorage;
   storedCards: StorageMap;
