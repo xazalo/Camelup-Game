@@ -47,7 +47,7 @@ describe("GameController", () => {
     expect(state?.currentPlayer).toBe(1);
     expect(state?.currentTurn).toBe(1);
 
-    expect(state?.history.length).toBe(1);
+    expect(state?.history.length).toBe(2);
     expect(state?.phase).toBe(0);
     expect(typeof state?.id).toBe("string");
     expect(state?.id.length).toBe(34);
@@ -56,13 +56,13 @@ describe("GameController", () => {
 
     expect(state?.players).toMatchObject([
       {
-        name: "enzo",
+        name: "John Doe",
         money: 3,
         cards: [],
         tiles: [],
       },
       {
-        name: "John Doe",
+        name: "enzo",
         money: 3,
         cards: [],
         tiles: [],
@@ -89,12 +89,6 @@ describe("GameController", () => {
 
     expect(state?.players).toMatchObject([
       {
-        name: "Ferananda",
-        money: 3,
-        cards: [],
-        tiles: [],
-      },
-      {
         name: "Ilia",
         money: 3,
         cards: [],
@@ -102,6 +96,12 @@ describe("GameController", () => {
       },
       {
         name: "Aleksander",
+        money: 3,
+        cards: [],
+        tiles: [],
+      },
+      {
+        name: "Ferananda",
         money: 3,
         cards: [],
         tiles: [],
@@ -120,12 +120,6 @@ describe("GameController", () => {
 
     expect(state?.players).toMatchObject([
       {
-        name: "Player1",
-        money: 3,
-        cards: [],
-        tiles: [],
-      },
-      {
         name: "Player2",
         money: 3,
         cards: [],
@@ -139,6 +133,12 @@ describe("GameController", () => {
       },
       {
         name: "Player4",
+        money: 3,
+        cards: [],
+        tiles: [],
+      },
+      {
+        name: "Player1",
         money: 3,
         cards: [],
         tiles: [],
@@ -157,12 +157,6 @@ describe("GameController", () => {
     const state = gameController.getState();
 
     expect(state?.players).toMatchObject([
-      {
-        name: "Player1",
-        money: 3,
-        cards: [],
-        tiles: [],
-      },
       {
         name: "Player2",
         money: 3,
@@ -187,6 +181,12 @@ describe("GameController", () => {
         cards: [],
         tiles: [],
       },
+      {
+        name: "Player1",
+        money: 3,
+        cards: [],
+        tiles: [],
+      },
     ]);
   });
 
@@ -202,12 +202,6 @@ describe("GameController", () => {
     const state = gameController.getState();
 
     expect(state?.players).toMatchObject([
-      {
-        name: "Player1",
-        money: 3,
-        cards: [],
-        tiles: [],
-      },
       {
         name: "Player2",
         money: 3,
@@ -234,6 +228,12 @@ describe("GameController", () => {
       },
       {
         name: "Player6",
+        money: 3,
+        cards: [],
+        tiles: [],
+      },
+      {
+        name: "Player1",
         money: 3,
         cards: [],
         tiles: [],

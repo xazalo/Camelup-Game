@@ -1,4 +1,6 @@
-import { type Turn, Dice } from "./index.js";
+import { Turn, Dice, DicePool, Board } from "./index.js";
+import { randomNumber } from "../../cli/helpers/index.js";
+import { type DiceValue } from "../types/index.js";
 
 /**
  * This class defines a round in the game.
@@ -9,10 +11,22 @@ import { type Turn, Dice } from "./index.js";
 export default class Round {
   turns: Turn[];
   rolledDice: Dice[];
+  dicePool: DicePool;
 
   constructor() {
     this.turns = [];
     this.rolledDice = [];
+    this.dicePool = new DicePool();
+  }
+
+  prepareInitialMoves(board: Board) {
+    for (let i = 0; i < 4; i++) {
+      const color = this.dicePool.draw();
+      const value = (randomNumber(3) + 1) as DiceValue;
+      const dice = new Dice(color, value);
+      this.addTurn(new Turn("System", { type: "RollDice" }, dice));
+      board.moveCamel(color, value);
+    }
   }
 
   addTurn(turn: Turn) {

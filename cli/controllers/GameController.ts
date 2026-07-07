@@ -22,7 +22,7 @@ export default class GameController {
 
   /**
    * Takes the names of the players, create a game, and define the initial position of the camels.
-   * @param playerNames 
+   * @param playerNames
    */
   startGame(playerNames: string[]) {
     const board = new Board(16);
@@ -64,24 +64,9 @@ export default class GameController {
    * Set the initial position of the camels through the Board
    */
   setupInitialDice(round: Round) {
-    if (!this.game) {
-      throw new Error("Game not started");
-    }
-
-    const pool = new DicePool();
-
-    for (let i = 0; i < 4; i++) {
-      const color = pool.draw();
-      const value = (randomNumber(3) + 1) as DiceValue;
-
-      const dice = new Dice(color, value);
-
-      const turn = new Turn(99, { type: "RollDice" }, dice);
-
-      round.addTurn(turn);
-
-      this.game.board.moveCamel(color, value);
-    }
+    if (!this.game) throw new Error("Game not started");
+    round.prepareInitialMoves(this.game.board);
+    this.game.addRound();
   }
 
   /**
@@ -90,4 +75,41 @@ export default class GameController {
   getState() {
     return this.game;
   }
+
+  /**
+   * Roll the dice and moves camels across the board
+   */
+  //warn this is only a schema needs ro be refactored using the methods across the project
+  /*rollTheDice(playerName: string) {
+    if (!this.game) return "Game not started";
+
+    //take the player
+    const index = this.game.players.findIndex((p) => p.name === playerName);
+    const currentPlayer = this.game.players[index];
+
+    //validate if the player === current player
+    const validTurn = this.game.currentTurn === index;
+    if (!validTurn) return "Is not your turn, please wait";
+
+    //update money
+    currentPlayer?.updateMoney(1);
+
+    //roll the dice and push it to the dice pool
+    const currentTurn = this.game.getCurrentRound();
+
+    //generate turn
+    //const newTurn = new Turn(currentPlayer?.name, {type: "RollDice"},  );
+
+    //move camels
+
+    //if dice pool length !== 5
+    // increase the turn in game
+    //end this turn and then change current player
+
+    //if dice pool length === 5
+    // reset the turn in game to 1
+    //call to the function for end the round instead of turn
+    //take the first player and pass it to the last position
+    //this is for move the turn
+  }*/
 }

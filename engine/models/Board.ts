@@ -4,7 +4,7 @@ import { Camel, Stack } from "./index.js";
 /**
  * This class defines de board of the Game, and also
  * contains methods for move the camels through the tiles
- * 
+ *
  * @param {size} number, this is the size of the board
  */
 
@@ -18,16 +18,16 @@ export default class Board {
   /**
    * This method is used for set the camels on their initial position
    * only at the game start, never in the players actions
-   * 
+   *
    * @param {color} string, This is one string whit the color of the camel for move,
    *                        used for select it.
-   * 
+   *
    * @param {steps} number, Define the size of the movement across the tiles
    *                        the camels has a property called direction
    *                        this direction can be Left or Right
    *                        this is because the white and black camels move
    *                        in reverse than the other camels
-   *                        
+   *
    */
 
   moveCamel(color: Colors, steps: number): void {
@@ -72,10 +72,10 @@ export default class Board {
   /**
    * This function extends moveCamel, the idea is move al the camels which are
    * up than the camel inside the tile.
-   * 
+   *
    * @param { color } string, again uses the color for select the camel
-   * 
-   * @param { steps } number This is the number the steps for advance 
+   *
+   * @param { steps } number This is the number the steps for advance
    */
 
   moveCamelStack(color: Colors, steps: number): void {
@@ -115,5 +115,13 @@ export default class Board {
 
     // move camel stack
     destinationStack.addCamels(camels);
+  }
+
+  findCamelByColor(color: Colors): Camel {
+    for (const stack of this.spaces) {
+      const camel = stack.camels.find((c) => c.color === color);
+      if (camel) return camel;
+    }
+    throw new Error(`Camel ${color} not found on the board`);
   }
 }

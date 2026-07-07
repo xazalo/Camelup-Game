@@ -23,6 +23,9 @@ rl.on("line", (input: any) => {
       console.log(gameController.startGame(command.players));
       break;
 
+    case "dice": 
+      console.log(gameController.rollTheDice(command.playerName))
+
     case "state":
       console.log(JSON.stringify(gameController.getState(), null, 2));
       break;

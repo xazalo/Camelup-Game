@@ -22,4 +22,8 @@ export default class Player {
         this.cards = [];
         this.tiles = [];
     }
+
+    updateMoney(amount: number) {
+        this.money = this.money + amount
+    }
 }
