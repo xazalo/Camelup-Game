@@ -17,7 +17,7 @@ export default class Stack {
    * @param {camel} Camel, The added camel 
    */
   addCamel(camel: Camel): void {
-    this.camels.unshift(camel);
+    this.camels.push(camel);
   }
 
   /**
@@ -25,7 +25,7 @@ export default class Stack {
    * @param {camels} Camel[], The added camels  
    */
   addCamels(camels: Camel[]): void {
-    this.camels.unshift(...camels);
+    this.camels.push(...camels);
   }
 
   /**

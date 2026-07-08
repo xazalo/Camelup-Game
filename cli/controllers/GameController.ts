@@ -25,11 +25,10 @@ export default class GameController {
    */
   startGame(playerNames: string[]): string {
     try {
-    this.game = Game.create(playerNames);
-    return "Game started";
-    } catch(error: unknown) {
-      if(error instanceof Error) return error.message as string;
-      else return "Unknown Error"
+      this.game = Game.create(playerNames);
+      return "Game started";
+    } catch (error: unknown) {
+      return error instanceof Error ? error.message : "Unknown error";
     }
   }
 
@@ -44,23 +43,14 @@ export default class GameController {
    * Roll the dice and moves camels across the board
    */
   //warn this is only a schema needs ro be refactored using the methods across the project
-  /*rollTheDice(playerName: string) {
+  rollTheDice(playerName: string) {
     if (!this.game) return "Game not started";
 
-    //take the player
-    const index = this.game.getPlayerIndexByName(playerName);
-    const currentPlayer = this.game.players[index];
-
-    //validate if the player === current player
-    const validTurn = this.game.playerHasTurn(index);
-    if (!validTurn) return "Is not your turn, please wait";
-
-    //update money
-    currentPlayer?.updateMoney(1);
-
-    //roll the dice and push it to the dice pool
-    this.game.processDiceRoll(this.game.players[index] as Player);
-
-    //!warn I think is finished review it.
-  }*/
+    try {
+      this.game.rollDice(playerName);
+      return "Dice rolled successfully";
+    } catch (error) {
+      return error instanceof Error ? error.message : "Unknown error";
+    }
+  }
 }

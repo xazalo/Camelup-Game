@@ -1,6 +1,6 @@
 export type Command =
   | { type: "start"; players: string[] }
-  | { type: "dice"; playerName: string }
+  | { type: "rollTheDice"; playerName: string }
   | { type: "state" }
   | { type: "help" }
   | { type: "unknown"; raw: string };
@@ -20,13 +20,13 @@ export function parseCommand(input: string): Command {
     };
   }
 
-  if (cmd === "dice") {
+  if (cmd === "rollTheDice") {
     if (parts.length < 2) {
       return { type: "unknown", raw: input };
     }
 
     return {
-      type: "dice",
+      type: "rollTheDice",
       playerName: parts[1] as string,
     };
   }

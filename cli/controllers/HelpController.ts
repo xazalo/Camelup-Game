@@ -9,8 +9,9 @@ export default class HelpController {
             "=== Camel Up CLI ===",
             "",
             "Commands:",
-            "  start <name> <name>          -> start a new game (between 2 and 6 players)",
+            "  start <name> <name>...       -> start a new game (between 2 and 6 players)",
             "  state                        -> show the game state",
+            "  rollTheDice <name>           -> create a new dice",
             "  help                         -> show all commands.",
             "",
         ].join("\n");

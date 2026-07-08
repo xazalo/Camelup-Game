@@ -13,9 +13,10 @@ export default class Turn {
   action: Action;
   dice: Dice | null;
 
-  constructor(playerName: string, action: Action, dice: Dice | null) {
+  constructor(playerName: string, action: Action, dice?: Dice | null) {
     this.playerName = playerName;
     this.action = action;
-    this.dice = dice;
+    if(dice) this.dice = dice;
+    else this.dice = null;
   }
 }
