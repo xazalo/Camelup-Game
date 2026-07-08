@@ -120,7 +120,7 @@ export default class Game {
   }
 
   getCurrentRound() {
-    return this.history[-1];
+    return this.history[this.history.length - 1];
   }
 
   /**
