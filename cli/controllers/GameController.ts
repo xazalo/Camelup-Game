@@ -42,7 +42,6 @@ export default class GameController {
   /**
    * Roll the dice and moves camels across the board
    */
-  //warn this is only a schema needs ro be refactored using the methods across the project
   rollTheDice(playerName: string) {
     if (!this.game) return "Game not started";
 
