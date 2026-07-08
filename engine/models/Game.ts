@@ -59,35 +59,10 @@ export default class Game {
 
     const game = new Game(board, players, [round], storage);
 
-    game.createCamels();
-    game.setupInitialDice(round);
+    game.board.createCamels();
+    round.prepareInitialMoves(board);
 
     return game;
-  }
-
-  /**
-   * Prepares the initial camel positions.
-   */
-  setupInitialDice(round: Round) {
-    round.prepareInitialMoves(this.board);
-  }
-
-  /**
-   * Creates and places all camels on the starting tile.
-   */
-  createCamels() {
-    const camels = [
-      new Camel(Colors.Green),
-      new Camel(Colors.Blue),
-      new Camel(Colors.Red),
-      new Camel(Colors.Yellow),
-      new Camel(Colors.White),
-      new Camel(Colors.Black),
-    ];
-
-    camels.forEach((camel) => {
-      this.board.spaces[0]?.addCamel(camel);
-    });
   }
 
   /**
@@ -108,6 +83,9 @@ export default class Game {
     this.currentPlayer = 0;
   }
 
+  /**
+   * Get the current round
+   */
   getCurrentRound(): Round {
     return this.history[this.history.length - 1]!;
   }
@@ -187,6 +165,9 @@ export default class Game {
     this.currentTurn++;
   }
 
+  /**
+   * Return a bool witch represents if player has turn
+   */
   playerHasTurn(index: number): boolean {
     return this.currentPlayer === index;
   }

@@ -23,18 +23,21 @@ export default class Round {
     for (let i = 0; i < 4; i++) {
       const color = this.dicePool.draw();
       const value = (randomNumber(3) + 1) as DiceValue;
-      const dice = new Dice(color, value);
+      //const dice = new Dice(color, value);
       //this.addTurn(new Turn("System", { type: "RollDice" }, dice));
       //? it's better to no register the first movement, this is because
       //? we are moving only 4 camels, so the turn don't finish 1 dice remaining,
       //? this create an error because the new round is not started on the next round.
       //? for implement the register of the first moves, is needed to create another method
       //? instead of reuse the method for move the camels.
-      //? Whatever it's better to keep it without register it, probably don't needed. 
+      //? Whatever it's better to keep it without register it, probably don't needed.
       board.moveCamel(color, value);
     }
   }
 
+  /**
+   * Add a new turn.
+   */
   addTurn(turn: Turn) {
     this.turns.push(turn);
 
@@ -43,6 +46,9 @@ export default class Round {
     }
   }
 
+  /**
+   * Return if the round if finished
+   */
   isFinished(): boolean {
     return this.rolledDice.length === 5;
   }

@@ -1,5 +1,5 @@
 import { Colors, Directions } from "../enums/index.js";
-import { Camel, Stack } from "./index.js";
+import { Camel, Game, Stack } from "./index.js";
 
 /**
  * This class defines de board of the Game, and also
@@ -70,6 +70,24 @@ export default class Board {
   }
 
   /**
+   * Creates and places all camels on the starting tile.
+   */
+  createCamels() {
+    const camels = [
+      new Camel(Colors.Green),
+      new Camel(Colors.Blue),
+      new Camel(Colors.Red),
+      new Camel(Colors.Yellow),
+      new Camel(Colors.White),
+      new Camel(Colors.Black),
+    ];
+
+    camels.forEach((camel) => {
+      this.spaces[0]?.addCamel(camel);
+    });
+  }
+
+  /**
    * This function extends moveCamel, the idea is move al the camels which are
    * up than the camel inside the tile.
    *
@@ -77,7 +95,6 @@ export default class Board {
    *
    * @param { steps } number This is the number the steps for advance
    */
-
   moveCamelStack(color: Colors, steps: number): void {
     let camels: Camel[] = [];
     let currentPosition = -1;
