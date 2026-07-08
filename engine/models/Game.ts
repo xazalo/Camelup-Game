@@ -1,6 +1,6 @@
-import { Board, Player, Round, CardStorage, Dice, Turn } from "./index.js";
+import { Board, Player, Round, CardStorage, Dice, Turn, Camel } from "./index.js";
 import createRandomId from "../../cli/helpers/createRandomId.js";
-import { GamePhase } from "../enums/index.js";
+import { GamePhase, Colors } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
 
 /**
@@ -48,6 +48,55 @@ export default class Game {
   }
 
   /**
+   * This method start the game
+   */
+   static create(playerNames: string[]) {
+
+        if(playerNames.length < 2 || playerNames.length > 6){
+            throw new Error("Game must have between 2 and 6 players");
+        }
+
+        const board = new Board(16);
+        const storage = new CardStorage();
+        const players = playerNames.map(name => new Player(name));
+        const round = new Round();
+
+        const game = new Game(board, players, [round], storage);
+
+        game.createCamels();
+        game.setupInitialDice(round);
+
+        return game;
+    }
+
+  /**
+   *  This method create the first dice 
+   * */
+  setupInitialDice(round: Round) {
+    round.prepareInitialMoves(this.board);
+    this.addRound();
+  }
+
+  /**
+   * This method create the camels for start the game
+   */
+  createCamels() {
+    const camelGreen = new Camel(Colors.Green);
+    const camelBlue = new Camel(Colors.Blue);
+    const camelRed = new Camel(Colors.Red);
+    const camelYellow = new Camel(Colors.Yellow);
+    const camelWhite = new Camel(Colors.White);
+    const camelBlack = new Camel(Colors.Black);
+
+    this.board.spaces[0]?.addCamel(camelGreen);
+    this.board.spaces[0]?.addCamel(camelBlue);
+    this.board.spaces[0]?.addCamel(camelRed);
+    this.board.spaces[0]?.addCamel(camelYellow);
+    this.board.spaces[0]?.addCamel(camelWhite);
+    this.board.spaces[0]?.addCamel(camelBlack);
+  }
+
+  /**
    * Adds a new round to the game history.
    */
   addRound() {
@@ -67,6 +116,9 @@ export default class Game {
     return this.history[-1];
   }
 
+  /**
+   * This is the method for roll the dice and move camels
+   */
   processDiceRoll(player: Player) {
     const round = this.getCurrentRound() as Round;
 
@@ -89,11 +141,24 @@ export default class Game {
     }
   }
 
-  /** 
+  /**
+   * This method return the index of one player using his name
+   */
+  getPlayerIndexByName(name: string): number {
+    const index = this.players.findIndex((p) => p.name === name);
+    return index;
+  }
+
+  /**
    * This method ends the round or the game depends on the position of the advanced camel.
    */
   private endRound() {
-    this.addRound(); 
+    //verify if game ends
+    //if not calculate round incomes
+    //if yes calculate round incomes, and game incomes
+    this.addRound();
+    //reset the dice,
+    //pass the player from first position to last one
     //TODO create the end of game just here.
   }
 
@@ -102,5 +167,9 @@ export default class Game {
    */
   private nextTurn() {
     this.currentTurn = (this.currentTurn + 1) % this.players.length;
+  }
+
+  playerHasTurn(index: number): boolean {
+    return this.currentPlayer === index;
   }
 }
