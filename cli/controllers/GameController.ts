@@ -16,7 +16,6 @@ import { randomNumber } from "../helpers/index.js";
 /**
  * This class creates a controller for the game cli orders
  */
-
 export default class GameController {
   game: Game | null = null;
 
@@ -24,9 +23,14 @@ export default class GameController {
    * Takes the names of the players, create a game, and define the initial position of the camels.
    * @param playerNames
    */
-  startGame(playerNames: string[]) {
+  startGame(playerNames: string[]): string {
+    try {
     this.game = Game.create(playerNames);
     return "Game started";
+    } catch(error: unknown) {
+      if(error instanceof Error) return error.message as string;
+      else return "Unknown Error"
+    }
   }
 
   /**

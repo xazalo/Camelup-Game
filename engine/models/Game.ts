@@ -1,4 +1,12 @@
-import { Board, Player, Round, CardStorage, Dice, Turn, Camel } from "./index.js";
+import {
+  Board,
+  Player,
+  Round,
+  CardStorage,
+  Dice,
+  Turn,
+  Camel,
+} from "./index.js";
 import createRandomId from "../../cli/helpers/createRandomId.js";
 import { GamePhase, Colors } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
@@ -50,27 +58,26 @@ export default class Game {
   /**
    * This method start the game
    */
-   static create(playerNames: string[]) {
-
-        if(playerNames.length < 2 || playerNames.length > 6){
-            throw new Error("Game must have between 2 and 6 players");
-        }
-
-        const board = new Board(16);
-        const storage = new CardStorage();
-        const players = playerNames.map(name => new Player(name));
-        const round = new Round();
-
-        const game = new Game(board, players, [round], storage);
-
-        game.createCamels();
-        game.setupInitialDice(round);
-
-        return game;
+  static create(playerNames: string[]) {
+    if (playerNames.length < 2 || playerNames.length > 6) {
+      throw new Error("This Game must have between 2 and 6 players")
     }
 
+    const board = new Board(16);
+    const storage = new CardStorage();
+    const players = playerNames.map((name) => new Player(name));
+    const round = new Round();
+
+    const game = new Game(board, players, [round], storage);
+
+    game.createCamels();
+    game.setupInitialDice(round);
+
+    return game;
+  }
+
   /**
-   *  This method create the first dice 
+   *  This method create the first dice
    * */
   setupInitialDice(round: Round) {
     round.prepareInitialMoves(this.board);

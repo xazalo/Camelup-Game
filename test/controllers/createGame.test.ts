@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import GameController from "../../cli/controllers/GameController.js";
 import { Colors } from "../../engine/enums/index.js";
+import { Game } from "../../engine/models/index.js"
 
 const gameController = new GameController();
 
@@ -20,6 +21,7 @@ describe("GameController", () => {
 
   it("state has the correct fields", () => {
     const game = gameController.startGame(["enzo", "John Doe"]);
+
     expect(game).toBe("Game started");
 
     const state = gameController.getState();
