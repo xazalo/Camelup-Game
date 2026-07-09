@@ -117,6 +117,43 @@ describe("Game", () => {
     });
   });
 
+  describe("placeWinnerBet", () => {
+    it("should place a winner bet", () => {
+      const camel = game.board.findCamelByColor(Colors.Yellow);
+
+      game.placeWinnerBet("Player1", camel);
+      expect(game.cardStorage.hasWinnerCardPlaced("Player1", "yellow")).toBe(
+        true,
+      );
+    });
+
+    it("should reject unknown player", () => {
+      const camel = game.board.findCamelByColor(Colors.Yellow);
+
+      expect(() => {
+        game.placeWinnerBet("Unknown", camel);
+      }).toThrow("Player not found");
+    });
+  });
+
+  describe("placeLoserBet", () => {
+    it("should place a loser bet", () => {
+      const camel = game.board.findCamelByColor(Colors.Blue);
+
+      game.placeLoserBet("Player1", camel);
+
+      expect(game.cardStorage.hasLoserCardPlaced("Player1", "blue")).toBe(true);
+    });
+
+    it("should reject unknown player", () => {
+      const camel = game.board.findCamelByColor(Colors.Blue);
+
+      expect(() => {
+        game.placeLoserBet("Unknown", camel);
+      }).toThrow("Player not found");
+    });
+  });
+
   describe("round management", () => {
     it("should have an initial round", () => {
       expect(game.history.length).toBe(1);

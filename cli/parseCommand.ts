@@ -1,4 +1,5 @@
 import { TileType } from "../engine/enums/index.js";
+import { Colors } from "../engine/enums/index.js"
 
 export type Command =
   | { type: "start"; players: string[] }
@@ -10,9 +11,23 @@ export type Command =
       position: number;
       tileType: TileType;
     }
+  | {
+      type: "placeWinnerBet";
+      playerName: string;
+      camelColor: Colors;
+    }
+  | {
+      type: "placeLoserBet";
+      playerName: string;
+      camelColor: Colors;
+    }
+  | {
+      type: "takeRoundBet";
+      playerName: string;
+      camelColor: Colors;
+    }
   | { type: "help" }
   | { type: "unknown"; raw: string };
-
 /**
  * This function convert the text inserted on the CMD into a command
  */

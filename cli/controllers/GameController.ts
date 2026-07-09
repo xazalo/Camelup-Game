@@ -72,4 +72,70 @@ export default class GameController {
       return error instanceof Error ? error.message : "Unknown error";
     }
   }
+
+  /**
+   * Place a bet for the camel that will win the game
+   */
+  placeWinnerBet(playerName: string, camelColor: Colors): string {
+    if (!this.game) {
+      return "Game not started";
+    }
+
+    try {
+      const camel = this.game.board.findCamelByColor(camelColor);
+
+      if (!camel) {
+        return "Camel not found";
+      }
+
+      this.game.placeWinnerBet(playerName, camel);
+      return "Winner bet placed";
+    } catch (error: unknown) {
+      return error instanceof Error ? error.message : "Unknown error";
+    }
+  }
+
+  /**
+   * Place a bet for the camel that will lose the game
+   */
+  placeLoserBet(playerName: string, camelColor: Colors): string {
+    if (!this.game) {
+      return "Game not started";
+    }
+
+    try {
+      const camel = this.game.board.findCamelByColor(camelColor);
+
+      if (!camel) {
+        return "Camel not found";
+      }
+
+      this.game.placeLoserBet(playerName, camel);
+      return "Loser bet placed";
+    } catch (error: unknown) {
+      return error instanceof Error ? error.message : "Unknown error";
+    }
+  }
+
+  /**
+   * Place a bet for the winner of the current round
+   */
+  takeRoundBet(playerName: string, camelColor: Colors): string {
+    if (!this.game) {
+      return "Game not started";
+    }
+
+    try {
+      const camel = this.game.board.findCamelByColor(camelColor);
+
+      if (!camel) {
+        return "Camel not found";
+      }
+
+      this.game.takeRoundBet(playerName, camel);
+      return "Round bet placed";
+    } catch (error: unknown) {
+      return error instanceof Error ? error.message : "Unknown error";
+    }
+  }
 }

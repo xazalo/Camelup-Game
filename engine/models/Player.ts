@@ -1,4 +1,4 @@
-import {Tile, Card} from "./index.js";
+import { Tile, Card } from "./index.js";
 
 /**
  * This class is a representation of the player across the game
@@ -11,43 +11,57 @@ import {Tile, Card} from "./index.js";
  */
 
 export default class Player {
-    name: string;
-    money: number;
-    cards: Card[];
-    placedTile: boolean;
+  name: string;
+  money: number;
+  cards: Card[];
+  placedTile: boolean;
 
-    constructor(name: string) {
-        this.name = name;
-        this.money = 3;
-        this.cards = [];
-        this.placedTile = false;
-    }
+  constructor(name: string) {
+    this.name = name;
+    this.money = 3;
+    this.cards = [];
+    this.placedTile = false;
+  }
 
-    /**
-     * Update the money
-     */
-    updateMoney(amount: number) {
-        this.money = this.money + amount
-    }
+  /**
+   * Update the money
+   */
+  updateMoney(amount: number) {
+    this.money = this.money + amount;
+  }
 
-    /**
-     * Flag for know if the user placed a tile
-     */
-    placeTile() {
-        this.placedTile = true 
-    }
+  /**
+   * Flag for know if the user placed a tile
+   */
+  placeTile() {
+    this.placedTile = true;
+  }
 
-    /**
-     * Reset to the original state
-     */
-    removePlacedTile() {
-        this.placedTile = false
-    }
+  /**
+   * Reset to the original state
+   */
+  removePlacedTile() {
+    this.placedTile = false;
+  }
 
-    /**
-     * Returns if the player placed a tile
-     */
-    hasPlacedTile() {
-        return this.placedTile
-    }
+  /**
+   * Returns if the player placed a tile
+   */
+  hasPlacedTile() {
+    return this.placedTile;
+  }
+
+  /**
+   * Adds a grabbed card to the player's pool
+   */
+  addCard(card: Card): void {
+    this.cards.push(card);
+  }
+
+  /**
+   * This method reset the storage
+   */
+  resetCardStorage() {
+    this.cards = [];
+  }
 }

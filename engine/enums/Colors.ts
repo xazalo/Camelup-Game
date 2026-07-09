@@ -1,10 +1,10 @@
 enum Colors {
-  Yellow,
-  Green,
-  Red,
-  Blue,
-  Black,
-  White,
+  Yellow = "yellow",
+  Green = "green",
+  Blue = "blue",
+  Red = "red",
+  White = "white",
+  Black = "black"
 }
 
 export default Colors;

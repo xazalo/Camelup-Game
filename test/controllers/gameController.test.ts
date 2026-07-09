@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import GameController from "../../cli/controllers/GameController.js";
-import type Game from "../../engine/models/Game.js";
+import type { Game } from "../../engine/models/index.js";
+import { Colors } from "../../engine/enums/index.js"
 
 describe("GameController", () => {
   let gameController: GameController;
@@ -101,6 +102,86 @@ describe("GameController", () => {
       gameController.startGame(["Player1", "Player2"]);
 
       const result = gameController.rollTheDice("Unknown");
+
+      expect(result).toBe("Player not found");
+    });
+  });
+
+  describe("placeWinnerBet", () => {
+    it("should return error if game has not started", () => {
+      const result = gameController.placeWinnerBet("Player1", Colors.Red);
+
+      expect(result).toBe("Game not started");
+    });
+
+    it("should place a winner bet correctly", () => {
+      gameController.startGame(["Player1", "Player2"]);
+
+      const result = gameController.placeWinnerBet("Player1", Colors.Red);
+
+      expect(result).toBe("Winner bet placed");
+    });
+
+    it("should return error if player does not exist", () => {
+      gameController.startGame(["Player1", "Player2"]);
+
+      const result = gameController.placeWinnerBet("Unknown", Colors.Red);
+
+      expect(result).toBe("Player not found");
+    });
+  });
+
+  describe("placeLoserBet", () => {
+    it("should return error if game has not started", () => {
+      const result = gameController.placeLoserBet("Player1", Colors.Red);
+
+      expect(result).toBe("Game not started");
+    });
+
+    it("should place a loser bet correctly", () => {
+      gameController.startGame(["Player1", "Player2"]);
+
+      const result = gameController.placeLoserBet("Player1", Colors.Blue);
+
+      expect(result).toBe("Loser bet placed");
+    });
+
+    it("should return error if player does not exist", () => {
+      gameController.startGame(["Player1", "Player2"]);
+
+      const result = gameController.placeLoserBet("Unknown", Colors.Blue);
+
+      expect(result).toBe("Player not found");
+    });
+  });
+
+  describe("takeRoundBet", () => {
+    it("should return error if game has not started", () => {
+      const result = gameController.takeRoundBet("Player1", Colors.Green);
+
+      expect(result).toBe("Game not started");
+    });
+
+    it("should place a round bet correctly", () => {
+      gameController.startGame(["Player1", "Player2"]);
+
+      const result = gameController.takeRoundBet("Player1", Colors.Yellow);
+
+      expect(result).toBe("Round bet placed");
+    });
+
+    it("should reject the action if it is not the player's turn", () => {
+      gameController.startGame(["Player1", "Player2"]);
+
+      const result = gameController.takeRoundBet("Player2", Colors.Yellow);
+
+      expect(result).toBe("It is not your turn");
+    });
+
+    it("should return error if player does not exist", () => {
+      gameController.startGame(["Player1", "Player2"]);
+
+      const result = gameController.takeRoundBet("Unknown", Colors.Yellow);
 
       expect(result).toBe("Player not found");
     });

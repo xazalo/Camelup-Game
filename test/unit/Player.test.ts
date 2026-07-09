@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import { Player } from "../../engine/models/index.js"
+import { Player, Card, Camel } from "../../engine/models/index.js"
+import { BetType, Colors } from "../../engine/enums/index.js"
 
 describe("Player", () => {
 
@@ -30,4 +31,24 @@ describe("Player", () => {
     it("should return the current status uf the placedTile", () => {
         expect(player.hasPlacedTile()).toBe(false)
     })
+
+it("should add card", () => {
+    const camel = new Camel(Colors.Yellow);
+
+    const card = new Card(
+        BetType.GameWinner,
+        camel,
+        {
+            1: 5,
+            2: 3,
+            3: 1,
+            4: -1,
+            5: -1
+        }
+    );
+
+    player.addCard(card);
+
+    expect(player.cards).toContain(card);
+});
 })

@@ -6,9 +6,10 @@ import {
   Dice,
   Turn,
   Camel,
+  Card
 } from "./index.js";
 import createRandomId from "../../cli/helpers/createRandomId.js";
-import { GamePhase, Colors, TileType } from "../enums/index.js";
+import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
 
 export default class Game {
@@ -117,10 +118,12 @@ export default class Game {
    * @param {tileType} TileType The kind of card placed on the tile
    */
   placeTile(playerName: string, position: number, tileType: TileType) {
-    if (position === 0) throw new Error("Tile cannot be placed on the first position");
+    if (position === 0)
+      throw new Error("Tile cannot be placed on the first position");
     const playerIndex = this.getPlayerIndexByName(playerName);
     if (!this.playerHasTurn(playerIndex)) throw new Error("Is not your turn");
-    if (this.players[playerIndex]?.hasPlacedTile()) throw new Error("Tile already placed")
+    if (this.players[playerIndex]?.hasPlacedTile())
+      throw new Error("Tile already placed");
     this.board.spaces[position]?.tile.place(playerName, tileType);
     this.players[playerIndex]?.placeTile();
   }
@@ -180,5 +183,53 @@ export default class Game {
    */
   playerHasTurn(index: number): boolean {
     return this.currentPlayer === index;
+  }
+
+  /**
+   * Bet for the winner
+   */
+  placeWinnerBet(playerName: string, camel: Camel): void {
+    const playerIndex = this.getPlayerIndexByName(playerName);
+
+    if (playerIndex === -1) {
+      throw new Error("Player not found");
+    }
+
+    this.cardStorage.addWinner(playerName, camel.color.toString());
+  }
+
+  /**
+   * Bet for the loser
+   */
+  placeLoserBet(playerName: string, camel: Camel): void {
+    const playerIndex = this.getPlayerIndexByName(playerName);
+
+    if (playerIndex === -1) {
+      throw new Error("Player not found");
+    }
+
+    this.cardStorage.addLoser(playerName, camel.color.toString());
+  }
+
+  takeRoundBet(playerName: string, camel: Camel): void {
+    const playerIndex = this.getPlayerIndexByName(playerName);
+
+    if (playerIndex === -1) {
+      throw new Error("Player not found");
+    }
+
+    if (!this.playerHasTurn(playerIndex)) {
+      throw new Error("It is not your turn");
+    }
+
+    if (!this.cardStorage.shouldGrabCard(camel.color.toString())) {
+      throw new Error("No cards remaining for this camel");
+    }
+
+    this.cardStorage.grabCard(camel.color.toString());
+
+    const card = new Card(BetType.TurnWinner, camel, {}); //todo needs to define the incomes
+
+    this.players[playerIndex]?.addCard(card);
   }
 }
