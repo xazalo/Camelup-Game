@@ -23,11 +23,15 @@ rl.on("line", (input: any) => {
       console.log(gameController.startGame(command.players));
       break;
 
-    case "rollTheDice": 
-      console.log(gameController.rollTheDice(command.playerName))
+    case "rollTheDice":
+      console.log(gameController.rollTheDice(command.playerName));
 
     case "state":
       console.log(JSON.stringify(gameController.getState(), null, 2));
+      break;
+
+    case "placeTile":
+      console.log(gameController.placeTile(command.playerName, command.position, command.tileType));
       break;
 
     case "help":

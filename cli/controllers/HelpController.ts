@@ -9,10 +9,11 @@ export default class HelpController {
             "=== Camel Up CLI ===",
             "",
             "Commands:",
-            "  start <name> <name>...       -> start a new game (between 2 and 6 players)",
-            "  state                        -> show the game state",
-            "  rollTheDice <name>           -> create a new dice",
-            "  help                         -> show all commands.",
+            "  start <name> <name>...                   -> start a new game (between 2 and 6 players)",
+            "  state                                    -> show the game state",
+            "  placeTile <name> <position> <number>     -> Place a new tile in the X position. This tile should be 1 (Oasis) or 2 (Mirage).",
+            "  rollTheDice <name>                       -> create a new dice",
+            "  help                                     -> show all commands.",
             "",
         ].join("\n");
     }

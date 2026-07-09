@@ -1,7 +1,15 @@
+import { TileType } from "../engine/enums/index.js";
+
 export type Command =
   | { type: "start"; players: string[] }
   | { type: "rollTheDice"; playerName: string }
   | { type: "state" }
+  | {
+      type: "placeTile";
+      playerName: string;
+      position: number;
+      tileType: TileType;
+    }
   | { type: "help" }
   | { type: "unknown"; raw: string };
 
@@ -28,6 +36,42 @@ export function parseCommand(input: string): Command {
     return {
       type: "rollTheDice",
       playerName: parts[1] as string,
+    };
+  }
+
+  if (cmd === "placeTile") {
+    if (parts.length !== 4) {
+      return { type: "unknown", raw: input };
+    }
+
+    const [, playerName, position, tile] = parts as [
+      string,
+      string,
+      string,
+      string,
+    ];
+
+    const positionNb = Number(position);
+
+    if (Number.isNaN(positionNb)) {
+      return { type: "unknown", raw: input };
+    }
+
+    let tileType: TileType;
+
+    if (tile === TileType.Oasis.toString()) {
+      tileType = TileType.Oasis;
+    } else if (tile === TileType.Mirage.toString()) {
+      tileType = TileType.Mirage;
+    } else {
+      return { type: "unknown", raw: input };
+    }
+
+    return {
+      type: "placeTile",
+      playerName,
+      position: positionNb,
+      tileType,
     };
   }
 

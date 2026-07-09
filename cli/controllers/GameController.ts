@@ -12,6 +12,7 @@ import {
 } from "../../engine/models/index.js";
 import { type DiceValue, type Action } from "../../engine/types/index.js";
 import { randomNumber } from "../helpers/index.js";
+import { TileType } from "../../engine/enums/TileType.js";
 
 /**
  * This class creates a controller for the game cli orders
@@ -36,9 +37,28 @@ export default class GameController {
    * Return the state of the game.
    */
   getState() {
-    return this.game;
+    try {
+      return this.game;
+    } catch (error: unknown) {
+      return error instanceof Error ? error.message : "Unknown error";
+    }
   }
 
+  /**
+   * This function place a tile card
+   */
+  placeTile(playerName: string, position: number, tileType: TileType) {
+    if (!this.game) {
+      return "Game not started";
+    }
+
+    try {
+      this.game.placeTile(playerName, position, tileType);
+      return "Tile placed";
+    } catch (error: unknown) {
+      return error instanceof Error ? error.message : "Unknown error";
+    }
+  }
   /**
    * Roll the dice and moves camels across the board
    */

@@ -1,7 +1,13 @@
 enum TileType {
-    None,
-    Oasis,
-    Mirage,
+  None,
+  Oasis,
+  Mirage,
 }
 
-export default TileType;
+function isTileType(value: string) {
+  return (
+    value === TileType.Oasis.toString() || value === TileType.Mirage.toString()
+  );
+}
+
+export { TileType, isTileType };

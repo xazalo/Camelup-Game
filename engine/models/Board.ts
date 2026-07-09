@@ -1,5 +1,6 @@
 import { Colors, Directions } from "../enums/index.js";
-import { Camel, Game, Stack } from "./index.js";
+import { Camel, Game, Stack, Player } from "./index.js";
+import { TileType } from "../enums/index.js";
 
 /**
  * This class defines de board of the Game, and also
@@ -30,7 +31,7 @@ export default class Board {
    *
    */
 
-  moveCamel(color: Colors, steps: number): void {
+  moveCamel(color: Colors, steps: number, player: Player): void {
     let camel: Camel | null = null;
     let currentPosition = -1;
 
@@ -67,6 +68,13 @@ export default class Board {
 
     // move camel
     destinationStack.addCamel(camel);
+
+    if (destinationStack.tile.hasTile()) {
+      if (destinationStack.tile.tileType === TileType.Oasis)
+        player.updateMoney(1);
+      else if (destinationStack.tile.tileType === TileType.Mirage)
+        player.updateMoney(-1);
+    }
   }
 
   /**

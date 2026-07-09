@@ -8,7 +8,7 @@ import {
   Camel,
 } from "./index.js";
 import createRandomId from "../../cli/helpers/createRandomId.js";
-import { GamePhase, Colors } from "../enums/index.js";
+import { GamePhase, Colors, TileType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
 
 export default class Game {
@@ -112,6 +112,20 @@ export default class Game {
   }
 
   /**
+   * This method place one tile
+   * @param {playerName} string The name of the player who places the tile
+   * @param {tileType} TileType The kind of card placed on the tile
+   */
+  placeTile(playerName: string, position: number, tileType: TileType) {
+    if (position === 0) throw new Error("Tile cannot be placed on the first position");
+    const playerIndex = this.getPlayerIndexByName(playerName);
+    if (!this.playerHasTurn(playerIndex)) throw new Error("Is not your turn");
+    if (this.players[playerIndex]?.hasPlacedTile()) throw new Error("Tile already placed")
+    this.board.spaces[position]?.tile.place(playerName, tileType);
+    this.players[playerIndex]?.placeTile();
+  }
+
+  /**
    * Rolls a dice and applies the movement to the board.
    */
   private processDiceRoll(player: Player) {
@@ -124,9 +138,7 @@ export default class Game {
 
     this.board.moveCamelStack(color, value);
 
-    round.addTurn(
-      new Turn(player.name, { type: "RollDice" }, dice),
-    );
+    round.addTurn(new Turn(player.name, { type: "RollDice" }, dice));
 
     if (round.isFinished()) {
       this.endRound();
@@ -139,9 +151,7 @@ export default class Game {
    * Returns the player index by name.
    */
   getPlayerIndexByName(name: string): number {
-    return this.players.findIndex(
-      (player) => player.name === name,
-    );
+    return this.players.findIndex((player) => player.name === name);
   }
 
   /**
