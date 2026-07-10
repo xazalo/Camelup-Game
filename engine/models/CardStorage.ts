@@ -37,11 +37,25 @@ export default class CardStorage {
     };
   }
 
-  grabCard(color: string): void {
-    if (color === "yellow") this.storedCards.yellow.remaining -= 1;
-    if (color === "green") this.storedCards.green.remaining -= 1;
-    if (color === "red") this.storedCards.red.remaining -= 1;
-    if (color === "blue") this.storedCards.blue.remaining -= 1;
+  grabCard(color: string): number | void {
+    if (color === "yellow"){
+      this.storedCards.yellow.remaining -= 1;
+      return this.storedCards.yellow.remaining + 1;
+    } 
+    if (color === "green") {
+      this.storedCards.green.remaining -= 1;
+      return this.storedCards.green.remaining + 1;
+    } 
+    if (color === "red") {
+      this.storedCards.red.remaining -= 1;
+      return this.storedCards.red.remaining + 1;
+    } 
+    if (color === "blue") {
+      this.storedCards.blue.remaining -= 1;
+      return this.storedCards.blue.remaining + 1;
+    } 
+
+    throw new Error("Bug in grab card!!!.")
   }
 
   numberRemainingCards(color: string): number | undefined {

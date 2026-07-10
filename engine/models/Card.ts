@@ -1,9 +1,6 @@
 import { Camel } from "./index.js";
 import { BetType } from "../enums/index.js"
-
-type PayoutTable = {
-  [position: number]: number;
-};
+import { type PayoutTable } from "../types/PayoutTables.js";
 
 /**
  * This class represents the cards within the game, they can be purchased for

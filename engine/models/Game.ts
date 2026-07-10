@@ -8,7 +8,7 @@ import {
   Camel,
   Card
 } from "./index.js";
-import createRandomId from "../../cli/helpers/createRandomId.js";
+import { createRandomId, generatePayoutTable } from "../../cli/helpers/index.js";
 import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
 
@@ -226,9 +226,12 @@ export default class Game {
       throw new Error("No cards remaining for this camel");
     }
 
-    this.cardStorage.grabCard(camel.color.toString());
+    const grabbedCard = this.cardStorage.grabCard(camel.color.toString());
+    if(!grabbedCard) throw new Error("There is a bug on the game!!!.")
 
-    const card = new Card(BetType.TurnWinner, camel, {}); //todo needs to define the incomes
+    const rewardTable = generatePayoutTable(grabbedCard)
+
+    const card = new Card(BetType.TurnWinner, camel, rewardTable);
 
     this.players[playerIndex]?.addCard(card);
   }
