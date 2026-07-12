@@ -174,4 +174,124 @@ describe("Board", () => {
       expect(() => board.findCamelByColor(Colors.Red)).toThrow("Camel");
     });
   });
+
+  describe("hasCamelReachedFinish", () => {
+    it("should return false if no racing camel reached the finish", () => {
+      const black = new Camel(Colors.Black);
+
+      board.spaces[15]?.addCamel(black);
+
+      expect(board.hasCamelReachedFinish()).toBe(false);
+    });
+
+    it("should return true if a racing camel reached the finish", () => {
+      const green = new Camel(Colors.Green);
+
+      board.spaces[15]?.addCamel(green);
+
+      expect(board.hasCamelReachedFinish()).toBe(true);
+    });
+
+    it("should return true if the finish stack contains racing and crazy camels", () => {
+      const black = new Camel(Colors.Black);
+      const red = new Camel(Colors.Red);
+
+      board.spaces[15]?.addCamel(black);
+      board.spaces[15]?.addCamel(red);
+
+      expect(board.hasCamelReachedFinish()).toBe(true);
+    });
+
+    it("should return false if the finish stack contains only crazy camels", () => {
+      const black = new Camel(Colors.Black);
+      const white = new Camel(Colors.White);
+
+      board.spaces[15]?.addCamel(black);
+      board.spaces[15]?.addCamel(white);
+
+      expect(board.hasCamelReachedFinish()).toBe(false);
+    });
+  });
+
+  describe("getRaceRanking", () => {
+    it("should return the ranking from finish to start", () => {
+      const green = new Camel(Colors.Green);
+      const blue = new Camel(Colors.Blue);
+      const red = new Camel(Colors.Red);
+      const yellow = new Camel(Colors.Yellow);
+
+      board.spaces[15]?.addCamel(green);
+      board.spaces[10]?.addCamel(blue);
+      board.spaces[5]?.addCamel(red);
+      board.spaces[0]?.addCamel(yellow);
+
+      expect(board.getRaceRanking()).toEqual([
+        Colors.Green,
+        Colors.Blue,
+        Colors.Red,
+        Colors.Yellow,
+      ]);
+    });
+
+    it("should respect the order of camels in the same stack", () => {
+      const green = new Camel(Colors.Green);
+      const blue = new Camel(Colors.Blue);
+      const red = new Camel(Colors.Red);
+
+      board.spaces[15]?.addCamel(green);
+      board.spaces[15]?.addCamel(blue);
+      board.spaces[15]?.addCamel(red);
+
+      expect(board.getRaceRanking()).toEqual([
+        Colors.Red,
+        Colors.Blue,
+        Colors.Green,
+      ]);
+    });
+
+    it("should ignore crazy camels", () => {
+      const green = new Camel(Colors.Green);
+      const blue = new Camel(Colors.Blue);
+      const black = new Camel(Colors.Black);
+      const white = new Camel(Colors.White);
+
+      board.spaces[15]?.addCamel(green);
+      board.spaces[15]?.addCamel(black);
+      board.spaces[10]?.addCamel(blue);
+      board.spaces[8]?.addCamel(white);
+
+      expect(board.getRaceRanking()).toEqual([Colors.Green, Colors.Blue]);
+    });
+
+    it("should return an empty array when there are no racing camels", () => {
+      const black = new Camel(Colors.Black);
+      const white = new Camel(Colors.White);
+
+      board.spaces[15]?.addCamel(black);
+      board.spaces[10]?.addCamel(white);
+
+      expect(board.getRaceRanking()).toEqual([]);
+    });
+
+    it("should rank camels across multiple stacks", () => {
+      const green = new Camel(Colors.Green);
+      const blue = new Camel(Colors.Blue);
+      const red = new Camel(Colors.Red);
+      const yellow = new Camel(Colors.Yellow);
+
+      board.spaces[12]?.addCamel(green);
+      board.spaces[12]?.addCamel(blue);
+
+      board.spaces[9]?.addCamel(red);
+
+      board.spaces[3]?.addCamel(yellow);
+
+      expect(board.getRaceRanking()).toEqual([
+        Colors.Blue,
+        Colors.Green,
+        Colors.Red,
+        Colors.Yellow,
+      ]);
+    });
+  });
 });

@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import Game from "../../engine/models/Game.js";
 import Colors from "../../engine/enums/Colors.js";
+import Card from "../../engine/models/Card.js";
+import BetType from "../../engine/enums/BetType.js";
+import generatePayoutTable from "../../cli/helpers/generatePayoutTable.js";
+import GamePhase from "../../engine/enums/GamePhase.js";
 
 describe("Game", () => {
   let game: Game;
@@ -157,6 +161,193 @@ describe("Game", () => {
   describe("round management", () => {
     it("should have an initial round", () => {
       expect(game.history.length).toBe(1);
+    });
+  });
+
+  describe("round incomes", () => {
+    it("should pay 5 coins for a first place card", () => {
+      const player = game.players[0]!;
+
+      const green = game.board.findCamelByColor(Colors.Green);
+
+      // El verde termina primero
+      game.board.spaces.forEach((space) => (space.camels = []));
+      game.board.spaces[15]!.addCamel(green);
+
+      player.addCard(
+        new Card(BetType.TurnWinner, green, generatePayoutTable(5)),
+      );
+
+      game.endRound();
+
+      expect(player.money).toBe(8);
+    });
+
+    it("should pay 3 coins for a second place card", () => {
+      const player = game.players[0]!;
+
+      const green = game.board.findCamelByColor(Colors.Green);
+      const blue = game.board.findCamelByColor(Colors.Blue);
+
+      game.board.spaces.forEach((space) => (space.camels = []));
+
+      game.board.spaces[15]!.addCamel(blue);
+      game.board.spaces[14]!.addCamel(green);
+
+      player.addCard(
+        new Card(BetType.TurnWinner, green, generatePayoutTable(5)),
+      );
+
+      game.endRound();
+
+      expect(player.money).toBe(6);
+    });
+
+    it("should lose one coin when the camel finishes fourth", () => {
+      const player = game.players[0]!;
+
+      const green = game.board.findCamelByColor(Colors.Green);
+      const blue = game.board.findCamelByColor(Colors.Blue);
+      const red = game.board.findCamelByColor(Colors.Red);
+      const yellow = game.board.findCamelByColor(Colors.Yellow);
+
+      game.board.spaces.forEach((space) => (space.camels = []));
+
+      game.board.spaces[15]!.addCamel(blue);
+      game.board.spaces[14]!.addCamel(red);
+      game.board.spaces[13]!.addCamel(yellow);
+      game.board.spaces[12]!.addCamel(green);
+
+      player.addCard(
+        new Card(BetType.TurnWinner, green, generatePayoutTable(5)),
+      );
+
+      game.endRound();
+
+      expect(player.money).toBe(2);
+    });
+  });
+
+  describe("Game Incomes", () => {
+    it("should pay 8 coins to the first correct winner bet", () => {
+      const player = game.players[0]!;
+
+      const green = game.board.findCamelByColor(Colors.Green);
+
+      game.placeWinnerBet(player.name, green);
+
+      game.board.spaces.forEach((space) => (space.camels = []));
+      game.board.spaces[15]!.addCamel(green);
+
+      game.endGame();
+
+      expect(player.money).toBe(11);
+    });
+
+    it("should pay 5 coins to the second correct winner bet", () => {
+      const green = game.board.findCamelByColor(Colors.Green);
+
+      game.placeWinnerBet("Player1", green);
+      game.placeWinnerBet("Player2", green);
+
+      game.board.spaces.forEach((space) => (space.camels = []));
+      game.board.spaces[15]!.addCamel(green);
+
+      game.endGame();
+
+      expect(game.players[0]!.money).toBe(11);
+      expect(game.players[1]!.money).toBe(8);
+    });
+
+    it("should lose one coin for an incorrect winner bet", () => {
+      const green = game.board.findCamelByColor(Colors.Green);
+      const blue = game.board.findCamelByColor(Colors.Blue);
+
+      game.placeWinnerBet("Player1", blue);
+
+      game.board.spaces.forEach((space) => (space.camels = []));
+      game.board.spaces[15]!.addCamel(green);
+
+      game.endGame();
+
+      expect(game.players[0]!.money).toBe(2);
+    });
+
+    it("should pay 8 coins for the first correct loser bet", () => {
+      const green = game.board.findCamelByColor(Colors.Green);
+      const blue = game.board.findCamelByColor(Colors.Blue);
+
+      game.placeLoserBet("Player1", blue);
+
+      game.board.spaces.forEach((space) => (space.camels = []));
+
+      game.board.spaces[15]!.addCamel(green);
+      game.board.spaces[0]!.addCamel(blue);
+
+      game.endGame();
+
+      expect(game.players[0]!.money).toBe(11);
+    });
+
+    it("should lose one coin for an incorrect loser bet", () => {
+      const green = game.board.findCamelByColor(Colors.Green);
+      const blue = game.board.findCamelByColor(Colors.Blue);
+
+      game.placeLoserBet("Player1", green);
+
+      game.board.spaces.forEach((space) => (space.camels = []));
+
+      game.board.spaces[15]!.addCamel(green);
+      game.board.spaces[0]!.addCamel(blue);
+
+      game.endGame();
+
+      expect(game.players[0]!.money).toBe(2);
+    });
+  });
+
+  describe("Ensure game only can be played when is active", () => {
+    beforeEach(() => {
+      const green = game.board.findCamelByColor(Colors.Green);
+
+      game.board.spaces.forEach((space) => (space.camels = []));
+      game.board.spaces[15]!.addCamel(green);
+
+      game.endGame();
+    });
+
+    it("should change phase to Finished after ending the game", () => {
+      expect(game.phase).toBe(GamePhase.Finished);
+    });
+
+    it("should not allow rolling dice after game finishes", () => {
+      expect(() => {
+        game.rollDice("Player1");
+      }).toThrow("Game has already finished");
+    });
+
+    it("should not allow winner bets after game finishes", () => {
+      const green = game.board.findCamelByColor(Colors.Green);
+
+      expect(() => {
+        game.placeWinnerBet("Player1", green);
+      }).toThrow("Game has already finished");
+    });
+
+    it("should not allow loser bets after game finishes", () => {
+      const green = game.board.findCamelByColor(Colors.Green);
+
+      expect(() => {
+        game.placeLoserBet("Player1", green);
+      }).toThrow("Game has already finished");
+    });
+
+    it("should not allow round bets after game finishes", () => {
+      const green = game.board.findCamelByColor(Colors.Green);
+
+      expect(() => {
+        game.takeRoundBet("Player1", green);
+      }).toThrow("Game has already finished");
     });
   });
 });

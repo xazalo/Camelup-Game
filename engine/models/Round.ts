@@ -19,6 +19,10 @@ export default class Round {
     this.dicePool = new DicePool();
   }
 
+  /**
+   * This method create the initials moves of the camels
+   * @param board The board of the game.
+   */
   prepareInitialMoves(board: Board) {
     for (let i = 0; i < 4; i++) {
       const color = this.dicePool.draw();

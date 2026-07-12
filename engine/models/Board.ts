@@ -31,7 +31,7 @@ export default class Board {
    *
    */
 
-  moveCamel(color: Colors, steps: number, player: Player): void {
+  moveCamel(color: Colors, steps: number, player?: Player): void {
     let camel: Camel | null = null;
     let currentPosition = -1;
 
@@ -69,7 +69,7 @@ export default class Board {
     // move camel
     destinationStack.addCamel(camel);
 
-    if (destinationStack.tile.hasTile()) {
+    if (destinationStack.tile.hasTile() && player) {
       if (destinationStack.tile.tileType === TileType.Oasis)
         player.updateMoney(1);
       else if (destinationStack.tile.tileType === TileType.Mirage)
@@ -148,5 +148,36 @@ export default class Board {
       if (camel) return camel;
     }
     throw new Error(`Camel ${color} not found on the board`);
+  }
+
+  /**
+   * This method validates if one camel reached the finish tile and the game is finished
+   */
+  hasCamelReachedFinish(): boolean {
+    const racingCamels = [Colors.Green, Colors.Blue, Colors.Red, Colors.Yellow];
+    const camels = this.spaces[this.spaces.length - 1]?.camels ?? [];
+    return camels.some((camel) => racingCamels.includes(camel.color));
+  }
+
+  /**
+   * This method gets the race ranking for calculate the rewards
+   */
+  getRaceRanking(): Colors[] {
+    const ranking: Colors[] = [];
+    const racingCamels = [Colors.Green, Colors.Blue, Colors.Red, Colors.Yellow];
+
+    for (let i = this.spaces.length - 1; i >= 0; i--) {
+      const stack = this.spaces[i]!;
+
+      for (let i = stack.camels.length - 1; i >= 0; i--) {
+        const camel = stack.camels[i]!;
+
+        if (racingCamels.includes(camel.color)) {
+          ranking.push(camel.color);
+        }
+      }
+    }
+
+    return ranking;
   }
 }

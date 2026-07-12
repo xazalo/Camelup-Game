@@ -6,9 +6,12 @@ import {
   Dice,
   Turn,
   Camel,
-  Card
+  Card,
 } from "./index.js";
-import { createRandomId, generatePayoutTable } from "../../cli/helpers/index.js";
+import {
+  createRandomId,
+  generatePayoutTable,
+} from "../../cli/helpers/index.js";
 import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
 
@@ -93,8 +96,10 @@ export default class Game {
 
   /**
    * Handles a player's dice roll action.
+   * @param playerName The player name who are rolling the dice.
    */
   rollDice(playerName: string) {
+    this.ensureGameIsActive();
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
@@ -118,6 +123,7 @@ export default class Game {
    * @param {tileType} TileType The kind of card placed on the tile
    */
   placeTile(playerName: string, position: number, tileType: TileType) {
+    this.ensureGameIsActive();
     if (position === 0)
       throw new Error("Tile cannot be placed on the first position");
     const playerIndex = this.getPlayerIndexByName(playerName);
@@ -130,6 +136,7 @@ export default class Game {
 
   /**
    * Rolls a dice and applies the movement to the board.
+   * @param player The player who are rolling the dice
    */
   private processDiceRoll(player: Player) {
     const round = this.getCurrentRound();
@@ -143,52 +150,108 @@ export default class Game {
 
     round.addTurn(new Turn(player.name, { type: "RollDice" }, dice));
 
+    if (this.board.hasCamelReachedFinish()) {
+      this.endGame();
+      return;
+    }
+
     if (round.isFinished()) {
       this.endRound();
-    } else {
-      this.nextTurn();
+      return;
     }
+
+    this.nextTurn();
   }
 
   /**
    * Returns the player index by name.
+   * @param name The player name
    */
   getPlayerIndexByName(name: string): number {
     return this.players.findIndex((player) => player.name === name);
   }
 
   /**
-   * This method ends the round or the game depends on the position of the advanced camel.
+   * this method calculate the round incomes
    */
-  private endRound() {
-    //verify if game ends
-    //if not calculate round incomes
-    //if yes calculate round incomes, and game incomes
-    this.addRound();
-    //reset the dice,
-    //pass the player from first position to last one
-    //TODO create the end of game just here.
+  private calculateRoundIncomes(): void {
+    const ranking = this.board.getRaceRanking();
+
+    for (const player of this.players) {
+      for (const card of player.getCards()) {
+        const position = ranking.indexOf(card.camel.color);
+
+        // Si por cualquier motivo no aparece
+        if (position === -1) continue;
+
+        const payout = card.payouts[(position + 1) as 1 | 2 | 3 | 4];
+
+        player.updateMoney(payout as number);
+      }
+    }
   }
 
   /**
-   * Moves the turn to the next player.
+   * Calculates the game winner/loser bet incomes.
    */
-  private nextTurn() {
-    this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
-    this.currentTurn++;
+  private calculateGameIncomes(): void {
+    const ranking = this.board.getRaceRanking();
+
+    const winner = ranking[0];
+    const loser = ranking[ranking.length - 1];
+
+    this.payGameBets(this.cardStorage.getWinnerCards(), winner as Colors);
+    this.payGameBets(this.cardStorage.getLoserCards(), loser as Colors);
   }
 
   /**
-   * Return a bool witch represents if player has turn
+   * Pays the final bet, the result depends on the position of the card
+   * @param bets The stored winner or loser bets.
+   * @param correctColor The camel color that matches the race result.
    */
-  playerHasTurn(index: number): boolean {
-    return this.currentPlayer === index;
+  private payGameBets(
+    bets: {
+      yellow: string[];
+      green: string[];
+      blue: string[];
+      red: string[];
+    },
+    correctColor: Colors,
+  ): void {
+    const payouts = [8, 5, 3, 2];
+
+    const correctPlayers = bets[correctColor.toString() as keyof typeof bets];
+
+    // Pay correct bets
+    correctPlayers.forEach((playerName, index) => {
+      const player = this.players.find((p) => p.name === playerName);
+
+      if (!player) return;
+
+      player.updateMoney(payouts[Math.min(index, payouts.length - 1)]!);
+    });
+
+    // Charge incorrect bets
+    Object.entries(bets).forEach(([color, players]) => {
+      if (color === correctColor.toString()) return;
+
+      players.forEach((playerName) => {
+        const player = this.players.find((p) => p.name === playerName);
+
+        if (!player) return;
+
+        player.updateMoney(-1);
+      });
+    });
   }
 
   /**
    * Bet for the winner
+   * @param playerName The name of the player who makes the bet
+   * @param camel The name of the camel witch is selected by the player
    */
   placeWinnerBet(playerName: string, camel: Camel): void {
+    this.ensureGameIsActive();
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
@@ -200,8 +263,11 @@ export default class Game {
 
   /**
    * Bet for the loser
+   * @param playerName The name of the player who makes the bet
+   * @param camel The camel witch the player select
    */
   placeLoserBet(playerName: string, camel: Camel): void {
+    this.ensureGameIsActive();
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
@@ -211,7 +277,13 @@ export default class Game {
     this.cardStorage.addLoser(playerName, camel.color.toString());
   }
 
+  /**
+   * This method allow the user to take one bet card for the round
+   * @param playerName The player name
+   * @param camel The chosen camel
+   */
   takeRoundBet(playerName: string, camel: Camel): void {
+    this.ensureGameIsActive();
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
@@ -227,12 +299,59 @@ export default class Game {
     }
 
     const grabbedCard = this.cardStorage.grabCard(camel.color.toString());
-    if(!grabbedCard) throw new Error("There is a bug on the game!!!.")
+    if (!grabbedCard) throw new Error("There is a bug on the game!!!.");
 
-    const rewardTable = generatePayoutTable(grabbedCard)
+    const rewardTable = generatePayoutTable(grabbedCard);
 
     const card = new Card(BetType.TurnWinner, camel, rewardTable);
 
     this.players[playerIndex]?.addCard(card);
+  }
+
+  /**
+   * This method ensures that the game is active
+   */
+  private ensureGameIsActive(): void {
+    if (this.phase === GamePhase.Finished) {
+      throw new Error("Game has already finished");
+    }
+  }
+
+  /**
+   * Return a bool witch represents if player has turn
+   * @param index The index on the array of the current player.
+   */
+  playerHasTurn(index: number): boolean {
+    return this.currentPlayer === index;
+  }
+
+  /**
+   * This method ends the round or the game depends on the position of the advanced camel.
+   */
+  endRound() {
+    //calculate round incomes
+    this.calculateRoundIncomes();
+    this.addRound();
+    //pass the player from first position to last one
+  }
+
+  /**
+   * This method ends the game if one camel have been reached the goal
+   */
+  endGame() {
+    //calculate round incomes
+    this.calculateRoundIncomes();
+    //calculate game incomes
+    this.calculateGameIncomes();
+    //Change the game phase
+    this.phase = GamePhase.Finished;
+  }
+
+  /**
+   * Moves the turn to the next player.
+   */
+  private nextTurn() {
+    this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
+    this.currentTurn++;
   }
 }

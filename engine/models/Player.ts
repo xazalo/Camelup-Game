@@ -53,6 +53,7 @@ export default class Player {
 
   /**
    * Adds a grabbed card to the player's pool
+   * @param card Card to be placed in the array
    */
   addCard(card: Card): void {
     this.cards.push(card);
@@ -63,5 +64,12 @@ export default class Player {
    */
   resetCardStorage() {
     this.cards = [];
+  }
+
+  /**
+   * This method returns the cards of the player
+   */
+  getCards() {
+    return this.cards;
   }
 }
