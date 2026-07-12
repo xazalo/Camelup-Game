@@ -1,5 +1,3 @@
-import { Colors } from "../../engine/enums/index.js";
-
 interface StorageMap {
   yellow: { remaining: number };
   green: { remaining: number };

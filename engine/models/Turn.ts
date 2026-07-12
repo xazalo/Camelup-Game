@@ -1,5 +1,5 @@
 import { Dice } from "./index.js";
-import { type Action } from "../types/index.js"
+import { type Action } from "../types/index.js";
 
 /**
  * This class represents a turn in the game
@@ -16,7 +16,7 @@ export default class Turn {
   constructor(playerName: string, action: Action, dice?: Dice | null) {
     this.playerName = playerName;
     this.action = action;
-    if(dice) this.dice = dice;
+    if (dice) this.dice = dice;
     else this.dice = null;
   }
 }

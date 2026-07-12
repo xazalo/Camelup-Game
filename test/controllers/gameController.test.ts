@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import GameController from "../../cli/controllers/GameController.js";
 import type { Game } from "../../engine/models/index.js";
-import { Colors } from "../../engine/enums/index.js"
+import { Colors } from "../../engine/enums/index.js";
 
 describe("GameController", () => {
   let gameController: GameController;

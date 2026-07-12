@@ -1,5 +1,5 @@
 import { Colors, Directions } from "../enums/index.js";
-import { Camel, Game, Stack, Player } from "./index.js";
+import { Camel, Stack, Player } from "./index.js";
 import { TileType } from "../enums/index.js";
 
 /**

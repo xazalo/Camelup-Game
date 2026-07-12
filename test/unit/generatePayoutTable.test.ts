@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generatePayoutTable } from "../../cli/helpers/index.js";
-import { type PayoutTable } from "../../engine/types/index.js"
+import { type PayoutTable } from "../../engine/types/index.js";
 
 describe("generatePayoutTable", () => {
   it("should return the correct table for topValue 5", () => {

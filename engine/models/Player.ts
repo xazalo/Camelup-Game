@@ -1,4 +1,4 @@
-import { Tile, Card } from "./index.js";
+import { Card } from "./index.js";
 
 /**
  * This class is a representation of the player across the game

@@ -1,5 +1,5 @@
 import { TileType } from "../engine/enums/index.js";
-import { Colors } from "../engine/enums/index.js"
+import { Colors } from "../engine/enums/index.js";
 
 export type Command =
   | { type: "start"; players: string[] }

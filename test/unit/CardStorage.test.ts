@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { CardStorage, Game } from "../../engine/models/index.js";
+import { CardStorage, Game, Stack } from "../../engine/models/index.js";
 import Colors from "../../engine/enums/Colors.js";
 
 describe("CardStorage", () => {
@@ -144,7 +144,7 @@ describe("CardStorage", () => {
       game.placeWinnerBet("Player4", green);
       game.placeWinnerBet("Player5", green);
 
-      game.board.spaces.forEach((space: any) => (space.camels = [] ));
+      game.board.spaces.forEach((space: Stack) => (space.camels = [] ));
       game.board.spaces[15]!.addCamel(green);
 
       game.endGame();
