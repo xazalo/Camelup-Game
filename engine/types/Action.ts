@@ -1,4 +1,4 @@
-import TileType from "../enums/TileType.js";
+import { TileType } from "../enums/index.js";
 
 export type Action =
   | { type: "RollDice" }

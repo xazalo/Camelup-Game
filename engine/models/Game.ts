@@ -30,12 +30,13 @@ export default class Game {
   history: Round[];
 
   constructor(
+    id: string,
     board: Board,
     players: Player[],
     history: Round[],
     cardStorage: CardStorage,
   ) {
-    this.id = createRandomId();
+    this.id = id;
 
     this.currentPlayer = 0;
     this.currentTurn = 1;
@@ -51,7 +52,7 @@ export default class Game {
   /**
    * Creates a new game instance.
    */
-  static create(playerNames: string[]) {
+  static create(playerNames: string[], id: string) {
     if (playerNames.length < 2 || playerNames.length > 6) {
       throw new Error("This Game must have between 2 and 6 players");
     }
@@ -61,7 +62,7 @@ export default class Game {
     const players = playerNames.map((name) => new Player(name));
     const round = new Round();
 
-    const game = new Game(board, players, [round], storage);
+    const game = new Game(id, board, players, [round], storage);
 
     game.board.createCamels();
     round.prepareInitialMoves(board);
