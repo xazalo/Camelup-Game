@@ -12,13 +12,13 @@ describe("GameController", () => {
 
   describe("startGame", () => {
     it("should start a game correctly", () => {
-      const result = gameController.startGame(["enzo", "pizza"]);
+      const result = gameController.startGame(["enzo", "pizza"], "testgameId");
 
       expect(result).toBe("Game started");
     });
 
     it("should return an error if player amount is invalid", () => {
-      const result = gameController.startGame(["enzo"]);
+      const result = gameController.startGame(["enzo"], "testgameId");
 
       expect(result).toBe("This Game must have between 2 and 6 players");
     });
@@ -32,13 +32,13 @@ describe("GameController", () => {
         "Player5",
         "Player6",
         "Player7",
-      ]);
+      ], "testgameId");
 
       expect(result).toBe("This Game must have between 2 and 6 players");
     });
 
     it("should expose the created game state", () => {
-      gameController.startGame(["enzo", "pizza"]);
+      gameController.startGame(["enzo", "pizza"], "testgameId");
 
       const state = gameController.getState();
       expect(state).toBeDefined();
@@ -53,7 +53,7 @@ describe("GameController", () => {
     });
 
     it("should return the current game instance after starting", () => {
-      gameController.startGame(["enzo", "pizza"]);
+      gameController.startGame(["enzo", "pizza"], "testgameId");
 
       const state = gameController.getState();
 
@@ -63,7 +63,7 @@ describe("GameController", () => {
 
   describe("placeTile", () => {
     it("should place a tile", () => {
-      gameController.startGame(["John", "Doe"]);
+      gameController.startGame(["John", "Doe"], "testgameId");
       const r = gameController.placeTile("John", 1, 1);
       const state = gameController.getState() as Game;
 
@@ -76,7 +76,7 @@ describe("GameController", () => {
     });
 
     it("should throw error if the player already have a tile placed", () => {
-      gameController.startGame(["John", "Doe"]);
+      gameController.startGame(["John", "Doe"], "testgameId");
       gameController.placeTile("John", 1, 1);
       const result = gameController.placeTile("John", 2, 1);
       expect(result).toBe("Tile already placed");
@@ -91,7 +91,7 @@ describe("GameController", () => {
     });
 
     it("should call the game roll action for a valid player", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const r = gameController.rollTheDice("Player1");
 
@@ -99,7 +99,7 @@ describe("GameController", () => {
     });
 
     it("should return an error when the player action is rejected", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const result = gameController.rollTheDice("Unknown");
 
@@ -115,7 +115,7 @@ describe("GameController", () => {
     });
 
     it("should place a winner bet correctly", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const result = gameController.placeWinnerBet("Player1", Colors.Red);
 
@@ -123,7 +123,7 @@ describe("GameController", () => {
     });
 
     it("should return error if player does not exist", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const result = gameController.placeWinnerBet("Unknown", Colors.Red);
 
@@ -139,7 +139,7 @@ describe("GameController", () => {
     });
 
     it("should place a loser bet correctly", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const result = gameController.placeLoserBet("Player1", Colors.Blue);
 
@@ -147,7 +147,7 @@ describe("GameController", () => {
     });
 
     it("should return error if player does not exist", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const result = gameController.placeLoserBet("Unknown", Colors.Blue);
 
@@ -163,7 +163,7 @@ describe("GameController", () => {
     });
 
     it("should place a round bet correctly", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const result = gameController.takeRoundBet("Player1", Colors.Yellow);
 
@@ -171,7 +171,7 @@ describe("GameController", () => {
     });
 
     it("should reject the action if it is not the player's turn", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const result = gameController.takeRoundBet("Player2", Colors.Yellow);
 
@@ -179,7 +179,7 @@ describe("GameController", () => {
     });
 
     it("should return error if player does not exist", () => {
-      gameController.startGame(["Player1", "Player2"]);
+      gameController.startGame(["Player1", "Player2"], "testgameId");
 
       const result = gameController.takeRoundBet("Unknown", Colors.Yellow);
 

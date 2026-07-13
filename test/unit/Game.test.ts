@@ -10,7 +10,7 @@ describe("Game", () => {
   let game: Game;
 
   beforeEach(() => {
-    game = Game.create(["Player1", "Player2"]);
+    game = Game.create(["Player1", "Player2"], "testgameId");
   });
 
   describe("create", () => {
@@ -21,13 +21,13 @@ describe("Game", () => {
 
     it("should reject games with less than 2 players", () => {
       expect(() => {
-        Game.create(["Player1"]);
+        Game.create(["Player1"], "testgameId");
       }).toThrow("This Game must have between 2 and 6 players");
     });
 
     it("should reject games with more than 6 players", () => {
       expect(() => {
-        Game.create(["1", "2", "3", "4", "5", "6", "7"]);
+        Game.create(["1", "2", "3", "4", "5", "6", "7"], "testgameId");
       }).toThrow("This Game must have between 2 and 6 players");
     });
   });

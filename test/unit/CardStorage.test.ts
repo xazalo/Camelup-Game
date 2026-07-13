@@ -134,7 +134,7 @@ describe("CardStorage", () => {
         "Player3",
         "Player4",
         "Player5",
-      ]);
+      ], "testgameId");
 
       const green = game.board.findCamelByColor(Colors.Green);
 
