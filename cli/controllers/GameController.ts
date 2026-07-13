@@ -12,9 +12,9 @@ export default class GameController {
    * Takes the names of the players, create a game, and define the initial position of the camels.
    * @param playerNames
    */
-  startGame(playerNames: string[]): string {
+  startGame(playerNames: string[], id: string): string {
     try {
-      this.game = Game.create(playerNames);
+      this.game = Game.create(playerNames, id);
       return "Game started";
     } catch (error: unknown) {
       return error instanceof Error ? error.message : "Unknown error";

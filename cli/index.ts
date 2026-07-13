@@ -1,12 +1,9 @@
-//@ts-expect-error
 import readline from "node:readline";
 import { GameController, HelpController } from "./controllers/index.js";
 import { parseCommand } from "./parseCommand.js";
 
 const rl = readline.createInterface({
-  //@ts-expect-error
   input: process.stdin,
-  //@ts-expect-error
   output: process.stdout,
 });
 
