@@ -9,7 +9,6 @@ import {
   Card,
 } from "./index.js";
 import {
-  createRandomId,
   generatePayoutTable,
 } from "../../cli/helpers/index.js";
 import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";

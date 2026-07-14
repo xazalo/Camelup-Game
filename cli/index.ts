@@ -1,6 +1,7 @@
 import readline from "node:readline";
 import { GameController, HelpController } from "./controllers/index.js";
 import { parseCommand } from "./parseCommand.js";
+import createRandomId from "./helpers/createRandomId.js";
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -14,10 +15,11 @@ console.log("CLI ready. Use help for see commands");
 
 rl.on("line", (input: string) => {
   const command = parseCommand(input);
+  const gameId = createRandomId();
 
   switch (command.type) {
     case "start":
-      console.log(gameController.startGame(command.players));
+      console.log(gameController.startGame(command.players, gameId));
       break;
 
     case "rollTheDice":
