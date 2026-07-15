@@ -37,6 +37,7 @@ export default class Round {
       //? Whatever it's better to keep it without register it, probably don't needed.
       board.moveCamel(color, value);
     }
+    this.dicePool.reset();
   }
 
   /**

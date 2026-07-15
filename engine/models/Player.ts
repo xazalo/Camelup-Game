@@ -1,4 +1,4 @@
-import { Card } from "./index.js";
+import { Card, AvailableActions } from "./index.js";
 
 /**
  * This class is a representation of the player across the game
@@ -15,12 +15,14 @@ export default class Player {
   money: number;
   cards: Card[];
   placedTile: boolean;
+  availableActions: AvailableActions
 
   constructor(name: string) {
     this.name = name;
     this.money = 3;
     this.cards = [];
     this.placedTile = false;
+    this.availableActions = new AvailableActions();
   }
 
   /**
@@ -35,6 +37,7 @@ export default class Player {
    */
   placeTile() {
     this.placedTile = true;
+    this.availableActions.switchPlaceTile();
   }
 
   /**

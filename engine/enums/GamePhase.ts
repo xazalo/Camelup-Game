@@ -1,9 +1,6 @@
 enum GamePhase {
   Setup,
-  RollingDice,
-  Betting,
-  MovingCamels,
-  RoundEnd,
+  Playing,
   Finished,
 }
 

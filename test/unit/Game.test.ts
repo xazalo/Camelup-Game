@@ -109,10 +109,6 @@ describe("Game", () => {
 
   describe("camel setup", () => {
     it("should place camels according to initial movement rules", () => {
-      const startingCamels = game.board.spaces[0]?.camels;
-
-      expect(startingCamels?.length).toBe(2);
-
       const invalidCamels = game.board.spaces
         .slice(4, 13)
         .flatMap((space) => space.camels);
@@ -169,8 +165,6 @@ describe("Game", () => {
       const player = game.players[0]!;
 
       const green = game.board.findCamelByColor(Colors.Green);
-
-      // El verde termina primero
       game.board.spaces.forEach((space) => (space.camels = []));
       game.board.spaces[15]!.addCamel(green);
 

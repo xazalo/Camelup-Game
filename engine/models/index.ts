@@ -10,7 +10,7 @@ import Dice from "./Dice.js";
 import DicePool from "./DicePool.js";
 import Round from "./Round.js";
 import Game from "./Game.js";
-
+import AvailableActions from "./AvailableActions.js";
 export {
   Player,
   Turn,
@@ -24,4 +24,5 @@ export {
   DicePool,
   Round,
   Game,
+  AvailableActions
 };

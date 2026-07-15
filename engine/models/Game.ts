@@ -8,11 +8,10 @@ import {
   Camel,
   Card,
 } from "./index.js";
-import {
-  generatePayoutTable,
-} from "../../cli/helpers/index.js";
+import { generatePayoutTable } from "../../cli/helpers/index.js";
 import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
+
 
 export default class Game {
   id: string;
@@ -65,6 +64,7 @@ export default class Game {
 
     game.board.createCamels();
     round.prepareInitialMoves(board);
+    game.phase = GamePhase.Playing
 
     return game;
   }
@@ -258,6 +258,7 @@ export default class Game {
       throw new Error("Player not found");
     }
 
+    this.players[playerIndex]?.availableActions.switchWinnerBet(camel.color);
     this.cardStorage.addWinner(playerName, camel.color.toString());
   }
 
@@ -274,6 +275,7 @@ export default class Game {
       throw new Error("Player not found");
     }
 
+    this.players[playerIndex]?.availableActions.switchLoserBet(camel.color);
     this.cardStorage.addLoser(playerName, camel.color.toString());
   }
 
@@ -332,6 +334,12 @@ export default class Game {
     //calculate round incomes
     this.calculateRoundIncomes();
     this.addRound();
+    this.cardStorage.resetStoredCards();
+
+    const playersLength = this.players.length - 1;
+    for(let i = 0; i < playersLength; i++) {
+      this.players[playersLength]?.resetCardStorage();
+    } 
     //pass the player from first position to last one
   }
 
@@ -345,6 +353,12 @@ export default class Game {
     this.calculateGameIncomes();
     //Change the game phase
     this.phase = GamePhase.Finished;
+
+    const playersLength = this.players.length - 1;
+
+    for (let i = 0; i < playersLength; i++) {
+      this.players[i]?.availableActions.switchRollDice();
+    }
   }
 
   /**
