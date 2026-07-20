@@ -78,7 +78,8 @@ describe("GameController", () => {
     it("should throw error if the player already have a tile placed", () => {
       gameController.startGame(["John", "Doe"], "testgameId");
       gameController.placeTile("John", 1, 1);
-      const result = gameController.placeTile("John", 2, 1);
+      gameController.placeTile("Doe", 2, 1)
+      const result = gameController.placeTile("John", 4, 1);
       expect(result).toBe("Tile already placed");
     });
   });

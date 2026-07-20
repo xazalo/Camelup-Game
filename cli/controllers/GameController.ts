@@ -8,122 +8,120 @@ import { TileType } from "../../engine/enums/TileType.js";
 export default class GameController {
   game: Game | null = null;
 
-  /**
-   * Takes the names of the players, create a game, and define the initial position of the camels.
-   * @param playerNames
-   */
+  private debug<T>(response: T): T {
+    console.log("[GameController]", response);
+    return response;
+  }
+
   startGame(playerNames: string[], id: string): string {
     try {
       this.game = Game.create(playerNames, id);
-      return "Game started";
+      return this.debug("Game started");
     } catch (error: unknown) {
-      return error instanceof Error ? error.message : "Unknown error";
+      return this.debug(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
-  /**
-   * Return the state of the game.
-   */
   getState() {
     try {
-      return this.game;
+      return this.debug(this.game);
     } catch (error: unknown) {
-      return error instanceof Error ? error.message : "Unknown error";
+      return this.debug(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
-  /**
-   * This function place a tile card
-   */
   placeTile(playerName: string, position: number, tileType: TileType) {
     if (!this.game) {
-      return "Game not started";
+      return this.debug("Game not started");
     }
 
     try {
       this.game.placeTile(playerName, position, tileType);
-      return "Tile placed";
+      return this.debug("Tile placed");
     } catch (error: unknown) {
-      return error instanceof Error ? error.message : "Unknown error";
+      return this.debug(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
-  /**
-   * Roll the dice and moves camels across the board
-   */
+
   rollTheDice(playerName: string) {
-    if (!this.game) return "Game not started";
+    if (!this.game) return this.debug("Game not started");
 
     try {
       this.game.rollDice(playerName);
-      return "Dice rolled successfully";
+      return this.debug("Dice rolled successfully");
     } catch (error) {
-      return error instanceof Error ? error.message : "Unknown error";
+      return this.debug(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
-  /**
-   * Place a bet for the camel that will win the game
-   */
   placeWinnerBet(playerName: string, camelColor: Colors): string {
     if (!this.game) {
-      return "Game not started";
+      return this.debug("Game not started");
     }
 
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
       if (!camel) {
-        return "Camel not found";
+        return this.debug("Camel not found");
       }
 
       this.game.placeWinnerBet(playerName, camel);
-      return "Winner bet placed";
+      return this.debug("Winner bet placed");
     } catch (error: unknown) {
-      return error instanceof Error ? error.message : "Unknown error";
+      return this.debug(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
-  /**
-   * Place a bet for the camel that will lose the game
-   */
   placeLoserBet(playerName: string, camelColor: Colors): string {
     if (!this.game) {
-      return "Game not started";
+      return this.debug("Game not started");
     }
 
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
       if (!camel) {
-        return "Camel not found";
+        return this.debug("Camel not found");
       }
 
       this.game.placeLoserBet(playerName, camel);
-      return "Loser bet placed";
+      return this.debug("Loser bet placed");
     } catch (error: unknown) {
-      return error instanceof Error ? error.message : "Unknown error";
+      return this.debug(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 
-  /**
-   * Place a bet for the winner of the current round
-   */
   takeRoundBet(playerName: string, camelColor: Colors): string {
     if (!this.game) {
-      return "Game not started";
+      return this.debug("Game not started");
     }
 
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
       if (!camel) {
-        return "Camel not found";
+        return this.debug("Camel not found");
       }
 
       this.game.takeRoundBet(playerName, camel);
-      return "Round bet placed";
+      return this.debug("Round bet placed");
     } catch (error: unknown) {
-      return error instanceof Error ? error.message : "Unknown error";
+      return this.debug(
+        error instanceof Error ? error.message : "Unknown error"
+      );
     }
   }
 }

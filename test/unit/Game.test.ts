@@ -177,7 +177,7 @@ describe("Game", () => {
       expect(player.money).toBe(8);
     });
 
-    it("should pay 3 coins for a second place card", () => {
+    it("should pay 1 coins for a second place card", () => {
       const player = game.players[0]!;
 
       const green = game.board.findCamelByColor(Colors.Green);
@@ -194,7 +194,7 @@ describe("Game", () => {
 
       game.endRound();
 
-      expect(player.money).toBe(6);
+      expect(player.money).toBe(4);
     });
 
     it("should lose one coin when the camel finishes fourth", () => {

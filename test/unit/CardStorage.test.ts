@@ -72,7 +72,6 @@ describe("CardStorage", () => {
     storage.resetStoredCards();
 
     expect(storage.hasWinnerCardPlaced("Player1", "red")).toBe(true);
-
     expect(storage.hasLoserCardPlaced("Player2", "blue")).toBe(true);
   });
 
@@ -83,8 +82,14 @@ describe("CardStorage", () => {
 
       const winners = storage.getWinnerCards();
 
-      expect(winners.yellow).toEqual(["Player1"]);
-      expect(winners.red).toEqual(["Player2"]);
+      expect(winners.yellow).toEqual([
+        { player: "Player1", order: 0 },
+      ]);
+
+      expect(winners.red).toEqual([
+        { player: "Player2", order: 1 },
+      ]);
+
       expect(winners.green).toEqual([]);
       expect(winners.blue).toEqual([]);
     });
@@ -95,9 +100,9 @@ describe("CardStorage", () => {
       storage.addWinner("Player3", "yellow");
 
       expect(storage.getWinnerCards().yellow).toEqual([
-        "Player1",
-        "Player2",
-        "Player3",
+        { player: "Player1", order: 0 },
+        { player: "Player2", order: 1 },
+        { player: "Player3", order: 2 },
       ]);
     });
   });
@@ -109,8 +114,14 @@ describe("CardStorage", () => {
 
       const losers = storage.getLoserCards();
 
-      expect(losers.green).toEqual(["Player1"]);
-      expect(losers.blue).toEqual(["Player2"]);
+      expect(losers.green).toEqual([
+        { player: "Player1", order: 0 },
+      ]);
+
+      expect(losers.blue).toEqual([
+        { player: "Player2", order: 1 },
+      ]);
+
       expect(losers.yellow).toEqual([]);
       expect(losers.red).toEqual([]);
     });
@@ -121,20 +132,23 @@ describe("CardStorage", () => {
       storage.addLoser("Player3", "red");
 
       expect(storage.getLoserCards().red).toEqual([
-        "Player1",
-        "Player2",
-        "Player3",
+        { player: "Player1", order: 0 },
+        { player: "Player2", order: 1 },
+        { player: "Player3", order: 2 },
       ]);
     });
 
     it("should pay 8, 5, 3 and 2 coins for multiple correct winner bets", () => {
-      const game = Game.create([
-        "Player1",
-        "Player2",
-        "Player3",
-        "Player4",
-        "Player5",
-      ], "testgameId");
+      const game = Game.create(
+        [
+          "Player1",
+          "Player2",
+          "Player3",
+          "Player4",
+          "Player5",
+        ],
+        "testgameId",
+      );
 
       const green = game.board.findCamelByColor(Colors.Green);
 
@@ -144,16 +158,21 @@ describe("CardStorage", () => {
       game.placeWinnerBet("Player4", green);
       game.placeWinnerBet("Player5", green);
 
-      game.board.spaces.forEach((space: Stack) => (space.camels = [] ));
+      const initialMoney = game.players.map((p) => p.money);
+
+      game.board.spaces.forEach((space: Stack) => {
+        space.camels = [];
+      });
+
       game.board.spaces[15]!.addCamel(green);
 
       game.endGame();
 
-      expect(game.players[0]!.money).toBe(11); // +8
-      expect(game.players[1]!.money).toBe(8); // +5
-      expect(game.players[2]!.money).toBe(6); // +3
-      expect(game.players[3]!.money).toBe(5); // +2
-      expect(game.players[4]!.money).toBe(5); // +2
+      expect(game.players[0]!.money - initialMoney[0]!).toBe(8);
+      expect(game.players[1]!.money - initialMoney[1]!).toBe(5);
+      expect(game.players[2]!.money - initialMoney[2]!).toBe(3);
+      expect(game.players[3]!.money - initialMoney[3]!).toBe(2);
+      expect(game.players[4]!.money - initialMoney[4]!).toBe(2);
     });
   });
 });
