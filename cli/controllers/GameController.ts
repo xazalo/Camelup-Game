@@ -68,9 +68,11 @@ export default class GameController {
       body: JSON.stringify(this.getState()),
     });
 
-    const { action } = await response.json();
+    const data = await response.json();
 
-    await this.executeAIAction(action);
+    console.log("AI response body:", data);
+
+    await this.executeAIAction(data.action_name);
   }
 
   async placeTile(playerName: string, position: number, tileType: TileType) {
@@ -196,64 +198,79 @@ export default class GameController {
 
     switch (action) {
       case "ROLL_DICE":
+        console.log(player.name, "ROLL_DICE");
         await this.rollTheDice(player.name);
         break;
 
       case "TAKE_ROUND_BET_GREEN":
+        console.log(player.name, "TAKE_ROUND_BET_GREEN");
         await this.takeRoundBet(player.name, Colors.Green);
         break;
 
       case "TAKE_ROUND_BET_BLUE":
+        console.log(player.name, "TAKE_ROUND_BET_BLUE");
         await this.takeRoundBet(player.name, Colors.Blue);
         break;
 
       case "TAKE_ROUND_BET_RED":
+        console.log(player.name, "TAKE_ROUND_BET_RED");
         await this.takeRoundBet(player.name, Colors.Red);
         break;
 
       case "TAKE_ROUND_BET_YELLOW":
+        console.log(player.name, "TAKE_ROUND_BET_YELLOW");
         await this.takeRoundBet(player.name, Colors.Yellow);
         break;
 
       case "PLACE_WINNER_GREEN":
+        console.log(player.name, "PLACE_WINNER_GREEN");
         await this.placeWinnerBet(player.name, Colors.Green);
         break;
 
       case "PLACE_WINNER_BLUE":
+        console.log(player.name, "PLACE_WINNER_BLUE");
         await this.placeWinnerBet(player.name, Colors.Blue);
         break;
 
       case "PLACE_WINNER_RED":
+        console.log(player.name, "PLACE_WINNER_RED");
         await this.placeWinnerBet(player.name, Colors.Red);
         break;
 
       case "PLACE_WINNER_YELLOW":
+        console.log(player.name, "PLACE_WINNER_YELLOW");
         await this.placeWinnerBet(player.name, Colors.Yellow);
         break;
 
       case "PLACE_LOSER_GREEN":
+        console.log(player.name, "PLACE_LOSER_GREEN");
         await this.placeLoserBet(player.name, Colors.Green);
         break;
 
       case "PLACE_LOSER_BLUE":
+        console.log(player.name, "PLACE_LOSER_BLUE");
         await this.placeLoserBet(player.name, Colors.Blue);
         break;
 
       case "PLACE_LOSER_RED":
+        console.log(player.name, "PLACE_LOSER_RED");
         await this.placeLoserBet(player.name, Colors.Red);
         break;
 
       case "PLACE_LOSER_YELLOW":
+        console.log(player.name, "PLACE_LOSER_YELLOW");
         await this.placeLoserBet(player.name, Colors.Yellow);
         break;
 
       case "PLACE_OASIS": {
+        console.log(player.name, "PLACE_OASIS");
         const position = Math.floor(Math.random() * 15) + 1;
         await this.placeTile(player.name, position, TileType.Oasis);
         break;
       }
 
       case "PLACE_MIRAGE": {
+        console.log(player.name, "PLACE_MIRAGE");
         const position = Math.floor(Math.random() * 15) + 1;
         await this.placeTile(player.name, position, TileType.Mirage);
         break;
