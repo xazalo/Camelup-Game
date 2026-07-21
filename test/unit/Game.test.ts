@@ -9,8 +9,13 @@ import GamePhase from "../../engine/enums/GamePhase.js";
 describe("Game", () => {
   let game: Game;
 
+  const players = [
+    { name: "Player1", isAI: false },
+    { name: "Player2", isAI: false },
+  ];
+
   beforeEach(() => {
-    game = Game.create(["Player1", "Player2"], "testgameId");
+    game = Game.create(players, "testgameId");
   });
 
   describe("create", () => {
@@ -21,13 +26,24 @@ describe("Game", () => {
 
     it("should reject games with less than 2 players", () => {
       expect(() => {
-        Game.create(["Player1"], "testgameId");
+        Game.create([{name: "Player1", isAI: false}], "testgameId");
       }).toThrow("This Game must have between 2 and 6 players");
     });
 
     it("should reject games with more than 6 players", () => {
       expect(() => {
-        Game.create(["1", "2", "3", "4", "5", "6", "7"], "testgameId");
+        Game.create(
+          [
+            { name: "Player1", isAI: false },
+            { name: "Player2", isAI: false },
+            { name: "Player3", isAI: false },
+            { name: "Player4", isAI: false },
+            { name: "Player5", isAI: false },
+            { name: "Player6", isAI: false },
+            { name: "Player7", isAI: false },
+          ],
+          "testgameId",
+        );
       }).toThrow("This Game must have between 2 and 6 players");
     });
   });

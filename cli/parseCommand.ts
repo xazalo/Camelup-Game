@@ -1,8 +1,9 @@
 import { TileType } from "../engine/enums/index.js";
 import { Colors } from "../engine/enums/index.js";
+import { type PlayerConfig } from "../engine/types/PlayerConfig.js";
 
 export type Command =
-  | { type: "start"; players: string[] }
+  | { type: "start"; players: PlayerConfig[] }
   | { type: "rollTheDice"; playerName: string }
   | { type: "state" }
   | {
@@ -37,9 +38,22 @@ export function parseCommand(input: string): Command {
   const cmd = parts[0];
 
   if (cmd === "start") {
+    const players: PlayerConfig[] = parts.slice(1).map((player) => {
+      const [name, type] = player.split(":");
+
+      if (!name) {
+        throw new Error("Invalid player format");
+      }
+
+      return {
+        name,
+        isAI: type?.toLowerCase() === "ai",
+      };
+    });
+
     return {
       type: "start",
-      players: parts.slice(1),
+      players,
     };
   }
 

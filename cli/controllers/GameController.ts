@@ -1,6 +1,7 @@
 import { Colors } from "../../engine/enums/index.js";
 import { Game } from "../../engine/models/index.js";
 import { TileType } from "../../engine/enums/TileType.js";
+import { type PlayerConfig } from "../../engine/types/PlayerConfig.js";
 
 /**
  * This class creates a controller for the game cli orders
@@ -24,9 +25,9 @@ export default class GameController {
     return Date.now() - this.lastActivity > timeout;
   }
 
-  startGame(playerNames: string[], id: string): string {
+  startGame(players: PlayerConfig[], id: string): string {
     try {
-      this.game = Game.create(playerNames, id);
+      this.game = Game.create(players, id);
       this.touch();
 
       return this.debug("Game started");

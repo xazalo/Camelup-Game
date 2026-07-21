@@ -8,6 +8,7 @@ import { Card, AvailableActions } from "./index.js";
  * @param {tiles} Tile[], The player should put a special card for making the
  *                        camels advance or going back instead. This is a
  *                        register of the card position.
+ * @param {isAI} boolean Represents if the player isAI or not.
  */
 
 export default class Player {
@@ -15,14 +16,16 @@ export default class Player {
   money: number;
   cards: Card[];
   placedTile: boolean;
-  availableActions: AvailableActions
+  availableActions: AvailableActions;
+  isAI: boolean;
 
-  constructor(name: string) {
+  constructor(name: string, isAI: boolean) {
     this.name = name;
     this.money = 3;
     this.cards = [];
     this.placedTile = false;
     this.availableActions = new AvailableActions();
+    this.isAI = isAI;
   }
 
   /**
@@ -30,6 +33,13 @@ export default class Player {
    */
   updateMoney(amount: number) {
     this.money = this.money + amount;
+  }
+
+  /**
+   * Switch if the player is AI
+   */
+  switchAI() {
+    this.isAI = !this.isAI;
   }
 
   /**

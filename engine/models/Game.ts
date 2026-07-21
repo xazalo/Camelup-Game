@@ -11,12 +11,12 @@ import {
 import { generatePayoutTable } from "../../cli/helpers/index.js";
 import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
+import { type PlayerConfig } from "../types/index.js";
 
 type Bet = {
   player: string;
   order: number;
 };
-
 
 export default class Game {
   id: string;
@@ -52,21 +52,25 @@ export default class Game {
     this.cardStorage = cardStorage;
   }
 
-  static create(playerNames: string[], id: string) {
-    if (playerNames.length < 2 || playerNames.length > 6) {
+  static create(playersConfig: PlayerConfig[], id: string) {
+    if (playersConfig.length < 2 || playersConfig.length > 6) {
       throw new Error("This Game must have between 2 and 6 players");
     }
 
     const board = new Board(16);
     const storage = new CardStorage();
-    const players = playerNames.map((name) => new Player(name));
+
+    const players = playersConfig.map(
+      ({ name, isAI }) => new Player(name, isAI),
+    );
+
     const round = new Round();
 
     const game = new Game(id, board, players, [round], storage);
 
     game.board.createCamels();
     round.prepareInitialMoves(board);
-    game.phase = GamePhase.Playing
+    game.phase = GamePhase.Playing;
 
     return game;
   }
@@ -178,45 +182,43 @@ export default class Game {
   }
 
   private payGameBets(
-  bets: {
-    yellow: Bet[];
-    green: Bet[];
-    blue: Bet[];
-    red: Bet[];
-  },
-  correctColor: Colors,
-): void {
-  const payouts = [8, 5, 3];
+    bets: {
+      yellow: Bet[];
+      green: Bet[];
+      blue: Bet[];
+      red: Bet[];
+    },
+    correctColor: Colors,
+  ): void {
+    const payouts = [8, 5, 3];
 
-  const orderedBets = Object.entries(bets)
-    .flatMap(([color, entries]) =>
-      entries.map((bet) => ({
-        color: color as Colors,
-        ...bet,
-      })),
-    )
-    .sort((a, b) => a.order - b.order);
+    const orderedBets = Object.entries(bets)
+      .flatMap(([color, entries]) =>
+        entries.map((bet) => ({
+          color: color as Colors,
+          ...bet,
+        })),
+      )
+      .sort((a, b) => a.order - b.order);
 
-  let correctCount = 0;
+    let correctCount = 0;
 
-  for (const bet of orderedBets) {
-    const player = this.players.find((p) => p.name === bet.player);
+    for (const bet of orderedBets) {
+      const player = this.players.find((p) => p.name === bet.player);
 
-    if (!player) continue;
+      if (!player) continue;
 
-    if (bet.color === correctColor) {
-      player.updateMoney(
-        correctCount < payouts.length
-          ? payouts[correctCount]!
-          : 2,
-      );
+      if (bet.color === correctColor) {
+        player.updateMoney(
+          correctCount < payouts.length ? payouts[correctCount]! : 2,
+        );
 
-      correctCount++;
-    } else {
-      player.updateMoney(-1);
+        correctCount++;
+      } else {
+        player.updateMoney(-1);
+      }
     }
   }
-}
 
   placeWinnerBet(playerName: string, camel: Camel): void {
     this.ensureGameIsActive();
