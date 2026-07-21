@@ -8,18 +8,31 @@ import { TileType } from "../../engine/enums/TileType.js";
 export default class GameController {
   game: Game | null = null;
 
+  private readonly createdAt = Date.now();
+  private lastActivity = Date.now();
+
   private debug<T>(response: T): T {
     console.log("[GameController]", response);
     return response;
   }
 
+  touch(): void {
+    this.lastActivity = Date.now();
+  }
+
+  isInactive(timeout = 10 * 60 * 1000): boolean {
+    return Date.now() - this.lastActivity > timeout;
+  }
+
   startGame(playerNames: string[], id: string): string {
     try {
       this.game = Game.create(playerNames, id);
+      this.touch();
+
       return this.debug("Game started");
     } catch (error: unknown) {
       return this.debug(
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -29,7 +42,7 @@ export default class GameController {
       return this.debug(this.game);
     } catch (error: unknown) {
       return this.debug(
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -41,23 +54,29 @@ export default class GameController {
 
     try {
       this.game.placeTile(playerName, position, tileType);
+      this.touch();
+
       return this.debug("Tile placed");
     } catch (error: unknown) {
       return this.debug(
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
 
   rollTheDice(playerName: string) {
-    if (!this.game) return this.debug("Game not started");
+    if (!this.game) {
+      return this.debug("Game not started");
+    }
 
     try {
       this.game.rollDice(playerName);
+      this.touch();
+
       return this.debug("Dice rolled successfully");
     } catch (error) {
       return this.debug(
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -75,10 +94,12 @@ export default class GameController {
       }
 
       this.game.placeWinnerBet(playerName, camel);
+      this.touch();
+
       return this.debug("Winner bet placed");
     } catch (error: unknown) {
       return this.debug(
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -96,10 +117,12 @@ export default class GameController {
       }
 
       this.game.placeLoserBet(playerName, camel);
+      this.touch();
+
       return this.debug("Loser bet placed");
     } catch (error: unknown) {
       return this.debug(
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -117,10 +140,12 @@ export default class GameController {
       }
 
       this.game.takeRoundBet(playerName, camel);
+      this.touch();
+
       return this.debug("Round bet placed");
     } catch (error: unknown) {
       return this.debug(
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
