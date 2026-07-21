@@ -6,7 +6,7 @@ describe("Player", () => {
   let player: Player;
 
   beforeEach(() => {
-    player = new Player("John");
+    player = new Player("John", false);
   });
 
   it("should update money", () => {
