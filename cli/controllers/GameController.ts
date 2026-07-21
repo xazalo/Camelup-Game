@@ -2,6 +2,7 @@ import { Colors } from "../../engine/enums/index.js";
 import { Game } from "../../engine/models/index.js";
 import { TileType } from "../../engine/enums/TileType.js";
 import { type PlayerConfig } from "../../engine/types/PlayerConfig.js";
+import { predict } from "../../server/services/index.js";
 
 /**
  * This class creates a controller for the game cli orders
@@ -25,10 +26,12 @@ export default class GameController {
     return Date.now() - this.lastActivity > timeout;
   }
 
-  startGame(players: PlayerConfig[], id: string): string {
+  async startGame(players: PlayerConfig[], id: string): Promise<string> {
     try {
       this.game = Game.create(players, id);
       this.touch();
+
+      await this.checkAIPlayer();
 
       return this.debug("Game started");
     } catch (error: unknown) {
@@ -48,7 +51,29 @@ export default class GameController {
     }
   }
 
-  placeTile(playerName: string, position: number, tileType: TileType) {
+  private async checkAIPlayer(): Promise<void> {
+    if (!this.game) return;
+
+    const currentPlayer = this.game.players[this.game.currentPlayer];
+
+    if (!currentPlayer?.isAI) {
+      return;
+    }
+
+    const response = await fetch("http://localhost:8000/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(this.getState()),
+    });
+
+    const { action } = await response.json();
+
+    await this.executeAIAction(action);
+  }
+
+  async placeTile(playerName: string, position: number, tileType: TileType) {
     if (!this.game) {
       return this.debug("Game not started");
     }
@@ -56,6 +81,8 @@ export default class GameController {
     try {
       this.game.placeTile(playerName, position, tileType);
       this.touch();
+
+      await this.checkAIPlayer();
 
       return this.debug("Tile placed");
     } catch (error: unknown) {
@@ -65,7 +92,7 @@ export default class GameController {
     }
   }
 
-  rollTheDice(playerName: string) {
+  async rollTheDice(playerName: string) {
     if (!this.game) {
       return this.debug("Game not started");
     }
@@ -73,6 +100,8 @@ export default class GameController {
     try {
       this.game.rollDice(playerName);
       this.touch();
+
+      await this.checkAIPlayer();
 
       return this.debug("Dice rolled successfully");
     } catch (error) {
@@ -82,7 +111,10 @@ export default class GameController {
     }
   }
 
-  placeWinnerBet(playerName: string, camelColor: Colors): string {
+  async placeWinnerBet(
+    playerName: string,
+    camelColor: Colors,
+  ): Promise<string> {
     if (!this.game) {
       return this.debug("Game not started");
     }
@@ -97,6 +129,8 @@ export default class GameController {
       this.game.placeWinnerBet(playerName, camel);
       this.touch();
 
+      await this.checkAIPlayer();
+
       return this.debug("Winner bet placed");
     } catch (error: unknown) {
       return this.debug(
@@ -105,7 +139,7 @@ export default class GameController {
     }
   }
 
-  placeLoserBet(playerName: string, camelColor: Colors): string {
+  async placeLoserBet(playerName: string, camelColor: Colors): Promise<string> {
     if (!this.game) {
       return this.debug("Game not started");
     }
@@ -120,6 +154,8 @@ export default class GameController {
       this.game.placeLoserBet(playerName, camel);
       this.touch();
 
+      await this.checkAIPlayer();
+
       return this.debug("Loser bet placed");
     } catch (error: unknown) {
       return this.debug(
@@ -128,7 +164,7 @@ export default class GameController {
     }
   }
 
-  takeRoundBet(playerName: string, camelColor: Colors): string {
+  async takeRoundBet(playerName: string, camelColor: Colors): Promise<string> {
     if (!this.game) {
       return this.debug("Game not started");
     }
@@ -143,11 +179,88 @@ export default class GameController {
       this.game.takeRoundBet(playerName, camel);
       this.touch();
 
+      await this.checkAIPlayer();
+
       return this.debug("Round bet placed");
     } catch (error: unknown) {
       return this.debug(
         error instanceof Error ? error.message : "Unknown error",
       );
+    }
+  }
+
+  private async executeAIAction(action: string): Promise<void> {
+    if (!this.game) return;
+
+    const player = this.game.players[this.game.currentPlayer]!;
+
+    switch (action) {
+      case "ROLL_DICE":
+        await this.rollTheDice(player.name);
+        break;
+
+      case "TAKE_ROUND_BET_GREEN":
+        await this.takeRoundBet(player.name, Colors.Green);
+        break;
+
+      case "TAKE_ROUND_BET_BLUE":
+        await this.takeRoundBet(player.name, Colors.Blue);
+        break;
+
+      case "TAKE_ROUND_BET_RED":
+        await this.takeRoundBet(player.name, Colors.Red);
+        break;
+
+      case "TAKE_ROUND_BET_YELLOW":
+        await this.takeRoundBet(player.name, Colors.Yellow);
+        break;
+
+      case "PLACE_WINNER_GREEN":
+        await this.placeWinnerBet(player.name, Colors.Green);
+        break;
+
+      case "PLACE_WINNER_BLUE":
+        await this.placeWinnerBet(player.name, Colors.Blue);
+        break;
+
+      case "PLACE_WINNER_RED":
+        await this.placeWinnerBet(player.name, Colors.Red);
+        break;
+
+      case "PLACE_WINNER_YELLOW":
+        await this.placeWinnerBet(player.name, Colors.Yellow);
+        break;
+
+      case "PLACE_LOSER_GREEN":
+        await this.placeLoserBet(player.name, Colors.Green);
+        break;
+
+      case "PLACE_LOSER_BLUE":
+        await this.placeLoserBet(player.name, Colors.Blue);
+        break;
+
+      case "PLACE_LOSER_RED":
+        await this.placeLoserBet(player.name, Colors.Red);
+        break;
+
+      case "PLACE_LOSER_YELLOW":
+        await this.placeLoserBet(player.name, Colors.Yellow);
+        break;
+
+      case "PLACE_OASIS": {
+        const position = Math.floor(Math.random() * 15) + 1;
+        await this.placeTile(player.name, position, TileType.Oasis);
+        break;
+      }
+
+      case "PLACE_MIRAGE": {
+        const position = Math.floor(Math.random() * 15) + 1;
+        await this.placeTile(player.name, position, TileType.Mirage);
+        break;
+      }
+
+      default:
+        throw new Error(`Unknown AI action: ${action}`);
     }
   }
 }
