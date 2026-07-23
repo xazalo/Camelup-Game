@@ -7,23 +7,44 @@ export default function joinLobby(
   manager: GameManager,
 ) {
   socket.on("joinLobby", ({ gameId, playerName }) => {
-    const lobby = manager.getLobby(gameId);
+    try {
+      const lobby = manager.getLobby(gameId);
 
-    if (!lobby) {
-      socket.emit("error", "Lobby not found");
-      return;
+      if (!lobby) {
+        socket.emit("lobbyError", {
+          message: "Lobby not found",
+        });
+        return;
+      }
+
+      const nameExists = lobby
+        .getPlayers()
+        .some(
+          (player) => player.name.toLowerCase() === playerName.toLowerCase(),
+        );
+
+      if (nameExists) {
+        socket.emit("lobbyError", {
+          message: "A player with that name already exists",
+        });
+        return;
+      }
+
+      const result = lobby.addPlayer({
+        name: playerName,
+        isAI: false,
+      });
+
+      socket.join(gameId);
+
+      io.to(gameId).emit("lobbyUpdated", {
+        result,
+        players: lobby.getPlayers(),
+      });
+    } catch (error) {
+      socket.emit("lobbyError", {
+        message: "Could not join lobby",
+      });
     }
-
-    const result = lobby.addPlayer({
-      name: playerName,
-      isAI: false,
-    });
-
-    socket.join(gameId);
-
-    io.to(gameId).emit("lobbyUpdated", {
-      result,
-      players: lobby.getPlayers(),
-    });
   });
 }

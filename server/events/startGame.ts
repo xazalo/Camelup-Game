@@ -7,17 +7,28 @@ export default function startGame(
   manager: GameManager,
 ) {
   socket.on("startGame", async ({ gameId }) => {
-    const game = manager.startGame(gameId);
+    try {
+      const game = manager.startGame(gameId);
 
-    if (!game) {
-      socket.emit("error", "Cannot start game");
-      return;
+      if (!game) {
+        socket.emit("gameError", {
+          message: "Cannot start game",
+        });
+        return;
+      }
+
+      socket.join(gameId);
+
+      io.to(gameId).emit("gameStarted", {
+        state: game.getState(),
+      });
+
+    } catch (error) {
+      socket.emit("gameError", {
+        message: error instanceof Error
+          ? error.message
+          : "Could not start game",
+      });
     }
-
-    socket.join(gameId);
-
-    io.to(gameId).emit("gameStarted", {
-      state: game.getState(),
-    });
   });
 }

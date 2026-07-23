@@ -7,17 +7,31 @@ export default function placeLoserBet(
   manager: GameManager,
 ) {
   socket.on("placeLoserBet", ({ gameId, playerName, camelColor }) => {
-    const controller = manager.getGame(gameId);
+    try {
+      const controller = manager.getGame(gameId);
 
-    if (!controller) {
-      socket.emit("error", "Game not found");
-      return;
+      if (!controller) {
+        socket.emit("gameError", {
+          message: "Game not found",
+        });
+        return;
+      }
+
+      const result = controller.placeLoserBet(
+        playerName,
+        camelColor,
+      );
+
+      socket.emit("actionResult", result);
+
+      io.to(gameId).emit("gameState", controller.getState());
+
+    } catch (error) {
+      socket.emit("gameError", {
+        message: error instanceof Error
+          ? error.message
+          : "Could not place loser bet",
+      });
     }
-
-    const result = controller.placeLoserBet(playerName, camelColor);
-
-    socket.emit("actionResult", result);
-
-    io.to(gameId).emit("gameState", controller.getState());
   });
 }

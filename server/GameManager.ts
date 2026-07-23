@@ -1,16 +1,15 @@
 import GameController from "../cli/controllers/GameController.js";
 import createRandomId from "../cli/helpers/createRandomId.js";
 import GameLobby from "./GameLobby.js";
+import { type PlayerConfig } from "../engine/types/index.js";
 
 export default class GameManager {
   private games = new Map<string, GameController>();
   private lobbies = new Map<string, GameLobby>();
 
-  createLobby(): string {
+  createLobby(player: PlayerConfig): string {
     const gameId = createRandomId();
-
-    this.lobbies.set(gameId, new GameLobby());
-
+    this.lobbies.set(gameId, new GameLobby(player));
     return gameId;
   }
 

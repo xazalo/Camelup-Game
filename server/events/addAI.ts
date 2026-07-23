@@ -7,18 +7,34 @@ export default function addAI(
   manager: GameManager,
 ) {
   socket.on("addAI", ({ gameId }) => {
-    const lobby = manager.getLobby(gameId);
+    try {
+      const lobby = manager.getLobby(gameId);
+      const players = lobby?.getPlayers();
 
-    if (!lobby) {
-      socket.emit("error", "Lobby not found");
-      return;
+      if (players?.length! >= 6) {
+        socket.emit("lobbyError", {
+          message: "The game has the maximum number of players",
+        });
+        return;
+      }
+
+      if (!lobby) {
+        socket.emit("lobbyError", {
+          message: "Lobby not found",
+        });
+        return;
+      }
+
+      const result = lobby.addAI();
+
+      io.to(gameId).emit("lobbyUpdated", {
+        result,
+        players: lobby.getPlayers(),
+      });
+    } catch (error) {
+      socket.emit("lobbyError", {
+        message: "Could not add AI player",
+      });
     }
-
-    const result = lobby.addAI();
-
-    io.to(gameId).emit("lobbyUpdated", {
-      result,
-      players: lobby.getPlayers(),
-    });
   });
 }

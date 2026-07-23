@@ -7,17 +7,32 @@ export default function placeTile(
   manager: GameManager,
 ) {
   socket.on("placeTile", ({ gameId, playerName, position, tileType }) => {
-    const controller = manager.getGame(gameId);
+    try {
+      const controller = manager.getGame(gameId);
 
-    if (!controller) {
-      socket.emit("error", "Game not found");
-      return;
+      if (!controller) {
+        socket.emit("gameError", {
+          message: "Game not found",
+        });
+        return;
+      }
+
+      const result = controller.placeTile(
+        playerName,
+        position,
+        tileType,
+      );
+
+      socket.emit("actionResult", result);
+
+      io.to(gameId).emit("gameState", controller.getState());
+
+    } catch (error) {
+      socket.emit("gameError", {
+        message: error instanceof Error
+          ? error.message
+          : "Could not place tile",
+      });
     }
-
-    const result = controller.placeTile(playerName, position, tileType);
-
-    socket.emit("actionResult", result);
-
-    io.to(gameId).emit("gameState", controller.getState());
   });
 }

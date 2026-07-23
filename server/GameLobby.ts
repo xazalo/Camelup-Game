@@ -1,9 +1,12 @@
 import type { PlayerConfig } from "../engine/types/PlayerConfig.js";
 
 export default class GameLobby {
-  private players: PlayerConfig[] = [];
-
+  private players: PlayerConfig[];
   private lastActivity = Date.now();
+
+  constructor(player: PlayerConfig) {
+    this.players = [{ ...player }];
+  }
 
   touch(): void {
     this.lastActivity = Date.now();
@@ -18,17 +21,18 @@ export default class GameLobby {
       return "Maximum players reached";
     }
 
-    this.players.push(player);
+    if (this.players.some((p) => p.name === player.name)) {
+      return "Player already exists";
+    }
+
+    this.players.push({ ...player });
     this.touch();
 
     return "Player added";
   }
 
   addAI(): string {
-    const aiNumber =
-      this.players.filter((p) => p.isAI).length + 1;
-
-    this.touch();
+    const aiNumber = this.players.filter((p) => p.isAI).length + 1;
 
     return this.addPlayer({
       name: `AI_${aiNumber}`,
@@ -37,6 +41,6 @@ export default class GameLobby {
   }
 
   getPlayers(): PlayerConfig[] {
-    return this.players;
+    return this.players.map((player) => ({ ...player }));
   }
 }

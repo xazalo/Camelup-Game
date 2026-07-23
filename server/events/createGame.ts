@@ -7,16 +7,30 @@ export default function createGame(
   manager: GameManager,
 ) {
   socket.on("createGame", ({ players }) => {
-    const { gameId, game } = manager.createGame();
+    try {
+      const { gameId, game } = manager.createGame();
 
-    const result = game.startGame(players, gameId);
+      const gameLobby = manager.getLobby(gameId);
 
-    socket.join(gameId);
+      if(!gameLobby) {
+        socket.emit("gameError", {
+          message: "Lobby not exist"
+        })
+      }
 
-    socket.emit("gameCreated", {
-      gameId,
-      result,
-      state: game.getState(),
-    });
+      const result = game.startGame(players, gameId);
+
+      socket.join(gameId);
+
+      socket.emit("gameCreated", {
+        gameId,
+        result,
+        state: game.getState(),
+      });
+    } catch (error) {
+      socket.emit("gameError", {
+        message: "Error creating game",
+      });
+    }
   });
 }

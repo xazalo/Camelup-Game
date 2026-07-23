@@ -7,15 +7,24 @@ export default function joinGame(
   manager: GameManager,
 ) {
   socket.on("joinGame", ({ gameId }) => {
-    const controller = manager.getGame(gameId);
+    try {
+      const controller = manager.getGame(gameId);
 
-    if (!controller) {
-      socket.emit("error", "Game not found");
-      return;
+      if (!controller) {
+        socket.emit("gameError", {
+          message: "Game not found",
+        });
+        return;
+      }
+
+      socket.join(gameId);
+
+      socket.emit("gameState", controller.getState());
+
+    } catch (error) {
+      socket.emit("gameError", {
+        message: "Could not join game",
+      });
     }
-
-    socket.join(gameId);
-
-    socket.emit("gameState", controller.getState());
   });
 }
