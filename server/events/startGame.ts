@@ -9,7 +9,7 @@ export default function startGame(
   socket.on("startGame", async ({ gameId }) => {
     try {
       const game = manager.startGame(gameId);
-
+  
       if (!game) {
         socket.emit("gameError", {
           message: "Cannot start game",

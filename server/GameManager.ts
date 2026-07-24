@@ -17,18 +17,6 @@ export default class GameManager {
     return this.lobbies.get(gameId);
   }
 
-  createGame(): { gameId: string; game: GameController } {
-    const gameId = createRandomId();
-    const game = new GameController();
-
-    this.games.set(gameId, game);
-
-    return {
-      gameId,
-      game,
-    };
-  }
-
   startGame(gameId: string): GameController | undefined {
     const lobby = this.lobbies.get(gameId);
 
