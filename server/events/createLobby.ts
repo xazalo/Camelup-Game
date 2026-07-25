@@ -23,7 +23,7 @@ export default function createLobby(
       socket.join(lobbyId);
 
       socket.emit("lobbyCreated", {
-        lobbyId,
+        id: lobbyId,
         players: lobby.getPlayers(),
       });
     } catch (error) {
