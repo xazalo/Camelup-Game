@@ -13,28 +13,40 @@ export default class GameManager {
     return gameId;
   }
 
-  getLobby(gameId: string): GameLobby | undefined {
-    return this.lobbies.get(gameId);
+  getLobby(gameId: string): GameLobby | string {
+    const result = this.lobbies.get(gameId);
+    if (!result) return "cannot get the lobby";
+    return result;
   }
 
-  startGame(gameId: string): GameController | undefined {
+  startGame(gameId: string): GameController | string {
     const lobby = this.lobbies.get(gameId);
 
-    if (!lobby) return;
+    if (!lobby) return "There are no lobby";
 
     const game = new GameController();
 
     this.games.set(gameId, game);
 
-    game.startGame(lobby.getPlayers(), gameId);
+    const players = lobby.getPlayers();
+
+    if(typeof players === "string") return players
+
+    if (players.length < 2 || players.length > 6) {
+      return "players must be between 2 and 6";
+    }
+
+    game.startGame(players, gameId);
 
     this.lobbies.delete(gameId);
 
     return game;
   }
 
-  getGame(gameId: string): GameController | undefined {
-    return this.games.get(gameId);
+  getGame(gameId: string): GameController | string {
+    const result = this.games.get(gameId);
+    if(!result) return "Game not found"
+    return result;
   }
 
   touchGame(gameId: string): void {

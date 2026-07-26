@@ -8,7 +8,7 @@ const httpServer = createServer();
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "http://localhost:4173",
     methods: ["GET", "POST"],
   },
 });
@@ -20,9 +20,15 @@ io.on("connection", (socket) => {
 
   registerEvents(io, socket, manager);
 
-  socket.on("disconnect", () => {
-    console.log(`Player disconnected: ${socket.id}`);
+  socket.on("disconnect", (reason) => {
+    console.log(
+      "Player disconnected:",
+      socket.id,
+      "reason:",
+      reason
+    );
   });
+
 });
 
 httpServer.listen(3000, () => {

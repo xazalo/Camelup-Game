@@ -13,26 +13,26 @@ const helpController = new HelpController();
 
 console.log("CLI ready. Use help for see commands");
 
-rl.on("line", (input: string) => {
+rl.on("line", async (input: string) => {
   const command = parseCommand(input);
   const gameId = createRandomId();
 
   switch (command.type) {
     case "start":
-      console.log(gameController.startGame(command.players, gameId));
+      console.log(
+        await gameController.startGame(command.players, gameId),
+      );
       break;
 
     case "rollTheDice":
-      console.log(gameController.rollTheDice(command.playerName));
-      break;
-
-    case "state":
-      console.log(JSON.stringify(gameController.getState(), null, 2));
+      console.log(
+        await gameController.rollTheDice(command.playerName),
+      );
       break;
 
     case "placeTile":
       console.log(
-        gameController.placeTile(
+        await gameController.placeTile(
           command.playerName,
           command.position,
           command.tileType,
@@ -42,7 +42,7 @@ rl.on("line", (input: string) => {
 
     case "placeWinnerBet":
       console.log(
-        gameController.placeWinnerBet(
+        await gameController.placeWinnerBet(
           command.playerName,
           command.camelColor,
         ),
@@ -51,7 +51,7 @@ rl.on("line", (input: string) => {
 
     case "placeLoserBet":
       console.log(
-        gameController.placeLoserBet(
+        await gameController.placeLoserBet(
           command.playerName,
           command.camelColor,
         ),
@@ -60,11 +60,15 @@ rl.on("line", (input: string) => {
 
     case "takeRoundBet":
       console.log(
-        gameController.takeRoundBet(
+        await gameController.takeRoundBet(
           command.playerName,
           command.camelColor,
         ),
       );
+      break;
+
+    case "state":
+      console.log(gameController.getState());
       break;
 
     case "help":

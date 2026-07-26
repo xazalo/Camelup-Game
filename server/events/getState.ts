@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
+import { log } from "../../cli/helpers/logger.js";
 
 export default function getState(
   io: Server,
@@ -8,21 +9,28 @@ export default function getState(
 ) {
   socket.on("getState", ({ gameId }) => {
     try {
+      socket.emit("gameLog", log("------Getting game state------", "started"));
+
       const controller = manager.getGame(gameId);
 
-      if (!controller) {
-        socket.emit("gameError", {
-          message: "Game not found",
-        });
+      if (typeof controller === "string") {
+        socket.emit("gameLog", log(controller, "error"));
+        socket.emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
-      socket.emit("gameState", controller.getState());
+      socket.emit("gameState", manager.getGame(gameId));
 
+      socket.emit("gameLog", log("Got game state", "log"));
+      socket.emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error) {
-      socket.emit("gameError", {
-        message: "Could not get game state",
-      });
+      socket.emit(
+        "gameLog",
+        log(
+          error instanceof Error ? error.message : "Could not get game state",
+          "error",
+        ),
+      );
     }
   });
 }

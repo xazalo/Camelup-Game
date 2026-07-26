@@ -1,34 +1,38 @@
 import { Server, Socket } from "socket.io";
-import GameManager from "..//GameManager.js";
+import GameManager from "../GameManager.js";
+import { log } from "../../cli/helpers/logger.js";
 
 export default function rollTheDice(
   io: Server,
   socket: Socket,
   manager: GameManager,
 ) {
-  socket.on("rollTheDice", ({ gameId, playerName }) => {
+  socket.on("rollTheDice", async ({ gameId, playerName }) => {
     try {
+      socket.emit("gameLog", log("------Rolling the dice------", "started"));
+
       const controller = manager.getGame(gameId);
 
-      if (!controller) {
-        socket.emit("gameError", {
-          message: "Game not found",
-        });
+      if (typeof controller === "string") {
+        socket.emit("gameLog", log(controller, "error"));
         return;
       }
 
-      const result = controller.rollTheDice(playerName);
+      const result = await controller.rollTheDice(playerName);
 
-      socket.emit("actionResult", result);
+      socket.emit("gameLog", result);
 
-      io.to(gameId).emit("gameState", controller.getState());
+      io.to(gameId).emit("gameState", manager.getGame(gameId));
 
-    } catch (error) {
-      socket.emit("gameError", {
-        message: error instanceof Error
-          ? error.message
-          : "Could not roll the dice",
-      });
+      socket.emit("gameLog", log("------FINISHED------", "finished"));
+    } catch (error: unknown) {
+      socket.emit(
+        "gameLog",
+        log(
+          error instanceof Error ? error.message : "Could not roll the dice",
+          "error",
+        ),
+      );
     }
   });
 }

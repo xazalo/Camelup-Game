@@ -3,6 +3,7 @@ import { Game } from "../../engine/models/index.js";
 import { TileType } from "../../engine/enums/TileType.js";
 import { type PlayerConfig } from "../../engine/types/PlayerConfig.js";
 import { predict } from "../../server/services/index.js";
+import { log } from "../helpers/logger.js";
 
 /**
  * This class creates a controller for the game cli orders
@@ -12,11 +13,6 @@ export default class GameController {
 
   private readonly createdAt = Date.now();
   private lastActivity = Date.now();
-
-  private debug<T>(response: T): T {
-    console.log("[GameController]", response);
-    return response;
-  }
 
   touch(): void {
     this.lastActivity = Date.now();
@@ -31,84 +27,72 @@ export default class GameController {
       this.game = Game.create(players, id);
       this.touch();
 
-      await this.checkAIPlayer();
+      const aiLog = await this.checkAIPlayer();
 
-      return this.debug("Game started");
+      return `${log("Game Created", "log")}\n${aiLog}`;
     } catch (error: unknown) {
-      return this.debug(
-        error instanceof Error ? error.message : "Unknown error",
-      );
+      const message = error instanceof Error ? error.message : "Unknown error";
+      return log(message, "error");
     }
   }
 
-  getState() {
+  async getState(): Promise<{ game: Game; message: string }> {
     try {
-      return this.debug(this.game);
+      return {
+        game: this.game as Game,
+        message: log("Game successfully returned", "log"),
+      };
     } catch (error: unknown) {
-      return this.debug(
-        error instanceof Error ? error.message : "Unknown error",
-      );
+      return {
+        game: this.game as Game,
+        message: log(
+          error instanceof Error ? error.message : "Unknown error",
+          "error",
+        ),
+      };
     }
   }
 
-  private async checkAIPlayer(): Promise<void> {
-    if (!this.game) return;
-
-    const currentPlayer = this.game.players[this.game.currentPlayer];
-
-    if (!currentPlayer?.isAI) {
-      return;
-    }
-
-    const response = await fetch("http://localhost:8000/predict", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(this.getState()),
-    });
-
-    const data = await response.json();
-
-    console.log("AI response body:", data);
-
-    await this.executeAIAction(data.action_name);
-  }
-
-  async placeTile(playerName: string, position: number, tileType: TileType) {
+  async placeTile(
+    playerName: string,
+    position: number,
+    tileType: TileType,
+  ): Promise<string> {
     if (!this.game) {
-      return this.debug("Game not started");
+      return log("Game not started", "error");
     }
 
     try {
       this.game.placeTile(playerName, position, tileType);
       this.touch();
 
-      await this.checkAIPlayer();
+      const aiLog = await this.checkAIPlayer();
 
-      return this.debug("Tile placed");
+      return `${log("Tile placed at " + position + "type " + tileType, "log")}\n${aiLog}`;
     } catch (error: unknown) {
-      return this.debug(
+      return log(
         error instanceof Error ? error.message : "Unknown error",
+        "error",
       );
     }
   }
 
-  async rollTheDice(playerName: string) {
+  async rollTheDice(playerName: string): Promise<string> {
     if (!this.game) {
-      return this.debug("Game not started");
+      return log("Game not started", "error");
     }
 
     try {
       this.game.rollDice(playerName);
       this.touch();
 
-      await this.checkAIPlayer();
+      const aiLog = await this.checkAIPlayer();
 
-      return this.debug("Dice rolled successfully");
-    } catch (error) {
-      return this.debug(
+      return `${log("Dice rolled successfully", "log")}\n${aiLog}`;
+    } catch (error: unknown) {
+      return log(
         error instanceof Error ? error.message : "Unknown error",
+        "error",
       );
     }
   }
@@ -118,166 +102,170 @@ export default class GameController {
     camelColor: Colors,
   ): Promise<string> {
     if (!this.game) {
-      return this.debug("Game not started");
+      return log("Game not started", "error");
     }
 
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
       if (!camel) {
-        return this.debug("Camel not found");
+        return log("Camel not found", "error");
       }
 
       this.game.placeWinnerBet(playerName, camel);
       this.touch();
 
-      await this.checkAIPlayer();
+      const aiLog = await this.checkAIPlayer();
 
-      return this.debug("Winner bet placed");
+      return `${log("Winner bet on " + camelColor + " placed", "log")}\n${aiLog}`;
     } catch (error: unknown) {
-      return this.debug(
+      return log(
         error instanceof Error ? error.message : "Unknown error",
+        "error",
       );
     }
   }
 
   async placeLoserBet(playerName: string, camelColor: Colors): Promise<string> {
     if (!this.game) {
-      return this.debug("Game not started");
+      return log("Game not started", "error");
     }
 
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
       if (!camel) {
-        return this.debug("Camel not found");
+        return log("Camel not found", "error");
       }
 
       this.game.placeLoserBet(playerName, camel);
       this.touch();
 
-      await this.checkAIPlayer();
+      const aiLog = await this.checkAIPlayer();
 
-      return this.debug("Loser bet placed");
+      return `${log("Loser bet on " + camelColor + " placed", "log")}\n${aiLog}`;
     } catch (error: unknown) {
-      return this.debug(
+      return log(
         error instanceof Error ? error.message : "Unknown error",
+        "error",
       );
     }
   }
 
   async takeRoundBet(playerName: string, camelColor: Colors): Promise<string> {
     if (!this.game) {
-      return this.debug("Game not started");
+      return log("Game not started", "error");
+    }
+
+    const playerExists = this.game.players.some((p) => p.name === playerName);
+
+    if (!playerExists) {
+      return log(`Player ${playerName} not found`, "error");
     }
 
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
       if (!camel) {
-        return this.debug("Camel not found");
+        return log("Camel not found", "error");
       }
 
       this.game.takeRoundBet(playerName, camel);
       this.touch();
 
-      await this.checkAIPlayer();
+      const aiLog = await this.checkAIPlayer();
 
-      return this.debug("Round bet placed");
+      return `${log("Round bet on " + camelColor + " placed", "log")}\n${aiLog}`;
     } catch (error: unknown) {
-      return this.debug(
+      return log(
         error instanceof Error ? error.message : "Unknown error",
+        "error",
       );
     }
   }
 
-  private async executeAIAction(action: string): Promise<void> {
-    if (!this.game) return;
+  private async checkAIPlayer(): Promise<string> {
+    try {
+      const isAI = this.game?.players[this.game.currentPlayer]?.isAI;
+
+      if (isAI) {
+        const result = await predict(this.game!);
+        console.log(result);
+        if (!result.action_name) {
+          return log("AI agent don't respond", "error");
+        } else {
+          await this.executeAIAction(result.action_name);
+        }
+      }
+
+      return isAI ? log("AI play", "log") : log("AI not play", "log");
+    } catch (error: unknown) {
+      return log(
+        error instanceof Error ? error.message : "Unknown error",
+        "error",
+      );
+    }
+  }
+
+  private async executeAIAction(action: string): Promise<string> {
+    if (!this.game) {
+      return log("Game not started", "error");
+    }
 
     const player = this.game.players[this.game.currentPlayer]!;
 
     switch (action) {
       case "ROLL_DICE":
-        console.log(player.name, "ROLL_DICE");
-        await this.rollTheDice(player.name);
-        break;
+        return await this.rollTheDice(player.name);
 
       case "TAKE_ROUND_BET_GREEN":
-        console.log(player.name, "TAKE_ROUND_BET_GREEN");
-        await this.takeRoundBet(player.name, Colors.Green);
-        break;
+        return await this.takeRoundBet(player.name, Colors.Green);
 
       case "TAKE_ROUND_BET_BLUE":
-        console.log(player.name, "TAKE_ROUND_BET_BLUE");
-        await this.takeRoundBet(player.name, Colors.Blue);
-        break;
+        return await this.takeRoundBet(player.name, Colors.Blue);
 
       case "TAKE_ROUND_BET_RED":
-        console.log(player.name, "TAKE_ROUND_BET_RED");
-        await this.takeRoundBet(player.name, Colors.Red);
-        break;
+        return await this.takeRoundBet(player.name, Colors.Red);
 
       case "TAKE_ROUND_BET_YELLOW":
-        console.log(player.name, "TAKE_ROUND_BET_YELLOW");
-        await this.takeRoundBet(player.name, Colors.Yellow);
-        break;
+        return await this.takeRoundBet(player.name, Colors.Yellow);
 
       case "PLACE_WINNER_GREEN":
-        console.log(player.name, "PLACE_WINNER_GREEN");
-        await this.placeWinnerBet(player.name, Colors.Green);
-        break;
+        return await this.placeWinnerBet(player.name, Colors.Green);
 
       case "PLACE_WINNER_BLUE":
-        console.log(player.name, "PLACE_WINNER_BLUE");
-        await this.placeWinnerBet(player.name, Colors.Blue);
-        break;
+        return await this.placeWinnerBet(player.name, Colors.Blue);
 
       case "PLACE_WINNER_RED":
-        console.log(player.name, "PLACE_WINNER_RED");
-        await this.placeWinnerBet(player.name, Colors.Red);
-        break;
+        return await this.placeWinnerBet(player.name, Colors.Red);
 
       case "PLACE_WINNER_YELLOW":
-        console.log(player.name, "PLACE_WINNER_YELLOW");
-        await this.placeWinnerBet(player.name, Colors.Yellow);
-        break;
+        return await this.placeWinnerBet(player.name, Colors.Yellow);
 
       case "PLACE_LOSER_GREEN":
-        console.log(player.name, "PLACE_LOSER_GREEN");
-        await this.placeLoserBet(player.name, Colors.Green);
-        break;
+        return await this.placeLoserBet(player.name, Colors.Green);
 
       case "PLACE_LOSER_BLUE":
-        console.log(player.name, "PLACE_LOSER_BLUE");
-        await this.placeLoserBet(player.name, Colors.Blue);
-        break;
+        return await this.placeLoserBet(player.name, Colors.Blue);
 
       case "PLACE_LOSER_RED":
-        console.log(player.name, "PLACE_LOSER_RED");
-        await this.placeLoserBet(player.name, Colors.Red);
-        break;
+        return await this.placeLoserBet(player.name, Colors.Red);
 
       case "PLACE_LOSER_YELLOW":
-        console.log(player.name, "PLACE_LOSER_YELLOW");
-        await this.placeLoserBet(player.name, Colors.Yellow);
-        break;
+        return await this.placeLoserBet(player.name, Colors.Yellow);
 
       case "PLACE_OASIS": {
-        console.log(player.name, "PLACE_OASIS");
         const position = Math.floor(Math.random() * 15) + 1;
-        await this.placeTile(player.name, position, TileType.Oasis);
-        break;
+        return await this.placeTile(player.name, position, TileType.Oasis);
       }
 
       case "PLACE_MIRAGE": {
-        console.log(player.name, "PLACE_MIRAGE");
         const position = Math.floor(Math.random() * 15) + 1;
-        await this.placeTile(player.name, position, TileType.Mirage);
-        break;
+        return await this.placeTile(player.name, position, TileType.Mirage);
       }
 
       default:
-        throw new Error(`Unknown AI action: ${action}`);
+        return log(`Unknown AI action: ${action}`, "error");
     }
   }
 }

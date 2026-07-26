@@ -16,23 +16,23 @@ describe("GameController", () => {
   ];
 
   describe("startGame", () => {
-    it("should start a game correctly", () => {
-      const result = gameController.startGame(players, "testgameId");
+    it("should start a game correctly", async () => {
+      const result = await gameController.startGame(players, "testgameId");
 
-      expect(result).toBe("Game started");
+      expect(result).include("Game Created");
     });
 
-    it("should return an error if player amount is invalid", () => {
-      const result = gameController.startGame(
+    it("should return an error if player amount is invalid", async () => {
+      const result = await gameController.startGame(
         [{ name: "Player1", isAI: false }],
         "testgameId",
       );
 
-      expect(result).toBe("This Game must have between 2 and 6 players");
+      expect(result).include("This Game must have between 2 and 6 players");
     });
 
-    it("should return an error if there are too many players", () => {
-      const result = gameController.startGame(
+    it("should return an error if there are too many players", async () => {
+      const result = await gameController.startGame(
         [
           { name: "Player1", isAI: false },
           { name: "Player2", isAI: false },
@@ -45,157 +45,157 @@ describe("GameController", () => {
         "testgameId",
       );
 
-      expect(result).toBe("This Game must have between 2 and 6 players");
+      expect(result).include("This Game must have between 2 and 6 players");
     });
 
-    it("should expose the created game state", () => {
-      gameController.startGame(players, "testgameId");
+    it("should expose the created game state", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const state = gameController.getState();
+      const state = await gameController.getState();
       expect(state).toBeDefined();
     });
   });
 
   describe("getState", () => {
-    it("should return null if game has not started", () => {
-      const state = gameController.getState();
+    it("should return null if game has not started", async () => {
+      const state = await gameController.getState();
 
-      expect(state).toBe(null);
+      expect(state.game).toBe(null);
     });
 
-    it("should return the current game instance after starting", () => {
-      gameController.startGame(players, "testgameId");
+    it("should return the current game instance after starting", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const state = gameController.getState();
+      const state = await gameController.getState();
 
       expect(state).toBeDefined();
     });
   });
 
   describe("placeTile", () => {
-    it("should place a tile", () => {
+    it("should place a tile", async () => {
       gameController.startGame(players, "testgameId");
-      const r = gameController.placeTile("Player1", 1, 1);
-      const state = gameController.getState() as Game;
+      const r = await gameController.placeTile("Player1", 1, 1);
+      const state = await gameController.getState();
 
-      const tileType = state?.board.spaces[1]?.tile.returnTileType();
-      const hasTile = state?.board.spaces[1]?.tile.hasTile();
+      const tileType = state?.game.board.spaces[1]?.tile.returnTileType();
+      const hasTile = state?.game.board.spaces[1]?.tile.hasTile();
 
-      expect(r).toBe("Tile placed");
+      expect(r).include("Tile placed");
       expect(tileType).toBe(1);
       expect(hasTile).toBe(true);
     });
 
-    it("should throw error if the player already have a tile placed", () => {
-      gameController.startGame(players, "testgameId");
-      gameController.placeTile("Player1", 1, 1);
-      gameController.placeTile("Player2", 2, 1);
-      const result = gameController.placeTile("Player1", 4, 1);
-      expect(result).toBe("Tile already placed");
+    it("should throw error if the player already have a tile placed", async () => {
+      await gameController.startGame(players, "testgameId");
+      await gameController.placeTile("Player1", 1, 1);
+      await gameController.placeTile("Player2", 2, 1);
+      const result = await gameController.placeTile("Player1", 4, 1);
+      expect(result).include("Tile already placed");
     });
   });
 
   describe("rollTheDice", () => {
-    it("should return error if game has not started", () => {
-      const result = gameController.rollTheDice("enzo");
+    it("should return error if game has not started", async () => {
+      const result = await gameController.rollTheDice("enzo");
 
-      expect(result).toBe("Game not started");
+      expect(result).include("Game not started");
     });
 
-    it("should call the game roll action for a valid player", () => {
-      gameController.startGame(players, "testgameId");
+    it("should call the game roll action for a valid player", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const r = gameController.rollTheDice("Player1");
+      const r = await gameController.rollTheDice("Player1");
 
-      expect(r).toBe("Dice rolled successfully");
+      expect(r).include("Dice rolled successfully");
     });
 
-    it("should return an error when the player action is rejected", () => {
-      gameController.startGame(players, "testgameId");
+    it("should return an error when the player action is rejected", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const result = gameController.rollTheDice("Unknown");
+      const result = await gameController.rollTheDice("Unknown");
 
-      expect(result).toBe("Player not found");
+      expect(result).include("Player not found");
     });
   });
 
   describe("placeWinnerBet", () => {
-    it("should return error if game has not started", () => {
-      const result = gameController.placeWinnerBet("Player1", Colors.Red);
+    it("should return error if game has not started", async () => {
+      const result = await gameController.placeWinnerBet("Player1", Colors.Red);
 
-      expect(result).toBe("Game not started");
+      expect(result).include("Game not started");
     });
 
-    it("should place a winner bet correctly", () => {
-      gameController.startGame(players, "testgameId");
+    it("should place a winner bet correctly", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const result = gameController.placeWinnerBet("Player1", Colors.Red);
-
-      expect(result).toBe("Winner bet placed");
+      const result = await gameController.placeWinnerBet("Player1", Colors.Red);
+      
+      expect(result).include("placed");
     });
 
-    it("should return error if player does not exist", () => {
-      gameController.startGame(players, "testgameId");
+    it("should return error if player does not exist", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const result = gameController.placeWinnerBet("Unknown", Colors.Red);
+      const result = await gameController.placeWinnerBet("Unknown", Colors.Red);
 
-      expect(result).toBe("Player not found");
+      expect(result).include("Player not found");
     });
   });
 
   describe("placeLoserBet", () => {
-    it("should return error if game has not started", () => {
-      const result = gameController.placeLoserBet("Player1", Colors.Red);
+    it("should return error if game has not started", async () => {
+      const result = await gameController.placeLoserBet("Player1", Colors.Red);
 
-      expect(result).toBe("Game not started");
+      expect(result).includes("Game not started");
     });
 
-    it("should place a loser bet correctly", () => {
-      gameController.startGame(players, "testgameId");
+    it("should place a loser bet correctly", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const result = gameController.placeLoserBet("Player1", Colors.Blue);
+      const result = await gameController.placeLoserBet("Player1", Colors.Blue);
 
-      expect(result).toBe("Loser bet placed");
+      expect(result).include("placed");
     });
 
-    it("should return error if player does not exist", () => {
-      gameController.startGame(players, "testgameId");
+    it("should return error if player does not exist", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const result = gameController.placeLoserBet("Unknown", Colors.Blue);
+      const result = await gameController.placeLoserBet("Unknown", Colors.Blue);
 
-      expect(result).toBe("Player not found");
+      expect(result).include("Player not found");
     });
   });
 
   describe("takeRoundBet", () => {
-    it("should return error if game has not started", () => {
-      const result = gameController.takeRoundBet("Player1", Colors.Green);
+    it("should return error if game has not started", async () => {
+      const result = await gameController.takeRoundBet("Player1", Colors.Green);
 
-      expect(result).toBe("Game not started");
+      expect(result).include("Game not started");
     });
 
-    it("should place a round bet correctly", () => {
-      gameController.startGame(players, "testgameId");
+    it("should place a round bet correctly", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const result = gameController.takeRoundBet("Player1", Colors.Yellow);
+      const result = await gameController.takeRoundBet("Player1", Colors.Yellow);
 
-      expect(result).toBe("Round bet placed");
+      expect(result).include("Round bet");
     });
 
-    it("should reject the action if it is not the player's turn", () => {
-      gameController.startGame(players, "testgameId");
+    it("should reject the action if it is not the player's turn", async () => {
+      await gameController.startGame(players, "testgameId");
 
-      const result = gameController.takeRoundBet("Player2", Colors.Yellow);
+      const result = await gameController.takeRoundBet("Player2", Colors.Yellow);
 
-      expect(result).toBe("It is not your turn");
+      expect(result).include("It is not your turn");
     });
 
-    it("should return error if player does not exist", () => {
-      gameController.startGame(players, "testgameId");
+    it("should return error if player does not exist", async () => {
+      await gameController.startGame(players, "testgameId");
+      
+      const result = await gameController.takeRoundBet("Unknown", Colors.Yellow);
 
-      const result = gameController.takeRoundBet("Unknown", Colors.Yellow);
-
-      expect(result).toBe("Player not found");
+      expect(result).include("not found");
     });
   });
 });

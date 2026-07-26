@@ -40,7 +40,15 @@ export default class GameLobby {
     });
   }
 
-  getPlayers(): PlayerConfig[] {
-    return this.players.map((player) => ({ ...player }));
+  getPlayers(): PlayerConfig[] | string {
+    const result = this.players.map((player) => ({ ...player }));
+    if (!result) return "Not players";
+    return result;
+  }
+
+  playerExists(playerName: string): boolean {
+    return this.players.some(
+      (player) => player.name.toLowerCase() === playerName.toLowerCase(),
+    );
   }
 }

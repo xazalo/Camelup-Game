@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
+import { log } from "../../cli/helpers/logger.js";
 import type { PlayerConfig } from "../../engine/types/index.js";
 
 export default function createLobby(
@@ -9,27 +10,42 @@ export default function createLobby(
 ) {
   socket.on("createLobby", (player: PlayerConfig) => {
     try {
-      const lobbyId = manager.createLobby(player);
+      socket.emit("gameLog", log("------Creating lobby------", "started"));
 
+      const lobbyId = manager.createLobby(player);
       const lobby = manager.getLobby(lobbyId);
 
-      if (!lobby) {
-        socket.emit("lobbyError", {
-          message: "Lobby not found",
-        });
+      if (typeof lobby === "string") {
+        socket.emit("gameLog", log(lobby, "error"));
+        socket.emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
       socket.join(lobbyId);
 
+      const players = lobby.getPlayers();
+
+      if (typeof players === "string") {
+        socket.emit("gameLog", log(players, "error"));
+        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        return;
+      }
+
       socket.emit("lobbyCreated", {
         id: lobbyId,
-        players: lobby.getPlayers(),
+        players: players,
       });
+
+      socket.emit("gameLog", log("Lobby has been created", "log"));
+      socket.emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error) {
-      socket.emit("lobbyError", {
-        message: "Could not create lobby",
-      });
+      socket.emit(
+        "gameLog",
+        log(
+          error instanceof Error ? error.message : "Could not create lobby",
+          "error",
+        ),
+      );
     }
   });
 }
