@@ -7,10 +7,12 @@ import { TileType } from "../enums/index.js";
  * contains methods for move the camels through the tiles
  *
  * @param {size} number, this is the size of the board
+ * @param {raceFinished} boolean, bool for indicate if the game is finished
  */
 
 export default class Board {
   spaces: Stack[];
+  private raceFinished = false;
 
   constructor(size: number) {
     this.spaces = Array.from({ length: size }, () => new Stack());
@@ -56,6 +58,17 @@ export default class Board {
       camel.direction === Directions.Right
         ? currentPosition + steps
         : currentPosition - steps;
+
+    // check if a racing camel stack crossed the finish line
+    if (
+      camel.direction === Directions.Right &&
+      [Colors.Green, Colors.Blue, Colors.Red, Colors.Yellow].includes(
+        camel.color,
+      ) &&
+      currentPosition + steps >= size
+    ) {
+      this.raceFinished = true;
+    }
 
     // rounded board movement
     destination = ((destination % size) + size) % size;
@@ -129,6 +142,17 @@ export default class Board {
         ? currentPosition + steps
         : currentPosition - steps;
 
+    // check if a racing camel stack crossed the finish line
+    if (
+      camels[0]!.direction === Directions.Right &&
+      [Colors.Green, Colors.Blue, Colors.Red, Colors.Yellow].includes(
+        camels[0]!.color,
+      ) &&
+      currentPosition + steps >= size
+    ) {
+      this.raceFinished = true;
+    }
+
     // rounded board movement
     destination = ((destination % size) + size) % size;
 
@@ -154,9 +178,7 @@ export default class Board {
    * This method validates if one camel reached the finish tile and the game is finished
    */
   hasCamelReachedFinish(): boolean {
-    const racingCamels = [Colors.Green, Colors.Blue, Colors.Red, Colors.Yellow];
-    const camels = this.spaces[this.spaces.length - 1]?.camels ?? [];
-    return camels.some((camel) => racingCamels.includes(camel.color));
+    return this.raceFinished;
   }
 
   /**

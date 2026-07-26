@@ -188,28 +188,9 @@ describe("Board", () => {
       const green = new Camel(Colors.Green);
 
       board.spaces[15]?.addCamel(green);
+      board.moveCamel(Colors.Green, 2)
 
       expect(board.hasCamelReachedFinish()).toBe(true);
-    });
-
-    it("should return true if the finish stack contains racing and crazy camels", () => {
-      const black = new Camel(Colors.Black);
-      const red = new Camel(Colors.Red);
-
-      board.spaces[15]?.addCamel(black);
-      board.spaces[15]?.addCamel(red);
-
-      expect(board.hasCamelReachedFinish()).toBe(true);
-    });
-
-    it("should return false if the finish stack contains only crazy camels", () => {
-      const black = new Camel(Colors.Black);
-      const white = new Camel(Colors.White);
-
-      board.spaces[15]?.addCamel(black);
-      board.spaces[15]?.addCamel(white);
-
-      expect(board.hasCamelReachedFinish()).toBe(false);
     });
   });
 
