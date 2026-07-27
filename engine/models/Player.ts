@@ -13,7 +13,7 @@ import { createRandomId } from "../../helpers/index.js";
  */
 
 export default class Player {
-  private readonly id: string;
+  private id: string;
 
   name: string;
   money: number;

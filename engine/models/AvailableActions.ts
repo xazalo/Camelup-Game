@@ -3,6 +3,13 @@ import { Colors } from "../../engine/enums/index.js";
 export default class AvailableActions {
   rollDice = true;
 
+  roundBet = {
+    blue: true,
+    green: true,
+    red: true,
+    yellow: true,
+  };
+
   winnerBet = {
     blue: true,
     green: true,
@@ -21,6 +28,11 @@ export default class AvailableActions {
 
   reset(): void {
     this.rollDice = true;
+
+    this.roundBet.blue = true;
+    this.roundBet.green = true;
+    this.roundBet.red = true;
+    this.roundBet.yellow = true;
 
     this.winnerBet.blue = true;
     this.winnerBet.green = true;
@@ -41,6 +53,19 @@ export default class AvailableActions {
 
   switchRollDice(): void {
     this.rollDice = false;
+  }
+
+  switchRoundBet(color: Colors): void {
+    if (
+      color !== Colors.Blue &&
+      color !== Colors.Green &&
+      color !== Colors.Red &&
+      color !== Colors.Yellow
+    ) {
+      throw new Error("Incorrect Bet Color");
+    }
+
+    this.roundBet[color] = false;
   }
 
   switchWinnerBet(color: Colors): void {

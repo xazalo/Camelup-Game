@@ -72,6 +72,7 @@ export default class Game {
     round.prepareInitialMoves(board);
     game.phase = GamePhase.Playing;
 
+    //Todo: this is returning the playerId
     return game;
   }
 
@@ -258,6 +259,7 @@ export default class Game {
 
   takeRoundBet(playerName: string, camel: Camel): void {
     this.ensureGameIsActive();
+
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
@@ -268,12 +270,25 @@ export default class Game {
       throw new Error("It is not your turn");
     }
 
-    if (!this.cardStorage.shouldGrabCard(camel.color.toString())) {
+    const color = camel.color.toString();
+
+    if (!this.cardStorage.shouldGrabCard(color)) {
       throw new Error("No cards remaining for this camel");
     }
 
-    const grabbedCard = this.cardStorage.grabCard(camel.color.toString());
-    if (!grabbedCard) throw new Error("There is a bug on the game!!!.");
+    const grabbedCard = this.cardStorage.grabCard(color);
+
+    if (!grabbedCard) {
+      throw new Error("There is a bug on the game!!!.");
+    }
+
+    const remaining = this.cardStorage.numberRemainingCards(color);
+
+    if (remaining === 0) {
+      for (const player of this.players) {
+        player.availableActions.switchRoundBet(camel.color);
+      }
+    }
 
     const rewardTable = generatePayoutTable(grabbedCard);
 

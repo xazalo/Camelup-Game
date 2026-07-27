@@ -42,13 +42,16 @@ export default class GameManager {
 
     await game.startGame(players, gameId);
 
+    //todo: this is returning playersId
     return game;
   }
 
   getGame(gameId: string): GameController | string {
-    const result = this.games.get(gameId);
-    if (!result) return "Game not found";
-    return result;
+    const game = this.games.get(gameId);
+    if (!game) return "Game not found";
+
+    //todo: this is returning playersId
+    return game;
   }
 
   touchGame(gameId: string): void {
