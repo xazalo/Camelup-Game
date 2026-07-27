@@ -51,14 +51,14 @@ describe("GameController", () => {
     it("should expose the created game state", async () => {
       await gameController.startGame(players, "testgameId");
 
-      const state = await gameController.getState();
+      const state = gameController.getState();
       expect(state).toBeDefined();
     });
   });
 
   describe("getState", () => {
     it("should return null if game has not started", async () => {
-      const state = await gameController.getState();
+      const state = gameController.getState();
 
       expect(state.game).toBe(null);
     });
@@ -66,7 +66,7 @@ describe("GameController", () => {
     it("should return the current game instance after starting", async () => {
       await gameController.startGame(players, "testgameId");
 
-      const state = await gameController.getState();
+      const state = gameController.getState();
 
       expect(state).toBeDefined();
     });
@@ -76,7 +76,7 @@ describe("GameController", () => {
     it("should place a tile", async () => {
       gameController.startGame(players, "testgameId");
       const r = await gameController.placeTile("Player1", 1, 1);
-      const state = await gameController.getState();
+      const state = gameController.getState();
 
       const tileType = state?.game.board.spaces[1]?.tile.returnTileType();
       const hasTile = state?.game.board.spaces[1]?.tile.hasTile();

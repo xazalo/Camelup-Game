@@ -36,8 +36,7 @@ export default class GameController {
     }
   }
 
-  //todo: this method is not async
-  async getState(): Promise<{ game: Game; message: string }> {
+  getState(): { game: Game; message: string } {
     try {
       return {
         game: this.game as Game,
