@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import createRandomId from "../../cli/helpers/createRandomId.js";
+import { createRandomId } from "../../helpers/index.js";
 
 describe("createRandomId", () => {
   it("should return a string", () => {

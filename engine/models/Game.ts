@@ -8,7 +8,7 @@ import {
   Camel,
   Card,
 } from "./index.js";
-import { generatePayoutTable } from "../../cli/helpers/index.js";
+import { generatePayoutTable } from "../../helpers/index.js";
 import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
 import { type PlayerConfig } from "../types/index.js";

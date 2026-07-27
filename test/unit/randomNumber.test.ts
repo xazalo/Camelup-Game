@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { randomNumber } from "../../cli/helpers/index.js";
+import { randomNumber } from "../../helpers/index.js";
 
 describe("createRandomNumber", () => {
   it("should create a random number", () => {

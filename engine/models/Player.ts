@@ -1,5 +1,5 @@
 import { Card, AvailableActions } from "./index.js";
-import createRandomId from "../../cli/helpers/createRandomId.js";
+import { createRandomId } from "../../helpers/index.js";
 
 /**
  * This class is a representation of the player across the game
@@ -23,7 +23,6 @@ export default class Player {
   isAI: boolean;
 
   constructor(name: string, isAI: boolean) {
-
     this.id = createRandomId();
 
     this.name = name;
@@ -38,12 +37,12 @@ export default class Player {
    * Get id
    */
   getId() {
-    return this.id
+    return this.id;
   }
 
-  /** 
+  /**
    * Validate id
-  */
+   */
   validateId(id: string) {
     return this.id === id;
   }

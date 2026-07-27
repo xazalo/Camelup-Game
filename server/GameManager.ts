@@ -1,5 +1,5 @@
 import GameController from "../cli/controllers/GameController.js";
-import createRandomId from "../cli/helpers/createRandomId.js";
+import { createRandomId } from "../helpers/index.js";
 import GameLobby from "./GameLobby.js";
 import { type PlayerConfig } from "../engine/types/index.js";
 
@@ -7,9 +7,12 @@ export default class GameManager {
   private games = new Map<string, GameController>();
   private lobbies = new Map<string, GameLobby>();
 
-  createLobby(player: {name: string, isAI: boolean}, socketId: string): string {
+  createLobby(
+    player: { name: string; isAI: boolean },
+    socketId: string,
+  ): string {
     const gameId = createRandomId();
-    const playerConfig = {name: player.name, isAI: player.isAI, socketId}
+    const playerConfig = { name: player.name, isAI: player.isAI, socketId };
     this.lobbies.set(gameId, new GameLobby(playerConfig));
     return gameId;
   }
@@ -31,7 +34,7 @@ export default class GameManager {
 
     const players = lobby.getPlayers();
 
-    if(typeof players === "string") return players
+    if (typeof players === "string") return players;
 
     if (players.length < 2 || players.length > 6) {
       return "players must be between 2 and 6";
@@ -44,7 +47,7 @@ export default class GameManager {
 
   getGame(gameId: string): GameController | string {
     const result = this.games.get(gameId);
-    if(!result) return "Game not found"
+    if (!result) return "Game not found";
     return result;
   }
 

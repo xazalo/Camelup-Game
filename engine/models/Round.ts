@@ -1,5 +1,5 @@
 import { Turn, Dice, DicePool, Board } from "./index.js";
-import { randomNumber } from "../../cli/helpers/index.js";
+import { randomNumber } from "../../helpers/index.js";
 import { type DiceValue } from "../types/index.js";
 
 /**

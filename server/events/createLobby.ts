@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
-import { log } from "../../cli/helpers/logger.js";
+import { log } from "../../helpers/index.js";
 import type { PlayerConfig } from "../../engine/types/index.js";
 
 export default function createLobby(

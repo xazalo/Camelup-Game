@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generatePayoutTable } from "../../cli/helpers/index.js";
+import { generatePayoutTable } from "../../helpers/index.js";
 
 describe("generatePayoutTable", () => {
   it("should return the correct table for the first betting card (5)", () => {

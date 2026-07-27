@@ -3,7 +3,7 @@ import Game from "../../engine/models/Game.js";
 import Colors from "../../engine/enums/Colors.js";
 import Card from "../../engine/models/Card.js";
 import BetType from "../../engine/enums/BetType.js";
-import generatePayoutTable from "../../cli/helpers/generatePayoutTable.js";
+import { generatePayoutTable } from "../../helpers/index.js";
 import GamePhase from "../../engine/enums/GamePhase.js";
 
 describe("Game", () => {

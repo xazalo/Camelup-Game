@@ -1,4 +1,4 @@
-import { type PayoutTable } from "../../engine/types/index.js";
+import type { PayoutTable } from "../engine/types/PayoutTables.js";
 
 /**
  * Generates the payment table using the position of the card in the Storage.

@@ -1,7 +1,7 @@
 import readline from "node:readline";
 import { GameController, HelpController } from "./controllers/index.js";
 import { parseCommand } from "./parseCommand.js";
-import createRandomId from "./helpers/createRandomId.js";
+import { createRandomId } from "../helpers/index.js";
 
 const rl = readline.createInterface({
   input: process.stdin,

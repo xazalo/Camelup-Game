@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
-import { log } from "../../cli/helpers/logger.js";
+import { log } from "../../helpers/index.js";
 
 export default function getState(
   io: Server,

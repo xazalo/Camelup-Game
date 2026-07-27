@@ -3,7 +3,7 @@ import { Game } from "../../engine/models/index.js";
 import { TileType } from "../../engine/enums/TileType.js";
 import { type PlayerConfig } from "../../engine/types/PlayerConfig.js";
 import { predict } from "../../server/services/index.js";
-import { log } from "../helpers/logger.js";
+import { log } from "../../helpers/index.js";
 
 /**
  * This class creates a controller for the game cli orders
