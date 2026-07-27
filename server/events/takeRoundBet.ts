@@ -1,13 +1,14 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
 import { log } from "../../helpers/index.js";
+import { isPlayerValid } from "../../helpers/index.js";
 
 export default function takeRoundBet(
   io: Server,
   socket: Socket,
   manager: GameManager,
 ) {
-  socket.on("takeRoundBet", async ({ gameId, playerName, camelColor }) => {
+  socket.on("takeRoundBet", async ({ gameId, playerName, playerId, camelColor }) => {
     try {
       socket.emit("gameLog", log("------Taking round bet------", "started"));
 
@@ -16,6 +17,13 @@ export default function takeRoundBet(
       if (typeof controller === "string") {
         socket.emit("gameLog", log(controller, "error"));
         socket.emit("gameLog", log("------FINISHED------", "finished"));
+        return;
+      }
+
+      const allowed = isPlayerValid(controller, playerName, playerId);
+
+      if (!allowed) {
+        socket.emit("gameLog", log("unauthorized", "error"));
         return;
       }
 

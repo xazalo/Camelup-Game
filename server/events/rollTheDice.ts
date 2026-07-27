@@ -1,13 +1,14 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
 import { log } from "../../helpers/index.js";
+import { isPlayerValid } from "../../helpers/index.js";
 
 export default function rollTheDice(
   io: Server,
   socket: Socket,
   manager: GameManager,
 ) {
-  socket.on("rollTheDice", async ({ gameId, playerName }) => {
+  socket.on("rollTheDice", async ({ gameId, playerName, playerId }) => {
     try {
       socket.emit("gameLog", log("------Rolling the dice------", "started"));
 
@@ -15,6 +16,13 @@ export default function rollTheDice(
 
       if (typeof controller === "string") {
         socket.emit("gameLog", log(controller, "error"));
+        return;
+      }
+
+      const allowed = isPlayerValid(controller, playerName, playerId);
+
+      if (!allowed) {
+        socket.emit("gameLog", log("unauthorized", "error"));
         return;
       }
 
