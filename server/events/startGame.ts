@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
-import { log } from "../../helpers/index.js";
+import { log, serializeGame } from "../../helpers/index.js";
+import { Game } from "../../engine/models/index.js";
 
 export default function startGame(
   io: Server,
@@ -34,9 +35,9 @@ export default function startGame(
       for (const lobbyPlayer of lobbyPlayers) {
         if (lobbyPlayer.isAI) continue;
 
-        if(!game.game) {
-          console.log("Game is null X/")
-          return
+        if (!game.game) {
+          console.log("Game is null X/");
+          return;
         }
 
         const gamePlayer = game.game.players.find(
@@ -54,8 +55,18 @@ export default function startGame(
 
       socket.join(gameId);
 
+      const gameState = manager.getGame(gameId);
+
+      if (typeof gameState === "string" || gameState === null) {
+        socket.emit("gameLog", log(gameState, "error"));
+        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        return;
+      }
+
+      const parsedGame = serializeGame(gameState.game as Game);
+
       io.to(gameId).emit("gameStarted", {
-        state: manager.getGame(gameId),
+        state: parsedGame,
       });
 
       io.to(gameId).emit("launchGame");

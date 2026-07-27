@@ -8,7 +8,7 @@ describe("Round", () => {
   let game: Game;
 
   beforeEach(() => {
-    game = Game.create([{name: "Player1", isAI: false, socketId: ""}, {name: "Player2", isAI: false, socketId: ""}], "testgameId");
+    game = Game.create([{name: "Player1", isAI: false, socketId: ""}, {name: "Player2", isAI: false, socketId: ""}], "testgameId") as Game;
     round = new Round();
   });
 

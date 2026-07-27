@@ -24,7 +24,7 @@ export default class GameController {
 
   async startGame(players: PlayerConfig[], id: string): Promise<string> {
     try {
-      this.game = Game.create(players, id);
+      this.game = Game.create(players, id) as Game;
       this.touch();
 
       const aiLog = await this.checkAIPlayer();

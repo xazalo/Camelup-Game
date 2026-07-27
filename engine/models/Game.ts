@@ -52,7 +52,7 @@ export default class Game {
     this.cardStorage = cardStorage;
   }
 
-  static create(playersConfig: PlayerConfig[], id: string) {
+  static create(playersConfig: PlayerConfig[], id: string): Game {
     if (playersConfig.length < 2 || playersConfig.length > 6) {
       throw new Error("This Game must have between 2 and 6 players");
     }
@@ -72,7 +72,6 @@ export default class Game {
     round.prepareInitialMoves(board);
     game.phase = GamePhase.Playing;
 
-    //Todo: this is returning the playerId
     return game;
   }
 

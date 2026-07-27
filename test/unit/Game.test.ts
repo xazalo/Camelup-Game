@@ -15,7 +15,7 @@ describe("Game", () => {
   ];
 
   beforeEach(() => {
-    game = Game.create(players, "testgameId");
+    game = Game.create(players, "testgameId") as Game;
   });
 
   describe("create", () => {

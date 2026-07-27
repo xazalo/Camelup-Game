@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
-import { log } from "../../helpers/index.js";
+import { log, serializeGame } from "../../helpers/index.js";
+import { Game} from "../../engine/models/index.js";
 
 export default function getState(
   io: Server,
@@ -19,7 +20,17 @@ export default function getState(
         return;
       }
 
-      socket.emit("gameState", manager.getGame(gameId));
+      const gameState = manager.getGame(gameId);
+
+      if (typeof gameState === "string" || gameState === null) {
+        socket.emit("gameLog", log(gameState, "error"));
+        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        return;
+      }
+
+      const parsedGame = serializeGame(gameState.game as Game)
+
+      socket.emit("gameState", parsedGame);
 
       socket.emit("gameLog", log("Got game state", "log"));
       socket.emit("gameLog", log("------FINISHED------", "finished"));

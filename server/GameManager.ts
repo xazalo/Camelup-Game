@@ -1,7 +1,7 @@
 import GameController from "../cli/controllers/GameController.js";
+import type Game from "../engine/models/Game.js";
 import { createRandomId } from "../helpers/index.js";
 import GameLobby from "./GameLobby.js";
-import { type PlayerConfig } from "../engine/types/index.js";
 
 export default class GameManager {
   private games = new Map<string, GameController>();
@@ -42,15 +42,12 @@ export default class GameManager {
 
     await game.startGame(players, gameId);
 
-    //todo: this is returning playersId
     return game;
   }
 
   getGame(gameId: string): GameController | string {
     const game = this.games.get(gameId);
     if (!game) return "Game not found";
-
-    //todo: this is returning playersId
     return game;
   }
 

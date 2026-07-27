@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
-import { log } from "../../helpers/index.js";
-import { isPlayerValid } from "../../helpers/index.js";
+import { log, isPlayerValid, serializeGame } from "../../helpers/index.js";
+import { Game } from "../../engine/models/index.js";
 
 export default function rollTheDice(
   io: Server,
@@ -30,7 +30,17 @@ export default function rollTheDice(
 
       socket.emit("gameLog", result);
 
-      io.to(gameId).emit("gameState", manager.getGame(gameId));
+      const gameState = manager.getGame(gameId);
+
+      if (typeof gameState === "string" || gameState === null) {
+        socket.emit("gameLog", log(gameState, "error"));
+        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        return;
+      }
+
+      const parsedGame = serializeGame(gameState.game as Game);
+
+      socket.emit("gameState", parsedGame);
 
       socket.emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error: unknown) {
