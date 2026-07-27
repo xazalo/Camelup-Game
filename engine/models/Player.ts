@@ -1,4 +1,5 @@
 import { Card, AvailableActions } from "./index.js";
+import createRandomId from "../../cli/helpers/createRandomId.js";
 
 /**
  * This class is a representation of the player across the game
@@ -12,6 +13,8 @@ import { Card, AvailableActions } from "./index.js";
  */
 
 export default class Player {
+  private readonly id: string;
+
   name: string;
   money: number;
   cards: Card[];
@@ -20,12 +23,29 @@ export default class Player {
   isAI: boolean;
 
   constructor(name: string, isAI: boolean) {
+
+    this.id = createRandomId();
+
     this.name = name;
     this.money = 3;
     this.cards = [];
     this.placedTile = false;
     this.availableActions = new AvailableActions();
     this.isAI = isAI;
+  }
+
+  /**
+   * Get id
+   */
+  getId() {
+    return this.id
+  }
+
+  /** 
+   * Validate id
+  */
+  validateId(id: string) {
+    return this.id === id;
   }
 
   /**

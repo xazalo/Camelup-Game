@@ -12,7 +12,7 @@ export default function createLobby(
     try {
       socket.emit("gameLog", log("------Creating lobby------", "started"));
 
-      const lobbyId = manager.createLobby(player);
+      const lobbyId = manager.createLobby(player, socket.id);
       const lobby = manager.getLobby(lobbyId);
 
       if (typeof lobby === "string") {

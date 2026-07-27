@@ -39,15 +39,20 @@ export function parseCommand(input: string): Command {
 
   if (cmd === "start") {
     const players: PlayerConfig[] = parts.slice(1).map((player) => {
-      const [name, type] = player.split(":");
+      const [name, type, socketId] = player.split(":");
 
       if (!name) {
+        throw new Error("Invalid player format");
+      }
+
+      if (!socketId) {
         throw new Error("Invalid player format");
       }
 
       return {
         name,
         isAI: type?.toLowerCase() === "ai",
+        socketId,
       };
     });
 

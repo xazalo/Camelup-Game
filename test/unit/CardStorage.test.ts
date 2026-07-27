@@ -141,11 +141,11 @@ describe("CardStorage", () => {
     it("should pay 8, 5, 3 and 2 coins for multiple correct winner bets", () => {
       const game = Game.create(
         [
-            { name: "Player1", isAI: false },
-            { name: "Player2", isAI: false },
-            { name: "Player3", isAI: false },
-            { name: "Player4", isAI: false },
-            { name: "Player5", isAI: false },
+            { name: "Player1", isAI: false, socketId: "" },
+            { name: "Player2", isAI: false, socketId: "" },
+            { name: "Player3", isAI: false, socketId: "" },
+            { name: "Player4", isAI: false, socketId: "" },
+            { name: "Player5", isAI: false, socketId: "" },
           ],
         "testgameId",
       );

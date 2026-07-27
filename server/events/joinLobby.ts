@@ -46,6 +46,7 @@ export default function joinLobby(
       const addedPlayer = lobby.addPlayer({
         name: playerName,
         isAI: false,
+        socketId: socket.id,
       });
 
       socket.join(gameId);

@@ -10,8 +10,8 @@ describe("Game", () => {
   let game: Game;
 
   const players = [
-    { name: "Player1", isAI: false },
-    { name: "Player2", isAI: false },
+    { name: "Player1", isAI: false, socketId: "" },
+    { name: "Player2", isAI: false, socketId: "" },
   ];
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe("Game", () => {
 
     it("should reject games with less than 2 players", () => {
       expect(() => {
-        Game.create([{name: "Player1", isAI: false}], "testgameId");
+        Game.create([{name: "Player1", isAI: false, socketId: ""}], "testgameId");
       }).toThrow("This Game must have between 2 and 6 players");
     });
 
@@ -34,13 +34,13 @@ describe("Game", () => {
       expect(() => {
         Game.create(
           [
-            { name: "Player1", isAI: false },
-            { name: "Player2", isAI: false },
-            { name: "Player3", isAI: false },
-            { name: "Player4", isAI: false },
-            { name: "Player5", isAI: false },
-            { name: "Player6", isAI: false },
-            { name: "Player7", isAI: false },
+            { name: "Player1", isAI: false, socketId: "" },
+            { name: "Player2", isAI: false, socketId: "" },
+            { name: "Player3", isAI: false, socketId: "" },
+            { name: "Player4", isAI: false, socketId: "" },
+            { name: "Player5", isAI: false, socketId: "" },
+            { name: "Player6", isAI: false, socketId: "" },
+            { name: "Player7", isAI: false, socketId: "" },
           ],
           "testgameId",
         );

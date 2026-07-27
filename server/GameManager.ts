@@ -7,9 +7,10 @@ export default class GameManager {
   private games = new Map<string, GameController>();
   private lobbies = new Map<string, GameLobby>();
 
-  createLobby(player: PlayerConfig): string {
+  createLobby(player: {name: string, isAI: boolean}, socketId: string): string {
     const gameId = createRandomId();
-    this.lobbies.set(gameId, new GameLobby(player));
+    const playerConfig = {name: player.name, isAI: player.isAI, socketId}
+    this.lobbies.set(gameId, new GameLobby(playerConfig));
     return gameId;
   }
 
@@ -19,7 +20,7 @@ export default class GameManager {
     return result;
   }
 
-  startGame(gameId: string): GameController | string {
+  async startGame(gameId: string): Promise<GameController | string> {
     const lobby = this.lobbies.get(gameId);
 
     if (!lobby) return "There are no lobby";
@@ -36,9 +37,7 @@ export default class GameManager {
       return "players must be between 2 and 6";
     }
 
-    game.startGame(players, gameId);
-
-    this.lobbies.delete(gameId);
+    await game.startGame(players, gameId);
 
     return game;
   }

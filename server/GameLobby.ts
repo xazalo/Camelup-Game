@@ -1,8 +1,9 @@
 import type { PlayerConfig } from "../engine/types/PlayerConfig.js";
 
 export default class GameLobby {
-  private players: PlayerConfig[];
+  private readonly players: PlayerConfig[];
   private lastActivity = Date.now();
+  
 
   constructor(player: PlayerConfig) {
     this.players = [{ ...player }];
@@ -37,6 +38,7 @@ export default class GameLobby {
     return this.addPlayer({
       name: `AI_${aiNumber}`,
       isAI: true,
+      socketId: "none"
     });
   }
 

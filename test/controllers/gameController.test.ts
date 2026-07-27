@@ -11,8 +11,8 @@ describe("GameController", () => {
   });
 
   const players = [
-    { name: "Player1", isAI: false },
-    { name: "Player2", isAI: false },
+    { name: "Player1", isAI: false, socketId: "12344" },
+    { name: "Player2", isAI: false, socketId: "12344" },
   ];
 
   describe("startGame", () => {
@@ -24,7 +24,7 @@ describe("GameController", () => {
 
     it("should return an error if player amount is invalid", async () => {
       const result = await gameController.startGame(
-        [{ name: "Player1", isAI: false }],
+        [{ name: "Player1", isAI: false, socketId: "1234" }],
         "testgameId",
       );
 
@@ -34,13 +34,13 @@ describe("GameController", () => {
     it("should return an error if there are too many players", async () => {
       const result = await gameController.startGame(
         [
-          { name: "Player1", isAI: false },
-          { name: "Player2", isAI: false },
-          { name: "Player3", isAI: false },
-          { name: "Player4", isAI: false },
-          { name: "Player5", isAI: false },
-          { name: "Player6", isAI: false },
-          { name: "Player7", isAI: false },
+          { name: "Player1", isAI: false, socketId: "1234" },
+          { name: "Player2", isAI: false, socketId: "1234" },
+          { name: "Player3", isAI: false, socketId: "1234" },
+          { name: "Player4", isAI: false, socketId: "1234" },
+          { name: "Player5", isAI: false, socketId: "1234" },
+          { name: "Player6", isAI: false, socketId: "1234" },
+          { name: "Player7", isAI: false, socketId: "1234" },
         ],
         "testgameId",
       );
