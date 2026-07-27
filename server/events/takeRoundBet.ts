@@ -43,7 +43,7 @@ export default function takeRoundBet(
 
         const parsedGame = serializeGame(gameState.game as Game);
 
-        socket.emit("gameState", parsedGame);
+        io.to(gameId).emit("gameState", parsedGame);
         socket.emit("gameLog", log("------FINISHED------", "finished"));
       } catch (error) {
         socket.emit(
