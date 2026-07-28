@@ -12,7 +12,5 @@ export type GameState = {
   currentPlayer: number;
   phase: GamePhase;
 
-  cardStorage: CardStorage;
-
   history: Round[];
 };

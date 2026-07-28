@@ -17,7 +17,6 @@ export function serializeGame(game: Game): GameState {
     currentTurn: game.currentTurn,
     currentPlayer: game.currentPlayer,
     phase: game.phase,
-    cardStorage: game.cardStorage,
     history: game.history,
   };
 }
