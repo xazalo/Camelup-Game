@@ -3,6 +3,8 @@ import { describe, it, expect, beforeEach } from "vitest";
 import Board from "../../engine/models/Board.js";
 import Camel from "../../engine/models/Camel.js";
 
+import { TileType } from "../../engine/enums/index.js";
+
 import { Colors, Directions } from "../../engine/enums/index.js";
 
 describe("Board", () => {
@@ -275,4 +277,56 @@ describe("Board", () => {
       ]);
     });
   });
+
+  describe("tile effects", () => {
+  it("should move a camel forward when landing on an oasis", () => {
+    const camel = new Camel(Colors.Green);
+
+    board.spaces[0]?.addCamel(camel);
+
+    board.spaces[3]!.tile.place("jose", TileType.Oasis);
+
+    board.moveCamel(Colors.Green, 3);
+
+    expect(board.spaces[3]?.camels).toHaveLength(0);
+    expect(board.spaces[4]?.camels).toContain(camel);
+  });
+
+  it("should move a camel backwards when landing on a mirage", () => {
+    const camel = new Camel(Colors.Green);
+
+    board.spaces[0]?.addCamel(camel);
+
+    board.spaces[3]!.tile.place("jose", TileType.Mirage);
+
+    board.moveCamel(Colors.Green, 3);
+
+    expect(board.spaces[3]?.camels).toHaveLength(0);
+    expect(board.spaces[2]?.camels).toContain(camel);
+  });
+
+  it("should wrap around when oasis is placed on the last space", () => {
+    const camel = new Camel(Colors.Green);
+
+    board.spaces[14]?.addCamel(camel);
+
+    board.spaces[1]!.tile.place("jose", TileType.Oasis);
+
+    board.moveCamel(Colors.Green, 3);
+
+    expect(board.spaces[2]?.camels).toContain(camel);
+  });
+
+  it("should wrap backwards when mirage is placed on the first space", () => {
+    const camel = new Camel(Colors.Green);
+
+    board.spaces[1]?.addCamel(camel);
+
+    board.spaces[0]!.tile.place("jose", TileType.Mirage);
+
+    board.moveCamel(Colors.Green, 15);
+
+    expect(board.spaces[15]?.camels).toContain(camel);
+  });
+});
 });

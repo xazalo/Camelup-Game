@@ -141,7 +141,7 @@ export default class Game {
 
     const dice = new Dice(color, value);
 
-    this.board.moveCamelStack(color, value);
+    this.board.moveCamelStack(color, value, player);
 
     round.addTurn(new Turn(player.name, { type: "RollDice" }, dice));
 

@@ -37,10 +37,8 @@ export default class Board {
     let camel: Camel | null = null;
     let currentPosition = -1;
 
-    // find camel
     for (const [index, stack] of this.spaces.entries()) {
       camel = stack.removeCamel(color);
-
       if (camel) {
         currentPosition = index;
         break;
@@ -53,13 +51,11 @@ export default class Board {
 
     const size = this.spaces.length;
 
-    // calculate destination
     let destination =
       camel.direction === Directions.Right
         ? currentPosition + steps
         : currentPosition - steps;
 
-    // check if a racing camel stack crossed the finish line
     if (
       camel.direction === Directions.Right &&
       [Colors.Green, Colors.Blue, Colors.Red, Colors.Yellow].includes(
@@ -70,24 +66,16 @@ export default class Board {
       this.raceFinished = true;
     }
 
-    // rounded board movement
     destination = ((destination % size) + size) % size;
 
-    const destinationStack = this.spaces[destination];
+    destination = this.applyTileEffect(destination, player);
 
+    const destinationStack = this.spaces[destination];
     if (!destinationStack) {
       throw new Error(`Invalid board state at ${destination}`);
     }
 
-    // move camel
     destinationStack.addCamel(camel);
-
-    if (destinationStack.tile.hasTile() && player) {
-      if (destinationStack.tile.tileType === TileType.Oasis)
-        player.updateMoney(1);
-      else if (destinationStack.tile.tileType === TileType.Mirage)
-        player.updateMoney(-1);
-    }
   }
 
   /**
@@ -116,14 +104,12 @@ export default class Board {
    *
    * @param { steps } number This is the number the steps for advance
    */
-  moveCamelStack(color: Colors, steps: number): void {
+  moveCamelStack(color: Colors, steps: number, player?: Player): void {
     let camels: Camel[] = [];
     let currentPosition = -1;
 
-    // find camel stack
     for (const [index, stack] of this.spaces.entries()) {
       camels = stack.removeCamelStack(color);
-
       if (camels.length > 0) {
         currentPosition = index;
         break;
@@ -136,13 +122,11 @@ export default class Board {
 
     const size = this.spaces.length;
 
-    // calculate destination
     let destination =
       camels[0]!.direction === Directions.Right
         ? currentPosition + steps
         : currentPosition - steps;
 
-    // check if a racing camel stack crossed the finish line
     if (
       camels[0]!.direction === Directions.Right &&
       [Colors.Green, Colors.Blue, Colors.Red, Colors.Yellow].includes(
@@ -153,16 +137,15 @@ export default class Board {
       this.raceFinished = true;
     }
 
-    // rounded board movement
     destination = ((destination % size) + size) % size;
 
-    const destinationStack = this.spaces[destination];
+    destination = this.applyTileEffect(destination, player);
 
+    const destinationStack = this.spaces[destination];
     if (!destinationStack) {
       throw new Error(`Invalid board state at ${destination}`);
     }
 
-    // move camel stack
     destinationStack.addCamels(camels);
   }
 
@@ -201,5 +184,49 @@ export default class Board {
     }
 
     return ranking;
+  }
+
+  /**
+   * Helper method to apply the tile effects (Oasis or Mirage)
+   * at the destination space.
+   */
+  private applyTileEffect(destination: number, player?: Player): number {
+    const destinationStack = this.spaces[destination];
+
+    console.log("******** Mess *************");
+
+    if (!destinationStack || !destinationStack.tile.hasTile()) {
+      return destination;
+    }
+
+    console.log(destination, player, "1");
+
+    console.log(destinationStack, "2");
+
+    const size = this.spaces.length;
+
+    console.log(size, "3");
+
+    if (destinationStack.tile.tileType === TileType.Oasis) {
+      if (player) {
+        player.updateMoney(1);
+      }
+
+      console.log(destination, "4");
+      console.log(destination + (1 % size), "5");
+      return (destination + 1) % size;
+    }
+
+    if (destinationStack.tile.tileType === TileType.Mirage) {
+      if (player) {
+        player.updateMoney(-1);
+      }
+
+      console.log(destination, "6");
+      return (((destination - 1) % size) + size) % size;
+    }
+
+    console.log(destination, "7");
+    return destination;
   }
 }
