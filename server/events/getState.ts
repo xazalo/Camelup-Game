@@ -10,21 +10,21 @@ export default function getState(
 ) {
   socket.on("getState", ({ gameId }) => {
     try {
-      socket.emit("gameLog", log("------Getting game state------", "started"));
+      io.to(gameId).emit("gameLog", log("------Getting game state------", "started"));
 
       const controller = manager.getGame(gameId);
 
       if (typeof controller === "string") {
-        socket.emit("gameLog", log(controller, "error"));
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", log(controller, "error"));
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
       const gameState = manager.getGame(gameId);
 
       if (typeof gameState === "string" || gameState === null) {
-        socket.emit("gameLog", log(gameState, "error"));
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", log(gameState, "error"));
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
@@ -32,8 +32,8 @@ export default function getState(
 
       io.to(gameId).emit("gameState", parsedGame);
 
-      socket.emit("gameLog", log("Got game state", "log"));
-      socket.emit("gameLog", log("------FINISHED------", "finished"));
+      io.to(gameId).emit("gameLog", log("Got game state", "log"));
+      io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error) {
       socket.emit(
         "gameLog",

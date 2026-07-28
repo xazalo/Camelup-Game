@@ -9,27 +9,27 @@ export default function joinLobby(
 ) {
   socket.on("joinLobby", ({ gameId, playerName }) => {
     try {
-      socket.emit("gameLog", log("------Joining lobby------", "started", playerName));
+      io.to(gameId).emit("gameLog", log("------Joining lobby------", "started", playerName));
 
       const lobby = manager.getLobby(gameId);
 
       if (typeof lobby === "string") {
-        socket.emit("gameLog", log(lobby, "error"));
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", log(lobby, "error"));
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
       const players = lobby.getPlayers();
 
       if (typeof players === "string") {
-        socket.emit("gameLog", log(players, "error"));
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", log(players, "error"));
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
       if (!players) {
-        socket.emit("gameLog", log("Not players", "error"));
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", log("Not players", "error"));
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
@@ -61,8 +61,8 @@ export default function joinLobby(
         players: lobby.getPlayers(),
       });
 
-      socket.emit("gameLog", log("Player has been joined the lobby", "log"));
-      socket.emit("gameLog", log("------FINISHED------", "finished"));
+      io.to(gameId).emit("gameLog", log("Player has been joined the lobby", "log"));
+      io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error) {
       socket.emit(
         "gameLog",

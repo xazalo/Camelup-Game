@@ -13,14 +13,14 @@ export default function addAI(
       const lobby = manager.getLobby(gameId);
 
       if (typeof lobby === "string") {
-        socket.emit("gameLog", log(lobby, "error"));
+        io.to(gameId).emit("gameLog", log(lobby, "error"));
         return;
       }
 
       const players = lobby?.getPlayers();
 
       if (typeof players === "string") {
-        socket.emit("gameLog", log(players, "error"));
+        io.to(gameId).emit("gameLog", log(players, "error"));
         return;
       }
 
@@ -38,7 +38,7 @@ export default function addAI(
       );
 
       if (!lobby) {
-        socket.emit("gameLog", log("Lobby not found", "error"));
+        io.to(gameId).emit("gameLog", log("Lobby not found", "error"));
         return;
       }
 
@@ -49,8 +49,8 @@ export default function addAI(
         players: lobby.getPlayers(),
       });
 
-      socket.emit("gameLog", log("Added AI player", "log"));
-      socket.emit("gameLog", log("------FINISHED------", "finished"));
+      io.to(gameId).emit("gameLog", log("Added AI player", "log"));
+      io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error) {
       socket.emit(
         "gameLog",

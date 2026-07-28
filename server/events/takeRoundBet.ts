@@ -12,39 +12,39 @@ export default function takeRoundBet(
     "takeRoundBet",
     async ({ gameId, playerName, playerId, camelColor }) => {
       try {
-        socket.emit("gameLog", log("------Taking round bet------", "started"));
+        io.to(gameId).emit("gameLog", log("------Taking round bet------", "started"));
 
         const controller = manager.getGame(gameId);
 
         if (typeof controller === "string") {
-          socket.emit("gameLog", log(controller, "error"));
-          socket.emit("gameLog", log("------FINISHED------", "finished"));
+          io.to(gameId).emit("gameLog", log(controller, "error"));
+          io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
           return;
         }
 
         const allowed = isPlayerValid(controller, playerName, playerId);
 
         if (!allowed) {
-          socket.emit("gameLog", log("unauthorized", "error"));
+          io.to(gameId).emit("gameLog", log("unauthorized", "error"));
           return;
         }
 
         const result = await controller.takeRoundBet(playerName, camelColor);
 
-        socket.emit("gameLog", log(result, "log"));
+        io.to(gameId).emit("gameLog", log(result, "log"));
 
         const gameState = manager.getGame(gameId);
 
         if (typeof gameState === "string" || gameState === null) {
-          socket.emit("gameLog", log(gameState, "error"));
-          socket.emit("gameLog", log("------FINISHED------", "finished", playerName));
+          io.to(gameId).emit("gameLog", log(gameState, "error"));
+          io.to(gameId).emit("gameLog", log("------FINISHED------", "finished", playerName));
           return;
         }
 
         const parsedGame = serializeGame(gameState.game as Game);
 
         io.to(gameId).emit("gameState", parsedGame);
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
       } catch (error) {
         socket.emit(
           "gameLog",

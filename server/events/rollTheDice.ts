@@ -10,31 +10,31 @@ export default function rollTheDice(
 ) {
   socket.on("rollTheDice", async ({ gameId, playerName, playerId }) => {
     try {
-      socket.emit("gameLog", log("------Rolling the dice------", "started", playerName));
+      io.to(gameId).emit("gameLog", log("------Rolling the dice------", "started", playerName));
 
       const controller = manager.getGame(gameId);
 
       if (typeof controller === "string") {
-        socket.emit("gameLog", log(controller, "error"));
+        io.to(gameId).emit("gameLog", log(controller, "error"));
         return;
       }
 
       const allowed = isPlayerValid(controller, playerName, playerId);
 
       if (!allowed) {
-        socket.emit("gameLog", log("unauthorized", "error"));
+        io.to(gameId).emit("gameLog", log("unauthorized", "error"));
         return;
       }
 
       const result = await controller.rollTheDice(playerName);
 
-      socket.emit("gameLog", result);
+      io.to(gameId).emit("gameLog", result);
 
       const gameState = manager.getGame(gameId);
 
       if (typeof gameState === "string" || gameState === null) {
-        socket.emit("gameLog", log(gameState, "error"));
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", log(gameState, "error"));
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
@@ -42,7 +42,7 @@ export default function rollTheDice(
 
       io.to(gameId).emit("gameState", parsedGame);
 
-      socket.emit("gameLog", log("------FINISHED------", "finished"));
+      io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error: unknown) {
       socket.emit(
         "gameLog",

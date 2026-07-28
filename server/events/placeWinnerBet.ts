@@ -20,34 +20,34 @@ export default function placeWinnerBet(
         const controller = manager.getGame(gameId);
 
         if (typeof controller === "string") {
-          socket.emit("gameLog", log("Game not found", "error"));
-          socket.emit("gameLog", log("------FINISHED------", "finished"));
+          io.to(gameId).emit("gameLog", log("Game not found", "error"));
+          io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
           return;
         }
 
         const allowed = isPlayerValid(controller, playerName, playerId);
 
         if (!allowed) {
-          socket.emit("gameLog", log("unauthorized", "error"));
+          io.to(gameId).emit("gameLog", log("unauthorized", "error"));
           return;
         }
 
         const result = await controller.placeWinnerBet(playerName, camelColor);
 
-        socket.emit("gameLog", log(result, "log"));
+        io.to(gameId).emit("gameLog", log(result, "log"));
 
         const gameState = manager.getGame(gameId);
 
         if (typeof gameState === "string" || gameState === null) {
-          socket.emit("gameLog", log(gameState, "error"));
-          socket.emit("gameLog", log("------FINISHED------", "finished"));
+          io.to(gameId).emit("gameLog", log(gameState, "error"));
+          io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
           return;
         }
 
         const parsedGame = serializeGame(gameState.game as Game);
 
         io.to(gameId).emit("gameState", parsedGame);
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
       } catch (error) {
         socket.emit(
           "gameLog",
