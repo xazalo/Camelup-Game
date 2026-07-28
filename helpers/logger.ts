@@ -38,7 +38,6 @@ export function log(message: string, type: Type, playerName?: string): string {
   });
 
   const playerInfo = playerName ? ` [Player: ${playerName}]` : "";
-  console.log(playerInfo, '^*****')
 
   const result = `${prefix}${playerInfo} ${message} [${formattedDate}]`;
 
