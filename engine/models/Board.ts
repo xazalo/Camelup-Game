@@ -197,21 +197,13 @@ export default class Board {
       return destination;
     }
 
-    console.log(destination, player, "1");
-
-    console.log(destinationStack, "2");
-
     const size = this.spaces.length;
-
-    console.log(size, "3");
 
     if (destinationStack.tile.tileType === TileType.Oasis) {
       if (player) {
         player.updateMoney(1);
       }
 
-      console.log(destination, "4");
-      console.log(destination + (1 % size), "5");
       return (destination + 1) % size;
     }
 
@@ -220,11 +212,9 @@ export default class Board {
         player.updateMoney(-1);
       }
 
-      console.log(destination, "6");
       return (((destination - 1) % size) + size) % size;
     }
 
-    console.log(destination, "7");
     return destination;
   }
 }
