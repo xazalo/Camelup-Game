@@ -3,8 +3,6 @@ type Type = "log" | "error" | "finished" | "started";
 export function log(message: string, type: Type, playerName?: string): string {
   let prefix: string;
 
-  console.log(playerName)
-
   switch (type) {
     case "log":
       prefix = "[LOG]";
