@@ -10,7 +10,7 @@ export default function createLobby(
 ) {
   socket.on("createLobby", (player: PlayerConfig) => {
     try {
-      socket.emit("gameLog", log("------Creating lobby------", "started"));
+      socket.emit("gameLog", log("------Creating lobby------", "started", player.name));
 
       const lobbyId = manager.createLobby(player, socket.id);
       const lobby = manager.getLobby(lobbyId);

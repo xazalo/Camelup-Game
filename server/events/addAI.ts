@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
 import { log } from "../../helpers/index.js";
+import type { PlayerConfig } from "../../engine/types/PlayerConfig.js";
 
 export default function addAI(
   io: Server,
@@ -9,8 +10,6 @@ export default function addAI(
 ) {
   socket.on("addAI", ({ gameId }) => {
     try {
-      socket.emit("gameLog", log("------Adding AI player------", "started"));
-
       const lobby = manager.getLobby(gameId);
 
       if (typeof lobby === "string") {
@@ -20,6 +19,11 @@ export default function addAI(
 
       const players = lobby?.getPlayers();
 
+      if (typeof players === "string") {
+        socket.emit("gameLog", log(players, "error"));
+        return;
+      }
+
       if (players?.length! >= 6) {
         socket.emit(
           "gameLog",
@@ -27,6 +31,11 @@ export default function addAI(
         );
         return;
       }
+
+      socket.emit(
+        "gameLog",
+        log("------Adding AI player------", "started", players[0]!.name),
+      );
 
       if (!lobby) {
         socket.emit("gameLog", log("Lobby not found", "error"));
