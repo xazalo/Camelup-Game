@@ -113,16 +113,23 @@ export default class Game {
     this.processDiceRoll(player as Player);
   }
 
-  placeTile(playerName: string, position: number, tileType: TileType) {
+  placeTile(playerName: string, position: number, tileType: TileType): void {
     this.ensureGameIsActive();
-    if (position === 0)
+    if (position === 0) {
       throw new Error("Tile cannot be placed on the first position");
+    }
     const playerIndex = this.getPlayerIndexByName(playerName);
-    if (!this.playerHasTurn(playerIndex)) throw new Error("Is not your turn");
-    if (this.players[playerIndex]?.hasPlacedTile())
+    if (!this.playerHasTurn(playerIndex)) {
+      throw new Error("Is not your turn");
+    }
+    if (this.players[playerIndex]?.hasPlacedTile()) {
       throw new Error("Tile already placed");
+    }
     this.board.spaces[position]?.tile.place(playerName, tileType);
-    this.players[playerIndex]?.placeTile();
+    for (const player of this.players) {
+      player?.updateAvailableTiles(position);
+    }
+    this.players[playerIndex]?.switchTilePlaced();
     this.nextTurn();
   }
 

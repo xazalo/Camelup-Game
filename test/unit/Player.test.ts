@@ -18,7 +18,7 @@ describe("Player", () => {
   });
 
   it("should update the placed tile state", () => {
-    player.placeTile();
+    player.switchTilePlaced();
     expect(player.placedTile).toBe(true);
   });
 

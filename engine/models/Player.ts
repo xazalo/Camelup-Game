@@ -61,12 +61,15 @@ export default class Player {
     this.isAI = !this.isAI;
   }
 
+  switchTilePlaced() {
+    this.placedTile = true;
+  }
+
   /**
    * Flag for know if the user placed a tile
    */
-  placeTile() {
-    this.placedTile = true;
-    this.availableActions.switchPlaceTile();
+  updateAvailableTiles(position: number) {
+    this.availableActions.switchPlaceTile(position);
   }
 
   /**

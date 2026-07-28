@@ -26,7 +26,24 @@ describe("AvailableActions", () => {
       yellow: true,
     });
 
-    expect(actions.placeTile).toEqual(true);
+    expect(actions.placeTile).toEqual([
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+    ]);
   });
 
   it("should disable roll dice", () => {
@@ -34,7 +51,6 @@ describe("AvailableActions", () => {
 
     expect(actions.rollDice).toBe(false);
   });
-
 
   it("should disable a winner bet", () => {
     actions.switchWinnerBet("green" as Colors);
@@ -56,22 +72,32 @@ describe("AvailableActions", () => {
     expect(actions.loserBet.yellow).toBe(true);
   });
 
-  it("should disable both tile actions", () => {
-    actions.switchPlaceTile();
+  it("should disable the selected tile position", () => {
+    actions.switchPlaceTile(5);
 
-    expect(actions.placeTile).toEqual(false);
+    expect(actions.placeTile[5]).toBe(false);
+  });
+
+  it("should disable the selected tile position and adjacent positions", () => {
+    actions.switchPlaceTile(5);
+
+    expect(actions.placeTile[4]).toBe(false);
+    expect(actions.placeTile[5]).toBe(false);
+    expect(actions.placeTile[6]).toBe(false);
+
+    expect(actions.placeTile[3]).toBe(true);
+    expect(actions.placeTile[7]).toBe(true);
   });
 
   it("should reset all actions", () => {
     actions.switchRollDice();
     actions.switchWinnerBet("green" as Colors);
     actions.switchLoserBet("red" as Colors);
-    actions.switchPlaceTile();
+    actions.switchPlaceTile(5);
 
     actions.reset();
 
     expect(actions.rollDice).toBe(true);
-
 
     expect(actions.winnerBet).toEqual({
       blue: true,
@@ -87,6 +113,23 @@ describe("AvailableActions", () => {
       yellow: true,
     });
 
-    expect(actions.placeTile).toEqual(true);
+    expect(actions.placeTile).toEqual([
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+    ]);
   });
 });

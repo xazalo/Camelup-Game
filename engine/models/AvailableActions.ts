@@ -24,7 +24,12 @@ export default class AvailableActions {
     yellow: true,
   };
 
-  placeTile = true;
+  placeTile: boolean[] = Array(16).fill(true);
+
+  constructor() {
+    this.placeTile[0] = false;
+    this.placeTile[15] = false;
+  }
 
   reset(): void {
     this.rollDice = true;
@@ -44,11 +49,19 @@ export default class AvailableActions {
     this.loserBet.red = true;
     this.loserBet.yellow = true;
 
-    this.placeTile = true;
+    this.placeTile.fill(true);
+    this.placeTile[0] = false;
+    this.placeTile[15] = false;
   }
 
-  switchPlaceTile(): void {
-    this.placeTile = false;
+  switchPlaceTile(position: number): void {
+    if (!Number.isInteger(position) || position < 1 || position > 14) {
+      throw new Error("Incorrect Tile Position");
+    }
+
+    this.placeTile[position - 1] = false;
+    this.placeTile[position] = false;
+    this.placeTile[position + 1] = false;
   }
 
   switchRollDice(): void {
