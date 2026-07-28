@@ -193,8 +193,6 @@ export default class Board {
   private applyTileEffect(destination: number, player?: Player): number {
     const destinationStack = this.spaces[destination];
 
-    console.log("******** Mess *************");
-
     if (!destinationStack || !destinationStack.tile.hasTile()) {
       return destination;
     }
