@@ -16,7 +16,7 @@ export default function createLobby(
       const lobby = manager.getLobby(lobbyId);
 
       if (typeof lobby === "string") {
-        socket.emit("gameLog", log(lobby, "error"));
+        socket.emit("gameLog", log(lobby, "error", player.name));
         socket.emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }

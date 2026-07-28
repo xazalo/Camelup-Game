@@ -14,7 +14,7 @@ export default function placeWinnerBet(
       try {
         socket.emit(
           "gameLog",
-          log("------Placing winner bet------", "started"),
+          log("------Placing winner bet------", "started", playerName),
         );
 
         const controller = manager.getGame(gameId);

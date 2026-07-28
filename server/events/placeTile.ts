@@ -12,7 +12,7 @@ export default function placeTile(
     "placeTile",
     async ({ gameId, playerName, playerId, position, tileType }) => {
       try {
-        socket.emit("gameLog", log("------Placing tile------", "started"));
+        socket.emit("gameLog", log("------Placing tile------", "started", playerName));
 
         const controller = manager.getGame(gameId);
 

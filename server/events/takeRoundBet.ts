@@ -37,7 +37,7 @@ export default function takeRoundBet(
 
         if (typeof gameState === "string" || gameState === null) {
           socket.emit("gameLog", log(gameState, "error"));
-          socket.emit("gameLog", log("------FINISHED------", "finished"));
+          socket.emit("gameLog", log("------FINISHED------", "finished", playerName));
           return;
         }
 

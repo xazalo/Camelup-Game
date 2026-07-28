@@ -13,7 +13,7 @@ export default function placeLoserBet(
     "placeLoserBet",
     async ({ gameId, playerName, playerId, camelColor }) => {
       try {
-        socket.emit("gameLog", log("------Placing loser bet------", "started"));
+        socket.emit("gameLog", log("------Placing loser bet------", "started", playerName));
 
         const controller = manager.getGame(gameId);
 

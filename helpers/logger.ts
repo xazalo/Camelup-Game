@@ -1,6 +1,6 @@
 type Type = "log" | "error" | "finished" | "started";
 
-export function log(message: string, type: Type): string {
+export function log(message: string, type: Type, playerName?: string): string {
   let prefix: string;
 
   switch (type) {
@@ -26,7 +26,18 @@ export function log(message: string, type: Type): string {
       break;
   }
 
-  const result = `${prefix}${message}`;
+  const date = new Date();
+
+  const formattedDate = date.toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    fractionalSecondDigits: 3,
+  });
+
+  const playerInfo = playerName ? ` [Player: ${playerName}]` : "";
+
+  const result = `${prefix}${playerInfo} ${message} [${formattedDate}]`;
 
   console.log(result);
 

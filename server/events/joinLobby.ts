@@ -9,7 +9,7 @@ export default function joinLobby(
 ) {
   socket.on("joinLobby", ({ gameId, playerName }) => {
     try {
-      socket.emit("gameLog", log("------Joining lobby------", "started"));
+      socket.emit("gameLog", log("------Joining lobby------", "started", playerName));
 
       const lobby = manager.getLobby(gameId);
 

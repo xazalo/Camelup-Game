@@ -10,7 +10,7 @@ export default function rollTheDice(
 ) {
   socket.on("rollTheDice", async ({ gameId, playerName, playerId }) => {
     try {
-      socket.emit("gameLog", log("------Rolling the dice------", "started"));
+      socket.emit("gameLog", log("------Rolling the dice------", "started", playerName));
 
       const controller = manager.getGame(gameId);
 
