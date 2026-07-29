@@ -10,12 +10,15 @@ export default function rollTheDice(
 ) {
   socket.on("rollTheDice", async ({ gameId, playerName, playerId }) => {
     try {
-      io.to(gameId).emit("gameLog", log("------Rolling the dice------", "started", playerName));
+      io.to(gameId).emit(
+        "gameLog",
+        log("------Rolling the dice------", "started", playerName),
+      );
 
       const controller = manager.getGame(gameId);
 
       if (typeof controller === "string") {
-        io.to(gameId).emit("gameLog", log(controller, "error"));
+        io.to(gameId).emit("gameLog", controller);
         return;
       }
 
@@ -28,17 +31,27 @@ export default function rollTheDice(
 
       const result = await controller.rollTheDice(playerName);
 
-      io.to(gameId).emit("gameLog", log(result, "info"));
+      io.to(gameId).emit("gameLog", result);
 
       const gameState = manager.getGame(gameId);
 
-      if (typeof gameState === "string" || gameState === null) {
-        io.to(gameId).emit("gameLog", log(gameState, "error"));
+      if (typeof gameState === "string") {
+        io.to(gameId).emit("gameLog", gameState);
+        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+        return;
+      }
+
+      if (gameState === null) {
+        io.to(gameId).emit("gameLog", log("Game is null", "error"));
         io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
       const parsedGame = serializeGame(gameState.game as Game);
+
+      const currentPlayer = gameState.getCurrentPlayer();
+
+      io.to(gameId).emit("currentPlayer", currentPlayer);
 
       io.to(gameId).emit("gameState", parsedGame);
 

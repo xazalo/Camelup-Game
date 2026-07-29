@@ -12,13 +12,19 @@ export default function placeTile(
     "placeTile",
     async ({ gameId, playerName, playerId, position, tileType }) => {
       try {
-        io.to(gameId).emit("gameLog", log("------Placing tile------", "started", playerName));
+        io.to(gameId).emit(
+          "gameLog",
+          log("------Placing tile------", "started", playerName),
+        );
 
         const controller = manager.getGame(gameId);
 
         if (typeof controller === "string") {
           io.to(gameId).emit("gameLog", log("Game not found", "error"));
-          io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+          io.to(gameId).emit(
+            "gameLog",
+            log("------FINISHED------", "finished"),
+          );
           return;
         }
 
@@ -35,17 +41,33 @@ export default function placeTile(
           tileType,
         );
 
-        io.to(gameId).emit("gameLog", log(result, "info"));
+        io.to(gameId).emit("gameLog", result);
 
         const gameState = manager.getGame(gameId);
 
-        if (typeof gameState === "string" || gameState === null) {
-          io.to(gameId).emit("gameLog", log(gameState, "error"));
-          io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+        if (typeof gameState === "string") {
+          io.to(gameId).emit("gameLog", gameState);
+          io.to(gameId).emit(
+            "gameLog",
+            log("------FINISHED------", "finished"),
+          );
+          return;
+        }
+
+        if (gameState === null) {
+          io.to(gameId).emit("gameLog", log("Game is null", "error"));
+          io.to(gameId).emit(
+            "gameLog",
+            log("------FINISHED------", "finished"),
+          );
           return;
         }
 
         const parsedGame = serializeGame(gameState.game as Game);
+
+        const currentPlayer = gameState.getCurrentPlayer();
+
+        io.to(gameId).emit("currentPlayer", currentPlayer);
 
         io.to(gameId).emit("gameState", parsedGame);
         io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));

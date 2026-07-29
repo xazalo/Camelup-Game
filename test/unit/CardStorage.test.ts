@@ -152,6 +152,11 @@ describe("CardStorage", () => {
 
       const green = game.board.findCamelByColor(Colors.Green);
 
+      if(typeof green === "string") {
+        expect(green).toBe("")
+        return
+      }
+
       game.placeWinnerBet("Player1", green);
       game.placeWinnerBet("Player2", green);
       game.placeWinnerBet("Player3", green);

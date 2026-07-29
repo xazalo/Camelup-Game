@@ -2,6 +2,7 @@ import GameController from "../cli/controllers/GameController.js";
 import type Game from "../engine/models/Game.js";
 import { createRandomId } from "../helpers/index.js";
 import GameLobby from "./GameLobby.js";
+import { log } from "../helpers/index.js";
 
 export default class GameManager {
   private games = new Map<string, GameController>();
@@ -19,14 +20,25 @@ export default class GameManager {
 
   getLobby(gameId: string): GameLobby | string {
     const result = this.lobbies.get(gameId);
-    if (!result) return "Cannot get the lobby";
+    if (typeof result === "string" || result === undefined)
+      return log("Cannot get the lobby", "error");
     return result;
+  }
+
+  getCurrentPlayer(gameId: string) {
+    const game = this.games.get(gameId);
+    if (!game) {
+      return log("Game not found", "error");
+    }
+    return game.getCurrentPlayer();
   }
 
   async startGame(gameId: string): Promise<GameController | string> {
     const lobby = this.lobbies.get(gameId);
 
-    if (!lobby) return "There is no lobby";
+    if (!lobby) {
+      return log("There is no lobby", "error");
+    }
 
     const game = new GameController();
 
@@ -34,10 +46,12 @@ export default class GameManager {
 
     const players = lobby.getPlayers();
 
-    if (typeof players === "string") return players;
+    if (typeof players === "string") {
+      return players;
+    }
 
     if (players.length < 2 || players.length > 6) {
-      return "players must be between 2 and 6";
+      return log("Players must be between 2 and 6", "info");
     }
 
     await game.startGame(players, gameId);
@@ -47,19 +61,37 @@ export default class GameManager {
 
   getGame(gameId: string): GameController | string {
     const game = this.games.get(gameId);
-    if (!game) return "Game not found";
+
+    if (!game) {
+      return log("Game not found", "error");
+    }
+
     return game;
   }
 
-  touchGame(gameId: string): void {
-    this.games.get(gameId)?.touch();
+  touchGame(gameId: string): string {
+    const game = this.games.get(gameId);
+
+    if (!game) {
+      return log("Game not found", "error");
+    }
+
+    game.touch();
+
+    return log("Game activity updated", "info");
   }
 
-  deleteGame(gameId: string): void {
+  deleteGame(gameId: string): string {
+    if (!this.games.has(gameId)) {
+      return log("Game not found", "error");
+    }
+
     this.games.delete(gameId);
+
+    return log("Game deleted successfully", "success");
   }
 
-  cleanup(): void {
+  cleanup(): string {
     for (const [gameId, game] of this.games) {
       if (game.isInactive()) {
         console.log(`Deleting game ${gameId} due to inactivity.`);
@@ -73,5 +105,7 @@ export default class GameManager {
         this.lobbies.delete(lobbyId);
       }
     }
+
+    return log("Cleanup completed", "success");
   }
 }

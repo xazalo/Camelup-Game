@@ -12,6 +12,7 @@ import { generatePayoutTable } from "../../helpers/index.js";
 import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
 import { type PlayerConfig } from "../types/index.js";
+import { log } from "../../helpers/index.js";
 
 type Bet = {
   player: string;
@@ -52,9 +53,13 @@ export default class Game {
     this.cardStorage = cardStorage;
   }
 
-  static create(playersConfig: PlayerConfig[], id: string): Game {
+  getCurrentPlayer() {
+    return this.players[this.currentPlayer]?.name;
+  }
+
+  static create(playersConfig: PlayerConfig[], id: string): Game | string {
     if (playersConfig.length < 2 || playersConfig.length > 6) {
-      throw new Error("This Game must have between 2 and 6 players");
+      return log("This Game must have between 2 and 6 players", "error");
     }
 
     const board = new Board(16);
@@ -75,7 +80,7 @@ export default class Game {
     return game;
   }
 
-  addRound() {
+  addRound(): string {
     const newRound = new Round();
 
     this.history = [...this.history, newRound];
@@ -88,52 +93,74 @@ export default class Game {
     }
 
     this.currentPlayer = 0;
+
+    return log("Round added successfully", "success");
   }
 
   getCurrentRound(): Round {
     return this.history[this.history.length - 1]!;
   }
 
-  rollDice(playerName: string) {
-    this.ensureGameIsActive();
+  rollDice(playerName: string): string {
+    const active = this.ensureGameIsActive();
+
+    if (!active) return log("Game has already finished", "info");
+    
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
-      throw new Error("Player not found");
+      return log("Player not found", "error");
     }
 
     if (!this.playerHasTurn(playerIndex)) {
-      throw new Error("It is not this player's turn");
+      return log("It is not this player's turn", "error");
     }
 
     const player = this.players[playerIndex] as Player;
 
     player.updateMoney(1);
 
-    this.processDiceRoll(player as Player);
+    this.processDiceRoll(player);
+
+    return log("Dice rolled successfully", "info");
   }
 
-  placeTile(playerName: string, position: number, tileType: TileType): void {
-    this.ensureGameIsActive();
+  placeTile(
+    playerName: string,
+    position: number,
+    tileType: TileType,
+  ): string {
+    const active = this.ensureGameIsActive();
+
+    if (!active) return log("Game has already finished", "info");
+
     if (position === 0) {
-      throw new Error("Tile cannot be placed on the first position");
+      return log("Tile cannot be placed on the first position", "error");
     }
+
     const playerIndex = this.getPlayerIndexByName(playerName);
+
     if (!this.playerHasTurn(playerIndex)) {
-      throw new Error("Is not your turn");
+      return log("Is not your turn", "error");
     }
+
     if (this.players[playerIndex]?.hasPlacedTile()) {
-      throw new Error("Tile already placed");
+      return log("Tile already placed", "error");
     }
+
     this.board.spaces[position]?.tile.place(playerName, tileType);
+
     for (const player of this.players) {
       player?.updateAvailableTiles(position);
     }
+
     this.players[playerIndex]?.switchTilePlaced();
     this.nextTurn();
+
+    return log("Tile placed successfully", "info");
   }
 
-  private processDiceRoll(player: Player) {
+  private processDiceRoll(player: Player): string | void {
     const round = this.getCurrentRound();
 
     const color = round.dicePool.draw();
@@ -147,12 +174,12 @@ export default class Game {
 
     if (this.board.hasCamelReachedFinish()) {
       this.endGame();
-      return;
+      return log("Game finished", "finished");
     }
 
     if (round.isFinished()) {
       this.endRound();
-      return;
+      return log("Round finished", "finished");
     }
 
     this.nextTurn();
@@ -227,65 +254,77 @@ export default class Game {
     }
   }
 
-  placeWinnerBet(playerName: string, camel: Camel): void {
-    this.ensureGameIsActive();
+  placeWinnerBet(playerName: string, camel: Camel): string {
+    const active = this.ensureGameIsActive();
+
+    if (!active) return log("Game has already finished", "info");
+
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
-      throw new Error("Player not found");
+      return log("Player not found", "error");
     }
 
     if (!this.playerHasTurn(playerIndex)) {
-      throw new Error("It is not your turn");
+      return log("It is not your turn", "error");
     }
 
     this.players[playerIndex]?.availableActions.switchWinnerBet(camel.color);
     this.cardStorage.addWinner(playerName, camel.color.toString());
 
     this.nextTurn();
+
+    return log("Winner bet placed successfully", "info");
   }
 
-  placeLoserBet(playerName: string, camel: Camel): void {
-    this.ensureGameIsActive();
+  placeLoserBet(playerName: string, camel: Camel): string {
+    const active = this.ensureGameIsActive();
+
+    if (!active) return log("Game has already finished", "info");
+
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
-      throw new Error("Player not found");
+      return log("Player not found", "error");
     }
 
     if (!this.playerHasTurn(playerIndex)) {
-      throw new Error("It is not your turn");
+      return log("It is not your turn", "error");
     }
 
     this.players[playerIndex]?.availableActions.switchLoserBet(camel.color);
     this.cardStorage.addLoser(playerName, camel.color.toString());
 
     this.nextTurn();
+
+    return log("Loser bet placed successfully", "info");
   }
 
-  takeRoundBet(playerName: string, camel: Camel): void {
-    this.ensureGameIsActive();
+  takeRoundBet(playerName: string, camel: Camel): string {
+    const active = this.ensureGameIsActive();
+
+    if (!active) return log("Game has already finished", "info");
 
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
-      throw new Error("Player not found");
+      return log("Player not found", "error");
     }
 
     if (!this.playerHasTurn(playerIndex)) {
-      throw new Error("It is not your turn");
+      return log("It is not your turn", "error");
     }
 
     const color = camel.color.toString();
 
     if (!this.cardStorage.shouldGrabCard(color)) {
-      throw new Error("No cards remaining for this camel");
+      return log("No cards remaining for this camel", "error");
     }
 
     const grabbedCard = this.cardStorage.grabCard(color);
 
     if (!grabbedCard) {
-      throw new Error("There is a bug on the game!!!.");
+      return log("There is a bug on the game!!!.", "error");
     }
 
     const remaining = this.cardStorage.numberRemainingCards(color);
@@ -303,30 +342,33 @@ export default class Game {
     this.players[playerIndex]?.addCard(card);
 
     this.nextTurn();
+
+    return log("Card drawn successfully.", "info");
   }
 
-  private ensureGameIsActive(): void {
-    if (this.phase === GamePhase.Finished) {
-      throw new Error("Game has already finished");
-    }
+  private ensureGameIsActive(): boolean {
+    return this.phase !== GamePhase.Finished;
   }
 
   playerHasTurn(index: number): boolean {
     return this.currentPlayer === index;
   }
 
-  endRound() {
+  endRound(): string {
     this.calculateRoundIncomes();
     this.addRound();
     this.cardStorage.resetStoredCards();
 
     const playersLength = this.players.length - 1;
+
     for (let i = 0; i < playersLength; i++) {
       this.players[playersLength]?.resetCardStorage();
     }
+
+    return log("Round ended successfully", "info");
   }
 
-  endGame() {
+  endGame(): string {
     this.calculateRoundIncomes();
     this.calculateGameIncomes();
     this.phase = GamePhase.Finished;
@@ -336,9 +378,11 @@ export default class Game {
     for (let i = 0; i < playersLength; i++) {
       this.players[i]?.availableActions.switchRollDice();
     }
+
+    return log("Game ended successfully", "finished");
   }
 
-  private nextTurn() {
+  private nextTurn(): void {
     this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
     this.currentTurn++;
   }

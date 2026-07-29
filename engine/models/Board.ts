@@ -1,6 +1,7 @@
 import { Colors, Directions } from "../enums/index.js";
 import { Camel, Stack, Player } from "./index.js";
 import { TileType } from "../enums/index.js";
+import { log } from "../../helpers/logger.js";
 
 /**
  * This class defines de board of the Game, and also
@@ -33,7 +34,7 @@ export default class Board {
    *
    */
 
-  moveCamel(color: Colors, steps: number, player?: Player): void {
+  moveCamel(color: Colors, steps: number, player?: Player): string | void {
     let camel: Camel | null = null;
     let currentPosition = -1;
 
@@ -46,7 +47,7 @@ export default class Board {
     }
 
     if (!camel) {
-      throw new Error(`Camel ${color} not found`);
+      return log(`Camel not found  ${color}`, "error");
     }
 
     const size = this.spaces.length;
@@ -68,20 +69,24 @@ export default class Board {
 
     destination = ((destination % size) + size) % size;
 
-    destination = this.applyTileEffect(destination, player);
+    const effect = this.applyTileEffect(destination, player);
+
+    if (typeof effect === "string")
+      return log(`Invalid board state at ${destination}`, "error");
+
+    destination = effect;
 
     const destinationStack = this.spaces[destination];
     if (!destinationStack) {
-      throw new Error(`Invalid board state at ${destination}`);
+      return log(`Invalid board state at ${destination}`, "error");
     }
 
     destinationStack.addCamel(camel);
+
+    return log("Camel moved successfully", "info");
   }
 
-  /**
-   * Creates and places all camels on the starting tile.
-   */
-  createCamels() {
+  createCamels(): void {
     const camels = [
       new Camel(Colors.Green),
       new Camel(Colors.Blue),
@@ -96,15 +101,7 @@ export default class Board {
     });
   }
 
-  /**
-   * This function extends moveCamel, the idea is move al the camels which are
-   * up than the camel inside the tile.
-   *
-   * @param { color } string, again uses the color for select the camel
-   *
-   * @param { steps } number This is the number the steps for advance
-   */
-  moveCamelStack(color: Colors, steps: number, player?: Player): void {
+  moveCamelStack(color: Colors, steps: number, player?: Player): string | void {
     let camels: Camel[] = [];
     let currentPosition = -1;
 
@@ -117,7 +114,7 @@ export default class Board {
     }
 
     if (camels.length === 0) {
-      throw new Error(`Camel not found ${color}`);
+      return log(`Camel not found ${color}`, "error");
     }
 
     const size = this.spaces.length;
@@ -139,34 +136,36 @@ export default class Board {
 
     destination = ((destination % size) + size) % size;
 
-    destination = this.applyTileEffect(destination, player);
+    const effect = this.applyTileEffect(destination, player);
+
+    if (typeof effect === "string")
+      return log(`Invalid board state at ${destination}`, "error");
+
+    destination = effect;
 
     const destinationStack = this.spaces[destination];
     if (!destinationStack) {
-      throw new Error(`Invalid board state at ${destination}`);
+      return log(`Invalid board state at ${destination}`, "error");
     }
 
     destinationStack.addCamels(camels);
+
+    return log("Camel stack moved successfully", "info");
   }
 
-  findCamelByColor(color: Colors): Camel {
+  findCamelByColor(color: Colors): Camel | string {
     for (const stack of this.spaces) {
       const camel = stack.camels.find((c) => c.color === color);
       if (camel) return camel;
     }
-    throw new Error(`Camel not found on the board ${color}`);
+
+    return log(`Camel not found on the board ${color}`, "error");
   }
 
-  /**
-   * This method validates if one camel reached the finish tile and the game is finished
-   */
   hasCamelReachedFinish(): boolean {
     return this.raceFinished;
   }
 
-  /**
-   * This method gets the race ranking for calculate the rewards
-   */
   getRaceRanking(): Colors[] {
     const ranking: Colors[] = [];
     const racingCamels = [Colors.Green, Colors.Blue, Colors.Red, Colors.Yellow];
@@ -186,11 +185,10 @@ export default class Board {
     return ranking;
   }
 
-  /**
-   * Helper method to apply the tile effects (Oasis or Mirage)
-   * at the destination space.
-   */
-  private applyTileEffect(destination: number, player?: Player): number {
+  private applyTileEffect(
+    destination: number,
+    player?: Player,
+  ): number | string {
     const destinationStack = this.spaces[destination];
 
     if (!destinationStack || !destinationStack.tile.hasTile()) {

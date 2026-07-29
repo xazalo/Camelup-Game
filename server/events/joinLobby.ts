@@ -9,27 +9,39 @@ export default function joinLobby(
 ) {
   socket.on("joinLobby", ({ gameId, playerName }) => {
     try {
-      io.to(gameId).emit("gameLog", log("------Joining lobby------", "started", playerName));
+      io.to(gameId).emit(
+        "gameLog",
+        log("------Joining lobby------", "started", playerName),
+      );
 
       const lobby = manager.getLobby(gameId);
 
       if (typeof lobby === "string") {
-        io.to(gameId).emit("gameLog", log(lobby, "error"));
-        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", lobby);
+        io.to(gameId).emit(
+          "gameLog",
+          log("------FINISHED------", "finished"),
+        );
         return;
       }
 
       const players = lobby.getPlayers();
 
       if (typeof players === "string") {
-        io.to(gameId).emit("gameLog", log(players, "error"));
-        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", players);
+        io.to(gameId).emit(
+          "gameLog",
+          log("------FINISHED------", "finished"),
+        );
         return;
       }
 
       if (!players) {
         io.to(gameId).emit("gameLog", log("Not players", "error"));
-        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit(
+          "gameLog",
+          log("------FINISHED------", "finished"),
+        );
         return;
       }
 
@@ -61,8 +73,15 @@ export default function joinLobby(
         players: lobby.getPlayers(),
       });
 
-      io.to(gameId).emit("gameLog", log("Player has been joined the lobby", "success"));
-      io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+      io.to(gameId).emit(
+        "gameLog",
+        log("Player has been joined the lobby", "success"),
+      );
+
+      io.to(gameId).emit(
+        "gameLog",
+        log("------FINISHED------", "finished"),
+      );
     } catch (error) {
       socket.emit(
         "gameLog",

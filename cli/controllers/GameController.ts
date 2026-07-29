@@ -22,14 +22,21 @@ export default class GameController {
     return Date.now() - this.lastActivity > timeout;
   }
 
+  getCurrentPlayer() {
+    return this.game?.getCurrentPlayer();
+  }
+
   async startGame(players: PlayerConfig[], id: string): Promise<string> {
     try {
+      if (players.length < 2 || players.length > 6)
+        return log("This Game must have between 2 and 6 players", "error");
+
       this.game = Game.create(players, id) as Game;
       this.touch();
 
       const aiLog = await this.checkAIPlayer();
 
-      return `${log("Game Created", "log")}\n${aiLog}`;
+      return `${log("Game Created", "success")}\n${aiLog}`;
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Unknown error";
       return log(message, "error");
@@ -63,12 +70,17 @@ export default class GameController {
     }
 
     try {
-      this.game.placeTile(playerName, position, tileType);
+      const placed = this.game.placeTile(playerName, position, tileType);
+
+      if (!placed.includes("placed successfully")) {
+        return placed;
+      }
+
       this.touch();
 
       const aiLog = await this.checkAIPlayer();
 
-      return `${log("Tile placed at " + position + "type " + tileType, "log")}\n${aiLog}`;
+      return `${log("Tile placed at " + position + "type " + tileType, "success")}\n${aiLog}`;
     } catch (error: unknown) {
       return log(
         error instanceof Error ? error.message : "Unknown error",
@@ -83,12 +95,15 @@ export default class GameController {
     }
 
     try {
-      this.game.rollDice(playerName);
+      const result = this.game.rollDice(playerName);
+
+      if (!result.includes("rolled successfully")) return result;
+
       this.touch();
 
       const aiLog = await this.checkAIPlayer();
 
-      return `${log("Dice rolled successfully", "log")}\n${aiLog}`;
+      return `${log("Dice rolled successfully", "success")}\n${aiLog}`;
     } catch (error: unknown) {
       return log(
         error instanceof Error ? error.message : "Unknown error",
@@ -108,16 +123,19 @@ export default class GameController {
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
-      if (!camel) {
-        return log("Camel not found", "error");
+      if (typeof camel === "string") {
+        return log(camel, "error");
       }
 
-      this.game.placeWinnerBet(playerName, camel);
+      const result = this.game.placeWinnerBet(playerName, camel);
+
+      if (!result.includes("placed successfully")) return result;
+
       this.touch();
 
       const aiLog = await this.checkAIPlayer();
 
-      return `${log("Winner bet on " + camelColor + " placed", "log")}\n${aiLog}`;
+      return `${log("Winner bet on " + camelColor + " placed", "success")}\n${aiLog}`;
     } catch (error: unknown) {
       return log(
         error instanceof Error ? error.message : "Unknown error",
@@ -134,16 +152,19 @@ export default class GameController {
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
-      if (!camel) {
-        return log("Camel not found", "error");
+      if (typeof camel === "string") {
+        return log(camel, "error");
       }
 
-      this.game.placeLoserBet(playerName, camel);
+      const result = this.game.placeLoserBet(playerName, camel);
+
+      if (!result.includes("placed successfully")) return result;
+
       this.touch();
 
       const aiLog = await this.checkAIPlayer();
 
-      return `${log("Loser bet on " + camelColor + " placed", "log")}\n${aiLog}`;
+      return `${log("Loser bet on " + camelColor + " placed", "success")}\n${aiLog}`;
     } catch (error: unknown) {
       return log(
         error instanceof Error ? error.message : "Unknown error",
@@ -166,16 +187,19 @@ export default class GameController {
     try {
       const camel = this.game.board.findCamelByColor(camelColor);
 
-      if (!camel) {
-        return log("Camel not found", "error");
+      if (typeof camel === "string") {
+        return log(camel, "error");
       }
 
-      this.game.takeRoundBet(playerName, camel);
+      const result = this.game.takeRoundBet(playerName, camel);
+
+      if (!result.includes("Card drawn successfully.")) return result;
+
       this.touch();
 
       const aiLog = await this.checkAIPlayer();
 
-      return `${log("Round bet on " + camelColor + " placed", "log")}\n${aiLog}`;
+      return `${log("Round bet on " + camelColor + " placed", "success")}\n${aiLog}`;
     } catch (error: unknown) {
       return log(
         error instanceof Error ? error.message : "Unknown error",

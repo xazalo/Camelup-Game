@@ -25,13 +25,16 @@ describe("Game", () => {
     });
 
     it("should reject games with less than 2 players", () => {
-      expect(() => {
-        Game.create([{name: "Player1", isAI: false, socketId: ""}], "testgameId");
-      }).toThrow("This Game must have between 2 and 6 players");
+      expect(
+        Game.create(
+          [{ name: "Player1", isAI: false, socketId: "" }],
+          "testgameId",
+        ),
+      ).include("This Game must have between 2 and 6 players");
     });
 
     it("should reject games with more than 6 players", () => {
-      expect(() => {
+      expect(
         Game.create(
           [
             { name: "Player1", isAI: false, socketId: "" },
@@ -43,8 +46,8 @@ describe("Game", () => {
             { name: "Player7", isAI: false, socketId: "" },
           ],
           "testgameId",
-        );
-      }).toThrow("This Game must have between 2 and 6 players");
+        ),
+      ).include("This Game must have between 2 and 6 players");
     });
   });
 
@@ -79,21 +82,15 @@ describe("Game", () => {
 
   describe("rollDice", () => {
     it("should allow current player to roll the dice", () => {
-      expect(() => {
-        game.rollDice("Player1");
-      }).not.toThrow();
+      expect(game.rollDice("Player1")).include("Dice rolled");
     });
 
     it("should reject unknown player", () => {
-      expect(() => {
-        game.rollDice("Unknown");
-      }).toThrow("Player not found");
+      expect(game.rollDice("Unknown")).include("Player not found");
     });
 
     it("should reject player without turn", () => {
-      expect(() => {
-        game.rollDice("Player2");
-      }).toThrow("It is not this player's turn");
+      expect(game.rollDice("Player2")).include("It is not this player's turn");
     });
 
     it("should increase player money after move", () => {
@@ -137,6 +134,11 @@ describe("Game", () => {
     it("should place a winner bet", () => {
       const camel = game.board.findCamelByColor(Colors.Yellow);
 
+      if (typeof camel === "string") {
+        expect(camel).toBe("");
+        return;
+      }
+
       game.placeWinnerBet("Player1", camel);
       expect(game.cardStorage.hasWinnerCardPlaced("Player1", "yellow")).toBe(
         true,
@@ -146,15 +148,23 @@ describe("Game", () => {
     it("should reject unknown player", () => {
       const camel = game.board.findCamelByColor(Colors.Yellow);
 
-      expect(() => {
-        game.placeWinnerBet("Unknown", camel);
-      }).toThrow("Player not found");
+      if (typeof camel === "string") {
+        expect(camel).toBe("");
+        return;
+      }
+
+      expect(game.placeWinnerBet("Unknown", camel)).include("Player not found");
     });
   });
 
   describe("placeLoserBet", () => {
     it("should place a loser bet", () => {
       const camel = game.board.findCamelByColor(Colors.Blue);
+
+      if (typeof camel === "string") {
+        expect(camel).toBe("");
+        return;
+      }
 
       game.placeLoserBet("Player1", camel);
 
@@ -164,9 +174,18 @@ describe("Game", () => {
     it("should reject unknown player", () => {
       const camel = game.board.findCamelByColor(Colors.Blue);
 
-      expect(() => {
-        game.placeLoserBet("Unknown", camel);
-      }).toThrow("Player not found");
+      if (typeof camel === "string") {
+        expect(camel).toBe("");
+        return;
+      }
+
+      expect(game.placeLoserBet("Unknown", camel)).include("Player not found");
+    });
+  });
+
+  describe("round management", () => {
+    it("should have an initial round", () => {
+      expect(game.history.length).toBe(1);
     });
   });
 
@@ -181,6 +200,12 @@ describe("Game", () => {
       const player = game.players[0]!;
 
       const green = game.board.findCamelByColor(Colors.Green);
+
+      if (typeof green === "string") {
+        expect(green).toBe("");
+        return;
+      }
+
       game.board.spaces.forEach((space) => (space.camels = []));
       game.board.spaces[15]!.addCamel(green);
 
@@ -198,6 +223,12 @@ describe("Game", () => {
 
       const green = game.board.findCamelByColor(Colors.Green);
       const blue = game.board.findCamelByColor(Colors.Blue);
+
+      if (typeof green === "string" || typeof blue === "string") {
+        expect(green).toBe("");
+        expect(blue).toBe("");
+        return;
+      }
 
       game.board.spaces.forEach((space) => (space.camels = []));
 
@@ -220,6 +251,19 @@ describe("Game", () => {
       const blue = game.board.findCamelByColor(Colors.Blue);
       const red = game.board.findCamelByColor(Colors.Red);
       const yellow = game.board.findCamelByColor(Colors.Yellow);
+
+      if (
+        typeof green === "string" ||
+        typeof blue === "string" ||
+        typeof red === "string" ||
+        typeof yellow === "string"
+      ) {
+        expect(green).toBe("");
+        expect(blue).toBe("");
+        expect(red).toBe("");
+        expect(yellow).toBe("");
+        return;
+      }
 
       game.board.spaces.forEach((space) => (space.camels = []));
 
@@ -244,6 +288,11 @@ describe("Game", () => {
 
       const green = game.board.findCamelByColor(Colors.Green);
 
+      if (typeof green === "string") {
+        expect(green).toBe("");
+        return;
+      }
+
       game.placeWinnerBet(player.name, green);
 
       game.board.spaces.forEach((space) => (space.camels = []));
@@ -256,6 +305,11 @@ describe("Game", () => {
 
     it("should pay 5 coins to the second correct winner bet", () => {
       const green = game.board.findCamelByColor(Colors.Green);
+
+      if (typeof green === "string") {
+        expect(green).toBe("");
+        return;
+      }
 
       game.placeWinnerBet("Player1", green);
       game.placeWinnerBet("Player2", green);
@@ -273,6 +327,12 @@ describe("Game", () => {
       const green = game.board.findCamelByColor(Colors.Green);
       const blue = game.board.findCamelByColor(Colors.Blue);
 
+      if (typeof green === "string" || typeof blue === "string") {
+        expect(green).toBe("");
+        expect(blue).toBe("");
+        return;
+      }
+
       game.placeWinnerBet("Player1", blue);
 
       game.board.spaces.forEach((space) => (space.camels = []));
@@ -286,6 +346,12 @@ describe("Game", () => {
     it("should pay 8 coins for the first correct loser bet", () => {
       const green = game.board.findCamelByColor(Colors.Green);
       const blue = game.board.findCamelByColor(Colors.Blue);
+
+      if (typeof green === "string" || typeof blue === "string") {
+        expect(green).toBe("");
+        expect(blue).toBe("");
+        return;
+      }
 
       game.placeLoserBet("Player1", blue);
 
@@ -302,6 +368,12 @@ describe("Game", () => {
     it("should lose one coin for an incorrect loser bet", () => {
       const green = game.board.findCamelByColor(Colors.Green);
       const blue = game.board.findCamelByColor(Colors.Blue);
+
+      if (typeof green === "string" || typeof blue === "string") {
+        expect(green).toBe("");
+        expect(blue).toBe("");
+        return;
+      }
 
       game.placeLoserBet("Player1", green);
 
@@ -320,6 +392,11 @@ describe("Game", () => {
     beforeEach(() => {
       const green = game.board.findCamelByColor(Colors.Green);
 
+      if (typeof green === "string") {
+        expect(green).toBe("");
+        return;
+      }
+
       game.board.spaces.forEach((space) => (space.camels = []));
       game.board.spaces[15]!.addCamel(green);
 
@@ -331,33 +408,46 @@ describe("Game", () => {
     });
 
     it("should not allow rolling dice after game finishes", () => {
-      expect(() => {
-        game.rollDice("Player1");
-      }).toThrow("Game has already finished");
+      expect(game.rollDice("Player1")).include("Game has already finished");
     });
 
     it("should not allow winner bets after game finishes", () => {
       const green = game.board.findCamelByColor(Colors.Green);
 
-      expect(() => {
-        game.placeWinnerBet("Player1", green);
-      }).toThrow("Game has already finished");
+      if (typeof green === "string") {
+        expect(green).toBe("");
+        return;
+      }
+
+      expect(game.placeWinnerBet("Player1", green)).include(
+        "Game has already finished",
+      );
     });
 
     it("should not allow loser bets after game finishes", () => {
       const green = game.board.findCamelByColor(Colors.Green);
 
-      expect(() => {
-        game.placeLoserBet("Player1", green);
-      }).toThrow("Game has already finished");
+      if (typeof green === "string") {
+        expect(green).toBe("");
+        return;
+      }
+
+      expect(game.placeLoserBet("Player1", green)).include(
+        "Game has already finished",
+      );
     });
 
     it("should not allow round bets after game finishes", () => {
       const green = game.board.findCamelByColor(Colors.Green);
 
-      expect(() => {
-        game.takeRoundBet("Player1", green);
-      }).toThrow("Game has already finished");
+      if (typeof green === "string") {
+        expect(green).toBe("");
+        return;
+      }
+
+      expect(game.takeRoundBet("Player1", green)).include(
+        "Game has already finished",
+      );
     });
   });
 });

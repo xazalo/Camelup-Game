@@ -10,13 +10,19 @@ export default function joinGame(
 ) {
   socket.on("joinGame", ({ gameId }) => {
     try {
-      io.to(gameId).emit("gameLog", log("------Joining game------", "started"));
+      io.to(gameId).emit(
+        "gameLog",
+        log("------Joining game------", "started"),
+      );
 
       const controller = manager.getGame(gameId);
 
       if (typeof controller === "string") {
-        io.to(gameId).emit("gameLog", log(controller, "error"));
-        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+        io.to(gameId).emit("gameLog", controller);
+        io.to(gameId).emit(
+          "gameLog",
+          log("------FINISHED------", "finished"),
+        );
         return;
       }
 
@@ -24,9 +30,24 @@ export default function joinGame(
 
       const gameState = manager.getGame(gameId);
 
-      if (typeof gameState === "string" || gameState === null) {
-        io.to(gameId).emit("gameLog", log(gameState, "error"));
-        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+      if (typeof gameState === "string") {
+        io.to(gameId).emit("gameLog", gameState);
+        io.to(gameId).emit(
+          "gameLog",
+          log("------FINISHED------", "finished"),
+        );
+        return;
+      }
+
+      if (gameState === null) {
+        io.to(gameId).emit(
+          "gameLog",
+          log("Game is null", "error"),
+        );
+        io.to(gameId).emit(
+          "gameLog",
+          log("------FINISHED------", "finished"),
+        );
         return;
       }
 
@@ -34,8 +55,15 @@ export default function joinGame(
 
       socket.emit("gameState", parsedGame);
 
-      io.to(gameId).emit("gameLog", log("Player has been joined the game", "log"));
-      io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+      io.to(gameId).emit(
+        "gameLog",
+        log("Player has been joined the game", "log"),
+      );
+
+      io.to(gameId).emit(
+        "gameLog",
+        log("------FINISHED------", "finished"),
+      );
     } catch (error) {
       socket.emit(
         "gameLog",

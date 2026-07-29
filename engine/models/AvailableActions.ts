@@ -1,4 +1,5 @@
 import { Colors } from "../../engine/enums/index.js";
+import { log } from "../../helpers/logger.js";
 
 export default class AvailableActions {
   rollDice = true;
@@ -54,56 +55,66 @@ export default class AvailableActions {
     this.placeTile[15] = false;
   }
 
-  switchPlaceTile(position: number): void {
+  switchPlaceTile(position: number): string {
     if (!Number.isInteger(position) || position < 1 || position > 14) {
-      throw new Error("Incorrect Tile Position");
+      return log("Incorrect Tile Position", "error");
     }
 
     this.placeTile[position - 1] = false;
     this.placeTile[position] = false;
     this.placeTile[position + 1] = false;
+
+    return log("Tile switched successfully", "success");
   }
 
-  switchRollDice(): void {
+  switchRollDice(): string {
     this.rollDice = false;
+
+    return log("Dice switched successfully", "success");
   }
 
-  switchRoundBet(color: Colors): void {
+  switchRoundBet(color: Colors): string {
     if (
       color !== Colors.Blue &&
       color !== Colors.Green &&
       color !== Colors.Red &&
       color !== Colors.Yellow
     ) {
-      throw new Error("Incorrect Bet Color");
+      return log("Incorrect Bet Color", "error");
     }
 
     this.roundBet[color] = false;
+
+    return log("Round bet switched successfully", "success");
   }
 
-  switchWinnerBet(color: Colors): void {
+  switchWinnerBet(color: Colors): string {
     if (
       color !== Colors.Blue &&
       color !== Colors.Green &&
       color !== Colors.Red &&
       color !== Colors.Yellow
     ) {
-      throw new Error("Incorrect Bet Color");
+      return log("Incorrect Bet Color", "error");
     }
 
     this.winnerBet[color] = false;
+
+    return log("Winner bet switched successfully", "success");
   }
 
-  switchLoserBet(color: Colors): void {
+  switchLoserBet(color: Colors): string {
     if (
       color !== Colors.Blue &&
       color !== Colors.Green &&
       color !== Colors.Red &&
       color !== Colors.Yellow
     ) {
-      throw new Error("Incorrect Bet Color");
+      return log("Incorrect Bet Color", "error");
     }
 
     this.loserBet[color] = false;
+
+    return log("Loser bet switched successfully", "success");
   }
 }

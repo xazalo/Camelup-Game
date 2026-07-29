@@ -12,13 +12,19 @@ export default function takeRoundBet(
     "takeRoundBet",
     async ({ gameId, playerName, playerId, camelColor }) => {
       try {
-        io.to(gameId).emit("gameLog", log("------Taking round bet------", "started"));
+        io.to(gameId).emit(
+          "gameLog",
+          log("------Taking round bet------", "started"),
+        );
 
         const controller = manager.getGame(gameId);
 
         if (typeof controller === "string") {
-          io.to(gameId).emit("gameLog", log(controller, "error"));
-          io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+          io.to(gameId).emit("gameLog", controller);
+          io.to(gameId).emit(
+            "gameLog",
+            log("------FINISHED------", "finished"),
+          );
           return;
         }
 
@@ -31,17 +37,24 @@ export default function takeRoundBet(
 
         const result = await controller.takeRoundBet(playerName, camelColor);
 
-        io.to(gameId).emit("gameLog", log(result, "info"));
+        io.to(gameId).emit("gameLog", result);
 
         const gameState = manager.getGame(gameId);
 
         if (typeof gameState === "string" || gameState === null) {
-          io.to(gameId).emit("gameLog", log(gameState, "error"));
-          io.to(gameId).emit("gameLog", log("------FINISHED------", "finished", playerName));
+          io.to(gameId).emit("gameLog", gameState);
+          io.to(gameId).emit(
+            "gameLog",
+            log("------FINISHED------", "finished", playerName),
+          );
           return;
         }
 
         const parsedGame = serializeGame(gameState.game as Game);
+
+        const currentPlayer = gameState.getCurrentPlayer();
+
+        io.to(gameId).emit("currentPlayer", currentPlayer);
 
         io.to(gameId).emit("gameState", parsedGame);
         io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));

@@ -94,7 +94,7 @@ describe("Board", () => {
     });
 
     it("should throw if camel does not exist", () => {
-      expect(() => board.moveCamel(Colors.Green, 1)).toThrow("Camel");
+      expect(board.moveCamel(Colors.Green, 1)).include("Camel not found");
     });
   });
 
@@ -127,7 +127,7 @@ describe("Board", () => {
     });
 
     it("should throw if stack camel is not found", () => {
-      expect(() => board.moveCamelStack(Colors.Green, 1)).toThrow("Camel");
+      expect(board.moveCamelStack(Colors.Green, 1)).include("Camel not found");
     });
   });
 
@@ -173,7 +173,7 @@ describe("Board", () => {
     });
 
     it("should throw if camel does not exist", () => {
-      expect(() => board.findCamelByColor(Colors.Red)).toThrow("Camel");
+      expect(board.findCamelByColor(Colors.Red)).include("Camel not found");
     });
   });
 

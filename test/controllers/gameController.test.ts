@@ -88,8 +88,8 @@ describe("GameController", () => {
 
     it("should throw error if the player already have a tile placed", async () => {
       await gameController.startGame(players, "testgameId");
-      await gameController.placeTile("Player1", 1, 1);
-      await gameController.placeTile("Player2", 2, 1);
+      await gameController.placeTile("Player1", 4, 1);
+      await gameController.placeTile("Player2", 11, 1);
       const result = await gameController.placeTile("Player1", 4, 1);
       expect(result).include("Tile already placed");
     });

@@ -10,25 +10,28 @@ export default function startGame(
 ) {
   socket.on("startGame", async ({ gameId }) => {
     try {
-      io.to(gameId).emit("gameLog", log("------Starting game------", "started"));
+      io.to(gameId).emit(
+        "gameLog",
+        log("------Starting game------", "started"),
+      );
 
       const lobby = manager.getLobby(gameId);
       const game = await manager.startGame(gameId);
 
       if (typeof lobby === "string") {
-        io.to(gameId).emit("gameLog", log(lobby, "error"));
+        socket.emit("gameLog", lobby);
         return;
       }
 
       if (typeof game === "string") {
-        io.to(gameId).emit("gameLog", log(game, "error"));
+        socket.emit("gameLog", game);
         return;
       }
 
       const lobbyPlayers = lobby.getPlayers();
 
       if (typeof lobbyPlayers === "string") {
-        io.to(gameId).emit("gameLog", log(lobbyPlayers, "error"));
+        socket.emit("gameLog", lobbyPlayers);
         return;
       }
 
@@ -36,7 +39,7 @@ export default function startGame(
         if (lobbyPlayer.isAI) continue;
 
         if (!game.game) {
-          log("Game is null", "error");
+          socket.emit("gameLog", log("Game is null", "error"));
           return;
         }
 
@@ -58,8 +61,8 @@ export default function startGame(
       const gameState = manager.getGame(gameId);
 
       if (typeof gameState === "string" || gameState === null) {
-        io.to(gameId).emit("gameLog", log(gameState, "error"));
-        io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
+        socket.emit("gameLog", gameState);
+        socket.emit("gameLog", log("------FINISHED------", "finished"));
         return;
       }
 
@@ -70,6 +73,10 @@ export default function startGame(
       });
 
       io.to(gameId).emit("launchGame");
+
+      const currentPlayer = gameState.getCurrentPlayer();
+
+      io.to(gameId).emit("currentPlayer", currentPlayer);
 
       io.to(gameId).emit("gameLog", log("Game has been started", "log"));
       io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));

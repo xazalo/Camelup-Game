@@ -1,16 +1,17 @@
 import type { PlayerConfig } from "../engine/types/PlayerConfig.js";
+import { log } from "../helpers/logger.js";
 
 export default class GameLobby {
   private readonly players: PlayerConfig[];
   private lastActivity = Date.now();
-  
 
   constructor(player: PlayerConfig) {
     this.players = [{ ...player }];
   }
 
-  touch(): void {
+  touch(): string {
     this.lastActivity = Date.now();
+    return log("Activity updated", "info");
   }
 
   isInactive(timeout = 10 * 60 * 1000): boolean {
@@ -19,17 +20,17 @@ export default class GameLobby {
 
   addPlayer(player: PlayerConfig): string {
     if (this.players.length >= 6) {
-      return "Maximum players reached";
+      return log("Maximum players reached", "error");
     }
 
     if (this.players.some((p) => p.name === player.name)) {
-      return "Player already exists";
+      return log("Player already exists", "error");
     }
 
     this.players.push({ ...player });
     this.touch();
 
-    return "Player added";
+    return log("Player added", "success");
   }
 
   addAI(): string {
@@ -38,13 +39,17 @@ export default class GameLobby {
     return this.addPlayer({
       name: `AI_${aiNumber}`,
       isAI: true,
-      socketId: "none"
+      socketId: "none",
     });
   }
 
   getPlayers(): PlayerConfig[] | string {
     const result = this.players.map((player) => ({ ...player }));
-    if (!result) return "Not players";
+
+    if (result.length === 0) {
+      return log("No players", "error");
+    }
+
     return result;
   }
 

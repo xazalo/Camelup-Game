@@ -19,8 +19,11 @@ export default function createLobby(
       const lobby = manager.getLobby(lobbyId);
 
       if (typeof lobby === "string") {
-        socket.emit("gameLog", log(lobby, "error", player.name));
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        socket.emit("gameLog", lobby);
+        socket.emit(
+          "gameLog",
+          log("------FINISHED------", "finished"),
+        );
         return;
       }
 
@@ -29,18 +32,28 @@ export default function createLobby(
       const players = lobby.getPlayers();
 
       if (typeof players === "string") {
-        socket.emit("gameLog", log(players, "error"));
-        socket.emit("gameLog", log("------FINISHED------", "finished"));
+        socket.emit("gameLog", players);
+        socket.emit(
+          "gameLog",
+          log("------FINISHED------", "finished"),
+        );
         return;
       }
 
       socket.emit("lobbyCreated", {
         id: lobbyId,
-        players: players,
+        players,
       });
 
-      socket.emit("gameLog", log("Lobby has been created", "success"));
-      socket.emit("gameLog", log("------FINISHED------", "finished"));
+      socket.emit(
+        "gameLog",
+        log("Lobby has been created", "success"),
+      );
+
+      socket.emit(
+        "gameLog",
+        log("------FINISHED------", "finished"),
+      );
     } catch (error) {
       socket.emit(
         "gameLog",
