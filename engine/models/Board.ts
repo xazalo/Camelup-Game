@@ -117,7 +117,7 @@ export default class Board {
     }
 
     if (camels.length === 0) {
-      throw new Error(`Camel ${color} not found`);
+      throw new Error(`Camel not found ${color}`);
     }
 
     const size = this.spaces.length;
@@ -154,7 +154,7 @@ export default class Board {
       const camel = stack.camels.find((c) => c.color === color);
       if (camel) return camel;
     }
-    throw new Error(`Camel ${color} not found on the board`);
+    throw new Error(`Camel not found on the board ${color}`);
   }
 
   /**

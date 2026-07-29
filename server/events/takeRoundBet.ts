@@ -31,7 +31,7 @@ export default function takeRoundBet(
 
         const result = await controller.takeRoundBet(playerName, camelColor);
 
-        io.to(gameId).emit("gameLog", log(result, "log"));
+        io.to(gameId).emit("gameLog", log(result, "info"));
 
         const gameState = manager.getGame(gameId);
 

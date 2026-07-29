@@ -19,14 +19,14 @@ export default class GameManager {
 
   getLobby(gameId: string): GameLobby | string {
     const result = this.lobbies.get(gameId);
-    if (!result) return "cannot get the lobby";
+    if (!result) return "Cannot get the lobby";
     return result;
   }
 
   async startGame(gameId: string): Promise<GameController | string> {
     const lobby = this.lobbies.get(gameId);
 
-    if (!lobby) return "There are no lobby";
+    if (!lobby) return "There is no lobby";
 
     const game = new GameController();
 

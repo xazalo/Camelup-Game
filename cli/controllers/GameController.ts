@@ -160,7 +160,7 @@ export default class GameController {
     const playerExists = this.game.players.some((p) => p.name === playerName);
 
     if (!playerExists) {
-      return log(`Player ${playerName} not found`, "error");
+      return log(`Player not found ${playerName}`, "error");
     }
 
     try {

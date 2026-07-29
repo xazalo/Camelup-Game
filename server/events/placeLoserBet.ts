@@ -31,7 +31,7 @@ export default function placeLoserBet(
 
         const result = await controller.placeLoserBet(playerName, camelColor);
 
-        io.to(gameId).emit("gameLog", log(result, "log"));
+        io.to(gameId).emit("gameLog", log(result, "info"));
 
         const gameState = manager.getGame(gameId);
 

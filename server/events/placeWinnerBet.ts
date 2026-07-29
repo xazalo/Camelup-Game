@@ -34,7 +34,7 @@ export default function placeWinnerBet(
 
         const result = await controller.placeWinnerBet(playerName, camelColor);
 
-        io.to(gameId).emit("gameLog", log(result, "log"));
+        io.to(gameId).emit("gameLog", log(result, "info"));
 
         const gameState = manager.getGame(gameId);
 

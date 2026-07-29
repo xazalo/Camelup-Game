@@ -49,7 +49,7 @@ export default function addAI(
         players: lobby.getPlayers(),
       });
 
-      io.to(gameId).emit("gameLog", log("Added AI player", "log"));
+      io.to(gameId).emit("gameLog", log("Added AI player", "info"));
       io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error) {
       socket.emit(

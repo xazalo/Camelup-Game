@@ -36,7 +36,7 @@ export default function startGame(
         if (lobbyPlayer.isAI) continue;
 
         if (!game.game) {
-          console.log("Game is null X/");
+          log("Game is null", "error");
           return;
         }
 

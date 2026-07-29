@@ -35,7 +35,7 @@ export default function placeTile(
           tileType,
         );
 
-        io.to(gameId).emit("gameLog", log(result, "log"));
+        io.to(gameId).emit("gameLog", log(result, "info"));
 
         const gameState = manager.getGame(gameId);
 

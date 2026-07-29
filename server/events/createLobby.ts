@@ -39,7 +39,7 @@ export default function createLobby(
         players: players,
       });
 
-      socket.emit("gameLog", log("Lobby has been created", "log"));
+      socket.emit("gameLog", log("Lobby has been created", "success"));
       socket.emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error) {
       socket.emit(

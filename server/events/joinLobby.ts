@@ -61,7 +61,7 @@ export default function joinLobby(
         players: lobby.getPlayers(),
       });
 
-      io.to(gameId).emit("gameLog", log("Player has been joined the lobby", "log"));
+      io.to(gameId).emit("gameLog", log("Player has been joined the lobby", "success"));
       io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error) {
       socket.emit(

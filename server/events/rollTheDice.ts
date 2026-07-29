@@ -28,7 +28,7 @@ export default function rollTheDice(
 
       const result = await controller.rollTheDice(playerName);
 
-      io.to(gameId).emit("gameLog", result);
+      io.to(gameId).emit("gameLog", log(result, "info"));
 
       const gameState = manager.getGame(gameId);
 
