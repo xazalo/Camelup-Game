@@ -1,4 +1,5 @@
-type Type = "log" | "error" | "finished" | "started";
+type Type =
+  "log" | "error" | "finished" | "started" | "success" | "warning" | "info";
 
 export function log(message: string, type: Type, playerName?: string): string {
   let prefix: string;
@@ -18,6 +19,18 @@ export function log(message: string, type: Type, playerName?: string): string {
 
     case "started":
       prefix = "[STARTED]";
+      break;
+
+    case "success":
+      prefix = "[SUCCESS]";
+      break;
+
+    case "warning":
+      prefix = "[WARNING]";
+      break;
+
+    case "info":
+      prefix = "[INFO]";
       break;
 
     default:
