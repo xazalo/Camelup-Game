@@ -70,6 +70,12 @@ export default function placeTile(
         io.to(gameId).emit("currentPlayer", currentPlayer);
 
         io.to(gameId).emit("gameState", parsedGame);
+
+        if ((controller.game?.phase as number) === 2) {
+          const winner = controller.getPlayerWithMoreMoney();
+          io.to(gameId).emit("winner", winner);
+        }
+
         io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
       } catch (error) {
         socket.emit(

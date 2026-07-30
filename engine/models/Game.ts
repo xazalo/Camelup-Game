@@ -57,6 +57,14 @@ export default class Game {
     return this.players[this.currentPlayer]?.name;
   }
 
+  getPlayerWithMoreMoney(): string {
+    const player = this.players.reduce((richest, player) =>
+      player.money > richest.money ? player : richest,
+    );
+
+    return player.name
+  }
+
   static create(playersConfig: PlayerConfig[], id: string): Game | string {
     if (playersConfig.length < 2 || playersConfig.length > 6) {
       return log("This Game must have between 2 and 6 players", "error");
@@ -105,7 +113,7 @@ export default class Game {
     const active = this.ensureGameIsActive();
 
     if (!active) return log("Game has already finished", "info");
-    
+
     const playerIndex = this.getPlayerIndexByName(playerName);
 
     if (playerIndex === -1) {
@@ -125,11 +133,7 @@ export default class Game {
     return log("Dice rolled successfully", "info");
   }
 
-  placeTile(
-    playerName: string,
-    position: number,
-    tileType: TileType,
-  ): string {
+  placeTile(playerName: string, position: number, tileType: TileType): string {
     const active = this.ensureGameIsActive();
 
     if (!active) return log("Game has already finished", "info");

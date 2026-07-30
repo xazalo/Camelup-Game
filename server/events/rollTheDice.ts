@@ -55,6 +55,11 @@ export default function rollTheDice(
 
       io.to(gameId).emit("gameState", parsedGame);
 
+      if (controller.game?.phase as number === 2) {
+        const winner = controller.getPlayerWithMoreMoney();
+        io.to(gameId).emit("winner", winner);
+      }
+
       io.to(gameId).emit("gameLog", log("------FINISHED------", "finished"));
     } catch (error: unknown) {
       socket.emit(

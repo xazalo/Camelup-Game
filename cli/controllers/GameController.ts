@@ -26,6 +26,12 @@ export default class GameController {
     return this.game?.getCurrentPlayer();
   }
 
+  getPlayerWithMoreMoney(): string {
+    const playerName = this.game?.getPlayerWithMoreMoney();
+    if (!playerName) return log("Player not found", "error");
+    return playerName;
+  }
+
   async startGame(players: PlayerConfig[], id: string): Promise<string> {
     try {
       if (players.length < 2 || players.length > 6)
