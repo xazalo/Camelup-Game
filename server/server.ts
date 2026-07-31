@@ -6,9 +6,11 @@ import registerEvents from "./events/index.js";
 
 const httpServer = createServer();
 
+import config from "../config.js";
+
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:4173",
+    origin: config.corsOrigin,
     methods: ["GET", "POST"],
   },
 });
@@ -31,6 +33,7 @@ io.on("connection", (socket) => {
 
 });
 
-httpServer.listen(3000, () => {
-  console.log("Listening on port 3000");
+httpServer.listen(config.port, () => {
+  console.log(`Listening on port ${config.port}`);
+  console.log(`Running on: ${config.host}:${config.port}`)
 });

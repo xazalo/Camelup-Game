@@ -1,4 +1,5 @@
 import type { Game } from "../../engine/models/index.js";
+import config from "../../config.js";
 
 export type AIAction = {
   action_idx: number;
@@ -6,7 +7,7 @@ export type AIAction = {
 };
 
 export async function predict(game: Game): Promise<AIAction> {
-    const response = await fetch("http://localhost:8000/predict", {
+    const response = await fetch(`${config.aiHost}/predict`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

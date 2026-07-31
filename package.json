@@ -7,7 +7,7 @@
     "dev": "tsx index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "server": "tsx server/server.ts",
+    "server": "NODE_ENV=production tsx server/server.ts",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
