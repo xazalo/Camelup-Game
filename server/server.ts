@@ -2,7 +2,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 import GameManager from "./GameManager.js";
-import registerEvents from "./events/index.js";
+import registerEvents from "./handlers/index.js";
 
 const httpServer = createServer();
 

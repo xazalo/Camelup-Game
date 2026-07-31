@@ -28,32 +28,10 @@ export default function joinGame(
 
       socket.join(gameId);
 
-      const gameState = manager.getGame(gameId);
-
-      if (typeof gameState === "string") {
-        io.to(gameId).emit("gameLog", gameState);
-        io.to(gameId).emit(
-          "gameLog",
-          log("------FINISHED------", "finished"),
-        );
-        return;
-      }
-
-      if (gameState === null) {
-        io.to(gameId).emit(
-          "gameLog",
-          log("Game is null", "error"),
-        );
-        io.to(gameId).emit(
-          "gameLog",
-          log("------FINISHED------", "finished"),
-        );
-        return;
-      }
-
-      const parsedGame = serializeGame(gameState.game as Game);
-
-      socket.emit("gameState", parsedGame);
+      socket.emit(
+        "gameState",
+        serializeGame(controller.game as Game),
+      );
 
       io.to(gameId).emit(
         "gameLog",
@@ -68,7 +46,9 @@ export default function joinGame(
       socket.emit(
         "gameLog",
         log(
-          error instanceof Error ? error.message : "Could not join game",
+          error instanceof Error
+            ? error.message
+            : "Could not join game",
           "error",
         ),
       );

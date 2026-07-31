@@ -2,6 +2,9 @@ import { Server, Socket } from "socket.io";
 import GameManager from "../GameManager.js";
 import { log } from "../../helpers/index.js";
 
+import { getLobby } from "../../server/operations/lobby/index.js"
+import { getPlayers } from "../../server/operations/lobby/index.js"
+
 export default function joinLobby(
   io: Server,
   socket: Socket,
@@ -14,10 +17,9 @@ export default function joinLobby(
         log("------Joining lobby------", "started", playerName),
       );
 
-      const lobby = manager.getLobby(gameId);
+      const lobby = getLobby(io, manager, gameId);
 
-      if (typeof lobby === "string") {
-        io.to(gameId).emit("gameLog", lobby);
+      if (!lobby) {
         io.to(gameId).emit(
           "gameLog",
           log("------FINISHED------", "finished"),
@@ -25,19 +27,13 @@ export default function joinLobby(
         return;
       }
 
-      const players = lobby.getPlayers();
-
-      if (typeof players === "string") {
-        io.to(gameId).emit("gameLog", players);
-        io.to(gameId).emit(
-          "gameLog",
-          log("------FINISHED------", "finished"),
-        );
-        return;
-      }
+      const players = getPlayers(
+        io,
+        gameId,
+        lobby,
+      );
 
       if (!players) {
-        io.to(gameId).emit("gameLog", log("Not players", "error"));
         io.to(gameId).emit(
           "gameLog",
           log("------FINISHED------", "finished"),
@@ -45,12 +41,13 @@ export default function joinLobby(
         return;
       }
 
-      const nameExists = lobby.playerExists(playerName);
-
-      if (nameExists) {
+      if (lobby.playerExists(playerName)) {
         socket.emit(
           "gameLog",
-          log("A player with that name already exists", "error"),
+          log(
+            "A player with that name already exists",
+            "error",
+          ),
         );
         return;
       }
@@ -86,7 +83,9 @@ export default function joinLobby(
       socket.emit(
         "gameLog",
         log(
-          error instanceof Error ? error.message : "Could not join lobby",
+          error instanceof Error
+            ? error.message
+            : "Could not join lobby",
           "error",
         ),
       );

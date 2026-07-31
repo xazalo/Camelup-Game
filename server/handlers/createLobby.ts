@@ -16,6 +16,7 @@ export default function createLobby(
       );
 
       const lobbyId = manager.createLobby(player, socket.id);
+
       const lobby = manager.getLobby(lobbyId);
 
       if (typeof lobby === "string") {
@@ -58,7 +59,9 @@ export default function createLobby(
       socket.emit(
         "gameLog",
         log(
-          error instanceof Error ? error.message : "Could not create lobby",
+          error instanceof Error
+            ? error.message
+            : "Could not create lobby",
           "error",
         ),
       );
