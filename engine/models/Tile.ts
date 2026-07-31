@@ -6,7 +6,7 @@ import { TileType } from "../enums/index.js";
  * @param {tileType}, represents the tile, can be null or one kind of card.
  */
 export default class Tile {
-  owner: String | null;
+  owner: string | null;
   tileType: TileType = TileType.None;
 
   constructor() {

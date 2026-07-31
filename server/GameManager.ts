@@ -1,5 +1,4 @@
 import GameController from "../cli/controllers/GameController.js";
-import type Game from "../engine/models/Game.js";
 import { createRandomId } from "../helpers/index.js";
 import GameLobby from "./GameLobby.js";
 import { log } from "../helpers/index.js";

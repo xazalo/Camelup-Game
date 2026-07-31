@@ -18,12 +18,12 @@ export default function addAI(
 
       const players = lobby?.getPlayers();
 
-      if (typeof players === "string") {
+      if (typeof players === "string" || typeof players) {
         io.to(gameId).emit("gameLog", players);
         return;
       }
 
-      if (players?.length! >= 6) {
+      if (players?.length as number >= 6) {
         socket.emit(
           "gameLog",
           log("The game has the maximum number of players", "error"),
