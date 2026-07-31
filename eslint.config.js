@@ -2,6 +2,11 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
 export default [
+  // Ignorar globalmente directorios de compilación
+  {
+    ignores: ["dist/**", "build/**", "node_modules/**"],
+  },
+
   js.configs.recommended,
   ...tseslint.configs.recommended,
 
