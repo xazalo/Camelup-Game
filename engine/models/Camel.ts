@@ -24,4 +24,8 @@ export default class Camel {
       this.direction = Directions.Right;
     }
   }
+
+  clone(): Camel {
+    return new Camel(this.color);
+  }
 }

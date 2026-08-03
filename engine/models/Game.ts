@@ -13,6 +13,7 @@ import { GamePhase, Colors, TileType, BetType } from "../enums/index.js";
 import { type DiceValue } from "../types/index.js";
 import { type PlayerConfig } from "../types/index.js";
 import { log } from "../../helpers/index.js";
+import { Probabilities } from "./Probabilities.js";
 
 type Bet = {
   player: string;
@@ -33,12 +34,15 @@ export default class Game {
 
   history: Round[];
 
+  probabilities: Probabilities;
+
   constructor(
     id: string,
     board: Board,
     players: Player[],
     history: Round[],
     cardStorage: CardStorage,
+    probabilities: Probabilities,
   ) {
     this.id = id;
 
@@ -51,6 +55,8 @@ export default class Game {
     this.history = history;
 
     this.cardStorage = cardStorage;
+
+    this.probabilities = probabilities;
   }
 
   getCurrentPlayer() {
@@ -62,7 +68,7 @@ export default class Game {
       player.money > richest.money ? player : richest,
     );
 
-    return player.name
+    return player.name;
   }
 
   static create(playersConfig: PlayerConfig[], id: string): Game | string {
@@ -79,11 +85,12 @@ export default class Game {
 
     const round = new Round();
 
-    const game = new Game(id, board, players, [round], storage);
+    const game = new Game(id, board, players, [round], storage, new Probabilities());
 
     game.board.createCamels();
     round.prepareInitialMoves(board);
     game.phase = GamePhase.Playing;
+    game.recomputeProbabilities();
 
     return game;
   }
@@ -159,6 +166,7 @@ export default class Game {
     }
 
     this.players[playerIndex]?.switchTilePlaced();
+    this.recomputeProbabilities();
     this.nextTurn();
 
     return log("Tile placed successfully", "info");
@@ -173,6 +181,8 @@ export default class Game {
     const dice = new Dice(color, value);
 
     this.board.moveCamelStack(color, value, player);
+
+    this.recomputeProbabilities();
 
     round.addTurn(new Turn(player.name, { type: "RollDice" }, dice));
 
@@ -361,6 +371,7 @@ export default class Game {
   endRound(): string {
     this.calculateRoundIncomes();
     this.addRound();
+    this.recomputeProbabilities();
     this.cardStorage.resetStoredCards();
 
     const playersLength = this.players.length - 1;
@@ -377,6 +388,19 @@ export default class Game {
     this.calculateGameIncomes();
     this.phase = GamePhase.Finished;
 
+    const ranking = this.board.getRaceRanking();
+    const winner = ranking[0];
+
+    this.probabilities.red = 0;
+    this.probabilities.blue = 0;
+    this.probabilities.yellow = 0;
+    this.probabilities.green = 0;
+
+    if (winner === Colors.Red) this.probabilities.red = 1;
+    else if (winner === Colors.Blue) this.probabilities.blue = 1;
+    else if (winner === Colors.Yellow) this.probabilities.yellow = 1;
+    else if (winner === Colors.Green) this.probabilities.green = 1;
+
     const playersLength = this.players.length - 1;
 
     for (let i = 0; i < playersLength; i++) {
@@ -389,5 +413,12 @@ export default class Game {
   private nextTurn(): void {
     this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
     this.currentTurn++;
+  }
+
+  private recomputeProbabilities(): void {
+    this.probabilities.defineProbabilities(
+      this.getCurrentRound().dicePool,
+      this.board,
+    );
   }
 }

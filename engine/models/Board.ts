@@ -185,6 +185,13 @@ export default class Board {
     return ranking;
   }
 
+  clone(): Board {
+    const copy = new Board(this.spaces.length);
+    copy.spaces = this.spaces.map((stack) => stack.clone());
+    copy.raceFinished = false;
+    return copy;
+  }
+
   private applyTileEffect(
     destination: number,
     player?: Player,

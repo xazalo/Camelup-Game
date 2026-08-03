@@ -55,4 +55,11 @@ export default class Stack {
 
     return this.camels.splice(index);
   }
+
+  clone(): Stack {
+    const copy = new Stack();
+    copy.camels = this.camels.map((camel) => camel.clone());
+    copy.tile = this.tile.clone();
+    return copy;
+  }
 }

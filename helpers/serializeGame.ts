@@ -18,5 +18,6 @@ export function serializeGame(game: Game): GameState {
     currentPlayer: game.currentPlayer,
     phase: game.phase,
     history: game.history,
+    probabilities: game.probabilities,
   };
 }

@@ -1,7 +1,21 @@
 type Type =
   "log" | "error" | "finished" | "started" | "success" | "warning" | "info";
 
+let logSilenceDepth = 0;
+
+export function silenceLogs(): void {
+  logSilenceDepth++;
+}
+
+export function restoreLogs(): void {
+  logSilenceDepth = Math.max(0, logSilenceDepth - 1);
+}
+
 export function log(message: string, type: Type, playerName?: string): string {
+  if (logSilenceDepth > 0) {
+    return message;
+  }
+
   let prefix: string;
 
   switch (type) {

@@ -46,4 +46,11 @@ export default class Tile {
     this.owner = null;
     this.tileType = TileType.None;
   }
+
+  clone(): Tile {
+    const copy = new Tile();
+    copy.owner = this.owner;
+    copy.tileType = this.tileType;
+    return copy;
+  }
 }

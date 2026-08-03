@@ -11,6 +11,7 @@ import DicePool from "./DicePool.js";
 import Round from "./Round.js";
 import Game from "./Game.js";
 import AvailableActions from "./AvailableActions.js";
+import { Probabilities } from "./Probabilities.js";
 export {
   Player,
   Turn,
@@ -24,5 +25,6 @@ export {
   DicePool,
   Round,
   Game,
-  AvailableActions
+  AvailableActions,
+  Probabilities,
 };
