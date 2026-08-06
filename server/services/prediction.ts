@@ -7,7 +7,8 @@ export type AIAction = {
 };
 
 export async function predict(game: Game): Promise<AIAction> {
-    const response = await fetch(`${config.aiHost}/predict`, {
+    const playerCount = game.players.length;
+    const response = await fetch(`${config.aiHost}/predict/${playerCount}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
