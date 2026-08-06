@@ -237,12 +237,35 @@ export default class GameController {
     }
   }
 
+  private async placeAIEncoded(
+    action: string,
+    tileType: TileType,
+    playerName: string,
+  ): Promise<string> {
+    const position = Number(action.split("_").pop());
+
+    if (!Number.isInteger(position) || position <= 0 || position >= 16) {
+      return log(`Invalid tile position from AI action: ${action}`, "error");
+    }
+
+    return await this.placeTile(playerName, position, tileType);
+  }
+
   private async executeAIAction(action: string): Promise<string> {
     if (!this.game) {
       return log("Game not started", "error");
     }
 
     const player = this.game.players[this.game.currentPlayer]!;
+
+    const legalActions = this.game.getLegalActions(player.name);
+
+    if (!legalActions.includes(action)) {
+      action = legalActions[0] ?? "ROLL_DICE";
+      console.warn(
+        `AI requested invalid action, falling back to legal action: ${action}`,
+      );
+    }
 
     switch (action) {
       case "ROLL_DICE":
@@ -284,15 +307,37 @@ export default class GameController {
       case "PLACE_LOSER_YELLOW":
         return await this.placeLoserBet(player.name, Colors.Yellow);
 
-      case "PLACE_OASIS": {
-        const position = Math.floor(Math.random() * 15) + 1;
-        return await this.placeTile(player.name, position, TileType.Oasis);
-      }
+      case "PLACE_OASIS_1": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_2": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_3": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_4": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_5": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_6": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_7": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_8": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_9": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_10": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_11": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_12": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_13": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_14": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
+      case "PLACE_OASIS_15": return await this.placeAIEncoded(action, TileType.Oasis, player.name);
 
-      case "PLACE_MIRAGE": {
-        const position = Math.floor(Math.random() * 15) + 1;
-        return await this.placeTile(player.name, position, TileType.Mirage);
-      }
+      case "PLACE_MIRAGE_1": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_2": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_3": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_4": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_5": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_6": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_7": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_8": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_9": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_10": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_11": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_12": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_13": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_14": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
+      case "PLACE_MIRAGE_15": return await this.placeAIEncoded(action, TileType.Mirage, player.name);
 
       default:
         return log(`Unknown AI action: ${action}`, "error");

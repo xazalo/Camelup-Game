@@ -107,6 +107,11 @@ export default class Game {
       this.players.push(firstPlayer);
     }
 
+    for (const player of this.players) {
+      player.availableActions.resetRound();
+      player.removePlacedTile();
+    }
+
     this.currentPlayer = 0;
 
     return log("Round added successfully", "success");
@@ -159,6 +164,28 @@ export default class Game {
       return log("Tile already placed", "error");
     }
 
+    const boardSize = this.board.spaces.length;
+
+    if (position < 1 || position >= boardSize) {
+      return log("Invalid tile position", "error");
+    }
+
+    if (!this.players[playerIndex]?.availableActions.placeTile[position]) {
+      return log("Tile position not available", "error");
+    }
+
+    if (this.board.spaces[position]?.tile.hasTile()) {
+      return log("There is already a tile in this space", "error");
+    }
+
+    if (this.board.spaces[position - 1]?.tile.hasTile()) {
+      return log("A tile cannot be placed next to an existing tile", "error");
+    }
+
+    if (this.board.spaces[position + 1]?.tile.hasTile()) {
+      return log("A tile cannot be placed next to an existing tile", "error");
+    }
+
     this.board.spaces[position]?.tile.place(playerName, tileType);
 
     for (const player of this.players) {
@@ -201,6 +228,73 @@ export default class Game {
 
   getPlayerIndexByName(name: string): number {
     return this.players.findIndex((player) => player.name === name);
+  }
+
+  /**
+   * Returns the concrete AI action names currently legal for the player.
+   * This is the single source of truth used to validate AI predictions, so
+   * an invalid/stale AI move is never executed (prevents turn desyncs).
+   */
+  getLegalActions(playerName: string): string[] {
+    if (this.phase === GamePhase.Finished) {
+      return [];
+    }
+
+    const index = this.getPlayerIndexByName(playerName);
+
+    if (index === -1 || !this.playerHasTurn(index)) {
+      return [];
+    }
+
+    const player = this.players[index]!;
+    const actions: string[] = [];
+
+    if (player.availableActions.rollDice) {
+      actions.push("ROLL_DICE");
+    }
+
+    const roundBet = player.availableActions.roundBet;
+    if (roundBet.green && this.cardStorage.shouldGrabCard("green"))
+      actions.push("TAKE_ROUND_BET_GREEN");
+    if (roundBet.blue && this.cardStorage.shouldGrabCard("blue"))
+      actions.push("TAKE_ROUND_BET_BLUE");
+    if (roundBet.red && this.cardStorage.shouldGrabCard("red"))
+      actions.push("TAKE_ROUND_BET_RED");
+    if (roundBet.yellow && this.cardStorage.shouldGrabCard("yellow"))
+      actions.push("TAKE_ROUND_BET_YELLOW");
+
+    const winnerBet = player.availableActions.winnerBet;
+    if (winnerBet.green) actions.push("PLACE_WINNER_GREEN");
+    if (winnerBet.blue) actions.push("PLACE_WINNER_BLUE");
+    if (winnerBet.red) actions.push("PLACE_WINNER_RED");
+    if (winnerBet.yellow) actions.push("PLACE_WINNER_YELLOW");
+
+    const loserBet = player.availableActions.loserBet;
+    if (loserBet.green) actions.push("PLACE_LOSER_GREEN");
+    if (loserBet.blue) actions.push("PLACE_LOSER_BLUE");
+    if (loserBet.red) actions.push("PLACE_LOSER_RED");
+    if (loserBet.yellow) actions.push("PLACE_LOSER_YELLOW");
+
+    if (!player.placedTile) {
+      for (let position = 1; position < 16; position++) {
+        const targetTile = this.board.spaces[position]?.tile;
+        const leftTile = this.board.spaces[position - 1]?.tile;
+        const rightTile = this.board.spaces[position + 1]?.tile;
+
+        const isFree =
+          player.availableActions.placeTile[position] &&
+          !targetTile?.hasTile() &&
+          !leftTile?.hasTile() &&
+          !rightTile?.hasTile();
+
+        if (isFree) {
+          actions.push(`PLACE_OASIS_${position}`);
+          actions.push(`PLACE_MIRAGE_${position}`);
+        }
+      }
+    }
+
+    return actions;
   }
 
   private calculateRoundIncomes(): void {
@@ -374,10 +468,8 @@ export default class Game {
     this.recomputeProbabilities();
     this.cardStorage.resetStoredCards();
 
-    const playersLength = this.players.length - 1;
-
-    for (let i = 0; i < playersLength; i++) {
-      this.players[playersLength]?.resetCardStorage();
+    for (const player of this.players) {
+      player.resetCardStorage();
     }
 
     return log("Round ended successfully", "info");
@@ -401,10 +493,8 @@ export default class Game {
     else if (winner === Colors.Yellow) this.probabilities.yellow = 1;
     else if (winner === Colors.Green) this.probabilities.green = 1;
 
-    const playersLength = this.players.length - 1;
-
-    for (let i = 0; i < playersLength; i++) {
-      this.players[i]?.availableActions.switchRollDice();
+    for (const player of this.players) {
+      player.availableActions.switchRollDice();
     }
 
     return log("Game ended successfully", "finished");

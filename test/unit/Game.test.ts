@@ -5,6 +5,7 @@ import Card from "../../engine/models/Card.js";
 import BetType from "../../engine/enums/BetType.js";
 import { generatePayoutTable } from "../../helpers/index.js";
 import GamePhase from "../../engine/enums/GamePhase.js";
+import { TileType } from "../../engine/enums/TileType.js";
 
 describe("Game", () => {
   let game: Game;
@@ -130,6 +131,53 @@ describe("Game", () => {
     });
   });
 
+  describe("placeTile", () => {
+    it("should place a tile on a valid isolated position", () => {
+      const result = game.placeTile("Player1", 5, TileType.Oasis);
+
+      expect(result).include("placed successfully");
+      expect(game.board.spaces[5]!.tile.hasTile()).toBe(true);
+    });
+
+    it("should block the placed position and its neighbors in every player's available actions", () => {
+      game.placeTile("Player1", 5, TileType.Oasis);
+
+      game.players.forEach((player) => {
+        expect(player.availableActions.placeTile[5]).toBe(false);
+        expect(player.availableActions.placeTile[4]).toBe(false);
+        expect(player.availableActions.placeTile[6]).toBe(false);
+      });
+    });
+
+    it("should reject a position that is not in the available actions array", () => {
+      expect(game.placeTile("Player1", 15, TileType.Oasis)).include(
+        "Tile position not available",
+      );
+    });
+
+    it("should reject placing a tile out of board bounds", () => {
+      expect(game.placeTile("Player1", 99, TileType.Oasis)).include(
+        "Invalid tile position",
+      );
+    });
+
+    it("should reject placing a tile on an already occupied space", () => {
+      game.board.spaces[5]!.tile.place("Other", TileType.Oasis);
+
+      expect(game.placeTile("Player1", 5, TileType.Oasis)).include(
+        "already a tile",
+      );
+    });
+
+    it("should reject placing a tile adjacent to an existing tile", () => {
+      game.board.spaces[6]!.tile.place("Other", TileType.Oasis);
+
+      expect(game.placeTile("Player1", 5, TileType.Oasis)).include(
+        "next to an existing tile",
+      );
+    });
+  });
+
   describe("placeWinnerBet", () => {
     it("should place a winner bet", () => {
       const camel = game.board.findCamelByColor(Colors.Yellow);
@@ -192,6 +240,56 @@ describe("Game", () => {
   describe("round management", () => {
     it("should have an initial round", () => {
       expect(game.history.length).toBe(1);
+    });
+  });
+
+  describe("available actions reset on new round", () => {
+    it("should reset round bet availability each round", () => {
+      const player = game.players[0]!;
+
+      player.availableActions.roundBet.green = false;
+      player.availableActions.roundBet.blue = false;
+
+      game.endRound();
+
+      expect(player.availableActions.roundBet.green).toBe(true);
+      expect(player.availableActions.roundBet.blue).toBe(true);
+    });
+
+    it("should reset tile placement availability and placed flag each round", () => {
+      const player = game.players[0]!;
+
+      player.placedTile = true;
+      player.availableActions.placeTile[3] = false;
+
+      game.endRound();
+
+      expect(player.placedTile).toBe(false);
+      expect(player.availableActions.placeTile[3]).toBe(true);
+    });
+
+    it("should keep winner and loser bets placed across rounds", () => {
+      const player = game.players[0]!;
+
+      player.availableActions.winnerBet.green = false;
+      player.availableActions.loserBet.yellow = false;
+
+      game.endRound();
+
+      expect(player.availableActions.winnerBet.green).toBe(false);
+      expect(player.availableActions.loserBet.yellow).toBe(false);
+    });
+
+    it("should reset round bets for every player", () => {
+      game.players.forEach((player) => {
+        player.availableActions.roundBet.yellow = false;
+      });
+
+      game.endRound();
+
+      game.players.forEach((player) => {
+        expect(player.availableActions.roundBet.yellow).toBe(true);
+      });
     });
   });
 
@@ -385,6 +483,42 @@ describe("Game", () => {
       game.endGame();
 
       expect(game.players[0]!.money).toBe(2);
+    });
+  });
+
+  describe("getLegalActions", () => {
+    it("should include ROLL_DICE for the current player", () => {
+      expect(game.getLegalActions("Player1")).toContain("ROLL_DICE");
+    });
+
+    it("should not return round bets when that color deck is exhausted", () => {
+      for (let i = 0; i < 5; i++) {
+        game.cardStorage.grabCard("green");
+      }
+
+      const legal = game.getLegalActions("Player1");
+
+      expect(legal).not.toContain("TAKE_ROUND_BET_GREEN");
+      expect(legal).toContain("TAKE_ROUND_BET_BLUE");
+    });
+
+    it("should not return tile actions for a position adjacent to an existing tile", () => {
+      game.board.spaces[6]!.tile.place("Other", TileType.Oasis);
+
+      const legal = game.getLegalActions("Player1");
+
+      expect(legal).not.toContain("PLACE_OASIS_5");
+      expect(legal).not.toContain("PLACE_MIRAGE_5");
+      expect(legal).toContain("PLACE_OASIS_3");
+    });
+
+    it("should not return tile actions if the player already placed a tile", () => {
+      game.players[0]!.placedTile = true;
+
+      const legal = game.getLegalActions("Player1");
+
+      expect(legal.some((a) => a.startsWith("PLACE_OASIS"))).toBe(false);
+      expect(legal.some((a) => a.startsWith("PLACE_MIRAGE"))).toBe(false);
     });
   });
 

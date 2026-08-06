@@ -55,6 +55,17 @@ export default class AvailableActions {
     this.placeTile[15] = false;
   }
 
+  resetRound(): void {
+    this.roundBet.blue = true;
+    this.roundBet.green = true;
+    this.roundBet.red = true;
+    this.roundBet.yellow = true;
+
+    this.placeTile.fill(true);
+    this.placeTile[0] = false;
+    this.placeTile[15] = false;
+  }
+
   switchPlaceTile(position: number): string {
     if (!Number.isInteger(position) || position < 1 || position > 14) {
       return log("Incorrect Tile Position", "error");
